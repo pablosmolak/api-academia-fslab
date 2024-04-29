@@ -12,7 +12,7 @@ model Usuarios {
     nome       String   @db.VarChar(200)
     email      String   @unique @db.VarChar(255)
     senha      String   @db.VarChar(255)
-    ativo      Boolean  @default(false)
+    ativo      Boolean  @default(true)
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
