@@ -1,4 +1,4 @@
-const messages = {
+export const messages = {
     // Mensagens para respostas via rotas da api
     httpCodes: {
         200: "Requisição bem sucedida!",

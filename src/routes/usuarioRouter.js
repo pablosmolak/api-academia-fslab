@@ -3,7 +3,6 @@ import express from "express";
 import { wrapException } from "../utils/wrapException.js";
 import usuarioValidation from "../validation/usuarioValidation.js";
 
-
 const router = express.Router();
 
 router

@@ -6,7 +6,7 @@ export default class UsuarioController {
     static async criarUsuario(req, res) {
         let { nome, email, senha } = req.body
 
-        const userCreated = await prisma.usuarios.create({
+        const userCreated = await prisma.usuario.create({
             data: {
                 nome,
                 email,

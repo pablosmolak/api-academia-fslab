@@ -13,7 +13,7 @@ export const wrapException = (fn) => {
             return await fn(req, res, next)
         }
         catch (err) {
-            if (process.env.DEBUGLOG === "true") console.error(err.message)
+            if (process.env.DEBUGLOG === "true") console.error(err)
 
             return sendError(res, 500, err.message || "" + err )
 
