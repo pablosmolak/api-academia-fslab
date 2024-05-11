@@ -5,11 +5,11 @@ export default class usuarioValidation {
 
         let validador = new Validador(req.body)
         
-        await validador.validacao("nome", funcoes.obrigatorio())
-        await validador.validacao("email", funcoes.obrigatorio())
-        await validador.validacao("senha", funcoes.obrigatorio())
+        await validador.validacao("nome", funcoes.Obrigatorio(),funcoes.Length({min: 3, max: 200}))
+        await validador.validacao("email", funcoes.Obrigatorio(), funcoes.Email(), funcoes.Unico({tabela: "usuario"}))
+        await validador.validacao("senha", funcoes.Obrigatorio(), funcoes.Senha())
         
-        if (validador.contemErros()) return sendError(res, 422, validador.obterErros());
+        if (validador.contemErros()) return sendError(res, 422, validador.obterErros())
 
         return next()
     }

@@ -108,7 +108,9 @@ export const messages = {
         invalidDateCurrent: "Data do inicio deve ser uma data atual ou passada!",
         invalidDateMonths: "A data final da vigência não pode ser um período maior que 12 meses após a data de início da vigência!",
         invalidDataNascimento: "Data de nascimento deve ser uma data passada e maior que 18!",
-        inventarioAndamento: "Inventario em andamento."
+        inventarioAndamento: "Inventario em andamento.",
+        lengthMenor: (campo, tamanho) => {return {message: `O campo ${campo} precisa ter no mínimo ${tamanho} ${tamanho <= 1 ? "caracter" : "caracteres"}!`}},
+        lengthMaior: (campo, tamanho) => {return {message: `O campo ${campo} deve ter no máximo ${tamanho} ${tamanho <= 1 ? "caracter" : "caracteres"}!`}}
     },
     auth: {
         authenticationFailed: "Falha na autenticação! Credenciais inválidas!",

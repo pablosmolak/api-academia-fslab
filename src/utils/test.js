@@ -368,7 +368,7 @@ export class ValidationFuncs {
 
     // ---------------------------------------------------
     // Funções de validação genéricas, isto é, sem regras de negócio específicas
-    // ---------------------------------------------------
+    // ---------------------------------------------------f
 
     /** Se não existir irá parar as validações (sem dar erro). */ 
     static optional = (opcoes = {allowNull: false}) => async (value) => {

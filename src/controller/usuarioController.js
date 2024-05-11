@@ -29,7 +29,7 @@ export default class UsuarioController {
         if (nome) filtros.where.nome = { contains: nome }
         if (email) filtros.where.email = { contains: email }
 
-        let userExists = await prisma.usuarios.findMany(filtros)
+        let userExists = await prisma.usuario.findMany(filtros)
 
         const usuarioCorreto = []
         for (let user of userExists) {
@@ -43,7 +43,7 @@ export default class UsuarioController {
     static async listarUsuarioPorID(req, res) {
         const id = req.params.id
 
-        let findUser = await prisma.usuarios.findUnique({
+        let findUser = await prisma.usuario.findUnique({
             where: {
                 id: id
             }
@@ -58,7 +58,7 @@ export default class UsuarioController {
     static async deletarUsuario(req, res) {
         const id = req.params.id
 
-        await prisma.usuarios.delete({
+        await prisma.usuario.delete({
             where: {
                 id: id,
             },

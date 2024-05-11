@@ -17,7 +17,7 @@ model Grupo {
 
     // Relacionamento com os usuários
 
-   // usuario        Usuario[]
+    // usuario        Usuario[]
     regrasOnGrupos Regras_Grupo[]
     usuarioOnGrupo UsuarioOnGrupo[]
 }
@@ -51,6 +51,7 @@ model Usuario {
     email              String   @unique
     senha              String
     tokenRecuperaSenha String?
+    fotoPerfil         String?
     ativo              Boolean  @default(true)
     //grupoId         String
     created_at         DateTime @default(now())
@@ -62,7 +63,7 @@ model Usuario {
     progressoCursos ProgressoCurso[]
     instrutores     instrutores[]
     usuarioOnGrupo  UsuarioOnGrupo[]
-   // Grupo           Grupo           @relation(fields: [grupoId], references: [id])
+    //Grupo           Grupo           @relation(fields: [grupoId], references: [id])
 }
 
 model UsuarioOnGrupo {
@@ -169,7 +170,7 @@ model instrutores {
 
 model Certificado {
     userId      String
-    cursoId     String  
+    cursoId     String
     dataEmissao DateTime
     validador   String
     created_at  DateTime @default(now())
@@ -179,5 +180,5 @@ model Certificado {
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
 
-    @@id([userId,cursoId])
+    @@id([userId, cursoId])
 }
