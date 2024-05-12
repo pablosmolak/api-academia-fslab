@@ -7,13 +7,15 @@ const routes = (app) => {
         app.use(logRoutes);
     }
 
-    app.route("/").get((req, res) => {
+    app.get("/", (req, res) => {
         res.status(200).redirect("/docs")
     });
 
     app.use(
         usuarios
     );
+
+    
 };
 
 export default routes;
