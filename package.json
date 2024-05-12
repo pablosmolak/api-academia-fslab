@@ -11,7 +11,7 @@
     "dev": "nodemon server.js"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "@prisma/client": "^5.13.0",

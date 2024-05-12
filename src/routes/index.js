@@ -1,4 +1,6 @@
 import usuarios from "./usuarioRouter.js";
+import cursos from "./cursoRouter.js";
+import categoria from "./categoriaRouter.js";
 import logRoutes from "../middleware/logRoutesMiddleware.js";
 
 const routes = (app) => {
@@ -12,7 +14,9 @@ const routes = (app) => {
     });
 
     app.use(
-        usuarios
+        usuarios,
+        cursos,
+        categoria
     );
 
     

@@ -20,6 +20,8 @@ model Grupo {
     // usuario        Usuario[]
     regrasOnGrupos Regras_Grupo[]
     usuarioOnGrupo UsuarioOnGrupo[]
+
+    @@map("grupos")
 }
 
 //regras de acesso a grupos
@@ -30,6 +32,8 @@ model Regra {
     updated_at DateTime @updatedAt
 
     regrasOnGrupos Regras_Grupo[]
+
+    @@map("regras")
 }
 
 model Regras_Grupo {
@@ -42,6 +46,8 @@ model Regras_Grupo {
     Regra Regra @relation(fields: [regrasId], references: [id])
 
     @@id([regrasId, grupoId])
+
+    @@map("regras_grupos")
 }
 
 // modelo de Usuários
@@ -64,6 +70,8 @@ model Usuario {
     instrutores     instrutores[]
     usuarioOnGrupo  UsuarioOnGrupo[]
     //Grupo           Grupo           @relation(fields: [grupoId], references: [id])
+
+    @@map("usuarios")
 }
 
 model UsuarioOnGrupo {
@@ -76,6 +84,8 @@ model UsuarioOnGrupo {
     Usuario Usuario @relation(fields: [usuarioId], references: [id])
 
     @@id([grupoId, usuarioId])
+
+    @@map("usuarios_grupos")
 }
 
 // modelo de Inscrições em Cursos
@@ -91,6 +101,8 @@ model Inscricao {
     // Relacionamento com o curso e usuário
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
+
+    @@map("inscricoes")
 }
 
 // modelo de Progresso do Curso
@@ -106,6 +118,8 @@ model ProgressoCurso {
     // Relacionamento com o curso e usuário
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
+
+    @@map("progresso_cursos")
 }
 
 // modelo de Certificados
@@ -122,6 +136,8 @@ model ConteudoCurso {
 
     // Relacionamento com a aula
     aula Aula @relation(fields: [aulaId], references: [id])
+
+    @@map("conteudos_cursos")
 }
 
 // modelo de Aulas
@@ -138,6 +154,8 @@ model Aula {
 
     // Relacionamento com o conteúdo
     conteudos ConteudoCurso[]
+
+    @@map("aulas")
 }
 
 // modelo de Cursos
@@ -145,7 +163,6 @@ model Curso {
     id            String   @id @default(uuid())
     nome          String
     descricao     String?
-    identificador String
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt
 
@@ -155,6 +172,22 @@ model Curso {
     progressoCursos ProgressoCurso[]
     certificado     Certificado[]
     instrutores     instrutores[]
+    categoria       Categoria[]
+
+    @@map("cursos")
+}
+
+// Criar um modelo de categoria de cursos para organizar os cursos
+model Categoria {
+    id         String   @id @default(uuid())
+    nome       String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    // Relacionamento com os cursos
+    cursos Curso[]
+
+    @@map("categorias")
 }
 
 model instrutores {
@@ -166,6 +199,8 @@ model instrutores {
 
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
+
+    @@map("instrutores")
 }
 
 model Certificado {
@@ -181,4 +216,6 @@ model Certificado {
     usuario Usuario @relation(fields: [userId], references: [id])
 
     @@id([userId, cursoId])
+
+    @@map("certificados")
 }
