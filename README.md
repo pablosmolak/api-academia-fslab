@@ -81,6 +81,21 @@ $ npm run dev
 $ npx prisma studio # Rodar o Studio Prisma Navegador
 ```
 
+
+🔧 `.env` 
+```bash
+PORT=3000
+
+DB_URL= mysql://root:pablo123@localhost:3307/academiaFSlab
+
+#JWT
+JWT_SECRET=1234567890
+JWT_EXPIRATION=1d
+
+#variavel de debug
+DEBUGLOG=true
+```
+
 Runs the app in the development mode.<br/>
 
 ## Autores
