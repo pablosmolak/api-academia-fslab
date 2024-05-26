@@ -11,15 +11,13 @@ datasource db {
 model Grupo {
     id         String   @id @default(uuid())
     nome       String
-    regraId    String
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
     // Relacionamento com os usuários
 
-    // usuario        Usuario[]
+    usuario        Usuario[]
     regrasOnGrupos Regras_Grupo[]
-    usuarioOnGrupo UsuarioOnGrupo[]
 }
 
 //regras de acesso a grupos
@@ -53,7 +51,7 @@ model Usuario {
     tokenRecuperaSenha String?
     fotoPerfil         String?
     ativo              Boolean  @default(true)
-    //grupoId         String
+    grupoId            String?
     created_at         DateTime @default(now())
     updated_at         DateTime @updatedAt
 
@@ -62,20 +60,7 @@ model Usuario {
     certificados    Certificado[]
     progressoCursos ProgressoCurso[]
     instrutores     instrutores[]
-    usuarioOnGrupo  UsuarioOnGrupo[]
-    //Grupo           Grupo           @relation(fields: [grupoId], references: [id])
-}
-
-model UsuarioOnGrupo {
-    grupoId    String
-    usuarioId  String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    Grupo   Grupo   @relation(fields: [grupoId], references: [id])
-    Usuario Usuario @relation(fields: [usuarioId], references: [id])
-
-    @@id([grupoId, usuarioId])
+    Grupo           Grupo?           @relation(fields: [grupoId], references: [id])
 }
 
 // modelo de Inscrições em Cursos
@@ -107,8 +92,6 @@ model ProgressoCurso {
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
 }
-
-// modelo de Certificados
 
 // modelo de Conteúdo do Curso
 model ConteudoCurso {
@@ -157,6 +140,7 @@ model Curso {
     instrutores     instrutores[]
 }
 
+// modelo de Instrutores
 model instrutores {
     id         String   @id @default(uuid())
     cursoId    String
@@ -168,6 +152,7 @@ model instrutores {
     usuario Usuario @relation(fields: [userId], references: [id])
 }
 
+// modelo de Certificados
 model Certificado {
     userId      String
     cursoId     String

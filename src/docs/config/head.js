@@ -1,3 +1,7 @@
+import { AuthPath } from "../paths/authPath.js";
+import { UsuarioPath } from "../paths/usuarioPath.js";
+import { usuarioSchema } from "../schemas/usuarioSchema.js";
+
 const swaggerOptions = {
   swaggerDefinition: {
     openapi: "3.0.0",
@@ -30,7 +34,7 @@ const swaggerOptions = {
         },
       },
       schemas: {
-
+        ...usuarioSchema
       },
     },
     security: [
@@ -53,7 +57,8 @@ const swaggerOptions = {
       }
     ],
     paths: {
-
+      ...AuthPath,
+      ...UsuarioPath
     },
   },
   apis: ["./src/routes/*.js"],
