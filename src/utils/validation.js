@@ -133,18 +133,24 @@ export class ResultadoValidacao {
     toString() {
         return JSON.stringify({
             path: this.path,
-            value: getValueByPath(this.body, this.path),
+            value: definirValorNoPath(this.body, this.path),
             error: this.error
         });
     }
 }
-
 
 export class funcoesDeValidacao {
     static Obrigatorio = (opcoes = { allowNull: false }) => async (valor, resultadoValidacao) => {
         if (valor === undefined || (!opcoes.allowNull && (valor === null || valor === ""))) {
             return opcoes.mensagem || messages.validationGeneric.fieldIsRequired(resultadoValidacao.path).message
         }
+        return true
+    }
+
+    static Opcional = (opcoes = { allowNull: false }) => async (valor) => {
+        if (valor === undefined) return false
+        if (!opcoes.allowNull && (valor === null || valor === "")) return false
+
         return true
     }
 
@@ -159,27 +165,42 @@ export class funcoesDeValidacao {
         return true
     }
 
-    static Opcional = (opcoes = { allowNull: false }) => async (valor) => {
-        if (valor === undefined) return false
-        if (!opcoes.allowNull && (valor === null || valor === "")) return false
+    static UnicoVerificaNoID = (opcoes = { tabela: false, query: false }) => async (valor, resultadoValidacao) => {
+        if (opcoes.tabela === false) throw new Error("A função Unico da validação deve receber a tabela")
+
+        let resultado = await prisma[opcoes.tabela].findUnique(opcoes.query || { where: { [resultadoValidacao.path]: valor }  })
+
+        if (!resultado || (resultado.id === resultadoValidacao.body.id)) {
+            return true
+        }
+
+        return opcoes.messagem || messages.validationGeneric.fieldIsRepeated(resultadoValidacao.path).message
+    }
+
+    static Existe = (opcoes = { tabela: false, query: false }) => async (valor, resultadoValidacao) => {
+        if (opcoes.tabela === false) throw new Error("A função existe da validação deve receber a tabela")
+
+        let resultado = await prisma[opcoes.tabela].findMany(opcoes.query || { where: { [resultadoValidacao.path]: { contains: valor } } })
+        if (resultado.length === 0) {
+            return opcoes.messagem || messages.validationGeneric.notFound(resultadoValidacao.path).message
+        }
 
         return true
     }
 
-    static Length = (opcoes = {min: false, max: false}) => async (valor,resultadoValidacao) => {
-        if(!opcoes.min && !opcoes.max) throw new Error ("A função de validação length deve receber um objeto com as propriedades min e/ou max")
+    static Length = (opcoes = { min: false, max: false }) => async (valor, resultadoValidacao) => {
+        if (!opcoes.min && !opcoes.max) throw new Error("A função de validação length deve receber um objeto com as propriedades min e/ou max")
 
-        if(opcoes.min && valor.length < opcoes.min){
+        if (opcoes.min && valor.length < opcoes.min) {
             return opcoes.mensagem || messages.customValidation.lengthMenor(resultadoValidacao.path, opcoes.min).message
         }
 
-        if(opcoes.max && valor.length > opcoes.max){
+        if (opcoes.max && valor.length > opcoes.max) {
             return opcoes.mensagem || messages.customValidation.lengthMaior(resultadoValidacao.path, opcoes.max).message
         }
 
         return true
     }
-
 
     static Email = (opcoes = {}) => async (valor) => {
         const valida = valor.split('@') // separa o email em 2
@@ -205,37 +226,54 @@ export class funcoesDeValidacao {
         return true
     }
 
-    static Senha = (opcoes = {}) => (valor,resultadoValidacao) => {
+    static Senha = (opcoes = {}) => (valor, resultadoValidacao) => {
         const maisculas = /[A-Z]/
         const minusculas = /[a-z]/
         const numeros = /[0-9]/
         const especial = /[!|@|#|$|%|^&|*|(|)|_|-|=|+|:|;]/
-        
+
         const erros = []
         const senha = String(valor)
-    
-        if(senha.length < 8){ 
+
+        if (senha.length < 8) {
             erros.push("A senha deve conter no mínimo 8 caracteres!")
         }
-    
-        if(!maisculas.test(senha)){
+
+        if (!maisculas.test(senha)) {
             erros.push("A senha precisa conter ao menos 1 letra maiúscula!")
         }
-    
-        if(!minusculas.test(senha)) {
+
+        if (!minusculas.test(senha)) {
             erros.push("A senha precisa conter ao menos 1 letra minúscula!")
         }
-    
-        if(!numeros.test(senha)){
+
+        if (!numeros.test(senha)) {
             erros.push("A senha precisa conter ao menos 1 número!")
         }
-    
-        if(!especial.test(senha)){
+
+        if (!especial.test(senha)) {
             erros.push("A senha deve conter ao menos 1 caractere especial!")
         }
 
-        if(erros.length > 0)  return erros
+        if (erros.length > 0) return erros
 
         return true
     }
+
+    static Regex = (opcoes = { regex: false }) => async (valor, resultadoValidacao) => {
+        if (opcoes.regex === false) throw new Error("A função de validação regex deve receber um objeto com a propriedade regex");
+        if (!opcoes.regex.test(valor)) {
+            return opcoes.message || messages.validationGeneric.invalidInputFormatForField(resultadoValidacao.path).message;
+        }
+
+        return true;
+    }
+
+    static UUID = (opcoes = {}) => async (valor, resultadoValidacao) => {
+        return funcoesDeValidacao.Regex({
+            regex: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+            message: opcoes.message
+        })(valor, resultadoValidacao)
+    }
+
 }

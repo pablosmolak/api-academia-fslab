@@ -62,7 +62,7 @@ export const messages = {
         invalidApiKey: "Chave de API inválida!",
         operationCanceled: "Operação cancelada pelo usuário!",
         resourceNotFound: (id) => `O campo ${id} não foi encontrado!`,
-        invalidID: "O ID informado deve estar em um formato válido (12 bytes)!"
+        invalidID: "O ID informado deve estar em um formato válido (16 bytes)!"
     },
     // Mensagens de validação genéricas
     validationGeneric: {
@@ -89,7 +89,7 @@ export const messages = {
             return { message: `${campo} não encontrada!` };
         },
         notFound: (fieldName) => {
-            return { message: `Nenhum registro encontrado com este ${fieldName}.` };
+            return { message: `Nenhum registro encontrado com este ${fieldName}!` };
         },
         mustBeOneOf: (fieldName, values) => {
             return { message: `O campo ${fieldName} deve ser um dos seguintes valores: ${values.join(", ")}` };
@@ -120,7 +120,7 @@ export const messages = {
         duplicateEntry: (fieldName) => `Já existe um registro com o mesmo ${fieldName}!`,
 
         accountLocked: "Conta bloqueada! Entre em contato com o suporte!",
-        invalidToken: "Token inválido, Faça login novamente!",
+        invalidToken: "Token inválido!",
 
         timeoutError: "Tempo de espera excedido, Tente novamente mais tarde!",
         databaseConnectionError: "Erro de conexão com o banco de dados, Tente novamente mais tarde!",
