@@ -4,13 +4,22 @@ import { sendResponse } from "../utils/mensagens.js";
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {
-        let { nome, email, senha } = req.body
+        let { nome, email, senha, fotoPerfil } = req.body
 
+        const grupoId = await prisma.grupo.findFirst({
+            where: {
+                nome: { in: ["Cursantes"] },
+            },
+            select: {id: true},
+        });
+    
         const userCreated = await prisma.usuario.create({
             data: {
                 nome,
                 email,
-                senha: bcrypt.hashSync(senha, 10)
+                senha: bcrypt.hashSync(senha, 10),
+                fotoPerfil,
+                grupoId: grupoId.id
             },
         });
 
@@ -49,10 +58,31 @@ export default class UsuarioController {
             }
         })
 
-        delete findUser.senha
+        delete findUser.senha  
 
         return sendResponse(res, 200, findUser)
+    }
 
+    static async alterarUsuario(req, res) {
+        const id = req.params.id
+
+        let { nome, email, senha, fotoPerfil } = req.body
+
+        if(senha) senha = bcrypt.hashSync(senha, 10)
+
+        await prisma.usuario.update({
+            where: {
+                id: id,
+            },
+            data: {
+                nome,
+                email,
+                senha: senha,
+                fotoPerfil
+            },
+        })
+
+        return sendResponse(res, 200, [])
     }
 
     static async deletarUsuario(req, res) {
