@@ -15,7 +15,16 @@ export default class AuthValidate {
         await validador.validacao("senha", funcoes.Obrigatorio())
 
         if (validador.ehValido("email")) {
-            let findUser = await prisma.usuario.findUnique({ where: { email: email } })
+            let findUser = await prisma.usuario.findUnique({ 
+                where: { email: email } ,
+                include:{
+                    Grupo:{
+                        select: {
+                            nome: true
+                        }
+                    }
+                }
+            })
 
             if (findUser === null) return sendError(res, 400, ["Usuário ou senha incorretos!"])
 

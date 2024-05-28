@@ -15,31 +15,7 @@ model Grupo {
     updated_at DateTime @updatedAt
 
     // Relacionamento com os usuários
-
     usuario        Usuario[]
-    regrasOnGrupos Regras_Grupo[]
-}
-
-//regras de acesso a grupos
-model Regra {
-    id         String   @id @default(uuid())
-    nome       String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    regrasOnGrupos Regras_Grupo[]
-}
-
-model Regras_Grupo {
-    grupoId    String
-    regrasId   String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    grupo Grupo @relation(fields: [grupoId], references: [id])
-    Regra Regra @relation(fields: [regrasId], references: [id])
-
-    @@id([regrasId, grupoId])
 }
 
 // modelo de Usuários
