@@ -12,7 +12,8 @@ export default class AuthController {
                     id: usuario.id,
                     nome: usuario.nome,
                     email: usuario.email,
-                    ativo: usuario.ativo
+                    ativo: usuario.ativo,
+                    grupo: usuario.Grupo.nome
                 },
                 process.env.JWT_SECRET,
                 {expiresIn: process.env.JWT_EXPIRATION}
