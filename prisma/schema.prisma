@@ -11,7 +11,6 @@ datasource db {
 model Grupo {
     id         String   @id @default(uuid())
     nome       String
-    regraId    String
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
@@ -59,7 +58,7 @@ model Usuario {
     tokenRecuperaSenha String?
     fotoPerfil         String?
     ativo              Boolean  @default(true)
-    //grupoId         String
+    grupoId            String?
     created_at         DateTime @default(now())
     updated_at         DateTime @updatedAt
 
@@ -121,8 +120,6 @@ model ProgressoCurso {
 
     @@map("progresso_cursos")
 }
-
-// modelo de Certificados
 
 // modelo de Conteúdo do Curso
 model ConteudoCurso {
@@ -190,6 +187,7 @@ model Categoria {
     @@map("categorias")
 }
 
+// modelo de Instrutores
 model instrutores {
     id         String   @id @default(uuid())
     cursoId    String
@@ -203,6 +201,7 @@ model instrutores {
     @@map("instrutores")
 }
 
+// modelo de Certificados
 model Certificado {
     userId      String
     cursoId     String
