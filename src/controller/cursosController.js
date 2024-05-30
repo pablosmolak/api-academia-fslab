@@ -29,10 +29,6 @@ export default class CursosController {
         });
         console.log(cursos)
 
-        if (!cursos==[]) { // verificar o porque que quando estiver diferente  ele entra no erro sendo que ele é um array vazio ??
-            return sendResponse(res, 404, messages.httpCodes[404]);
-        }
-
         return sendResponse(res, 200, cursos);
     }
 
@@ -53,7 +49,7 @@ export default class CursosController {
                     categoria: true
                 }
             });
-            return sendResponse(res, 404, cursos);// caso não encontre o curso, retorna todos os cursos ? 
+            return sendResponse(res, 404);
         }
         return sendResponse(res, 200, curso);
     }
@@ -63,7 +59,7 @@ export default class CursosController {
         if (!id) {
             return sendResponse(res, 400, messages.httpCodes[400]);
         }
-        const curso = await prisma.curso.delete({// verificar Bug de delatar curso que não existe pis cai no catch e retorna 500...
+        const curso = await prisma.curso.delete({
             where: {
                 id: id
             }
