@@ -24,7 +24,7 @@ model Usuario {
     nome               String
     email              String   @unique
     senha              String
-    tokenRecuperaSenha String?
+    tokenRecuperaSenha String? @db.VarChar(1024)
     fotoPerfil         String?
     ativo              Boolean  @default(true)
     grupoId            String?
@@ -35,7 +35,7 @@ model Usuario {
     inscricoes      Inscricao[]
     certificados    Certificado[]
     progressoCursos ProgressoCurso[]
-    instrutores     instrutores[]
+    instrutores     Instrutores[]
     Grupo           Grupo?           @relation(fields: [grupoId], references: [id])
 }
 
@@ -113,11 +113,11 @@ model Curso {
     aulas           Aula[]
     progressoCursos ProgressoCurso[]
     certificado     Certificado[]
-    instrutores     instrutores[]
+    instrutores     Instrutores[]
 }
 
 // modelo de Instrutores
-model instrutores {
+model Instrutores {
     id         String   @id @default(uuid())
     cursoId    String
     userId     String

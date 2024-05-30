@@ -1,6 +1,7 @@
+import logRoutes from "../middleware/logRoutesMiddleware.js";
 import usuarios from "./usuarioRouter.js";
 import auth from "./authRouter.js";
-import logRoutes from "../middleware/logRoutesMiddleware.js";
+import recuperarsenha from "./recuperaSenhaRouter.js";
 
 const routes = (app) => {
 
@@ -14,7 +15,8 @@ const routes = (app) => {
 
     app.use(
         auth,
-        usuarios
+        usuarios,
+        recuperarsenha
     );
 
     

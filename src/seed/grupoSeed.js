@@ -9,7 +9,6 @@ export default async function gruposSeed() {
         },
         {
             nome: 'Ministrantes'
-        
         },
         {
             nome: 'Cursantes'
