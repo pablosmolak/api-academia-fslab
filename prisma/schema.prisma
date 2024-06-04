@@ -16,6 +16,8 @@ model Grupo {
 
     // Relacionamento com os usuários
     usuario        Usuario[]
+
+    @@map("grupos")
 }
 
 // modelo de Usuários
@@ -52,6 +54,8 @@ model Inscricao {
     // Relacionamento com o curso e usuário
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
+
+    @@map("inscricoes")
 }
 
 // modelo de Progresso do Curso
@@ -67,6 +71,8 @@ model ProgressoCurso {
     // Relacionamento com o curso e usuário
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
+
+    @@map("progresso_cursos")
 }
 
 // modelo de Conteúdo do Curso
@@ -81,6 +87,8 @@ model ConteudoCurso {
 
     // Relacionamento com a aula
     aula Aula @relation(fields: [aulaId], references: [id])
+
+    @@map("conteudos_cursos")
 }
 
 // modelo de Aulas
@@ -97,6 +105,8 @@ model Aula {
 
     // Relacionamento com o conteúdo
     conteudos ConteudoCurso[]
+
+    @@map("aulas")
 }
 
 // modelo de Cursos
@@ -104,7 +114,6 @@ model Curso {
     id            String   @id @default(uuid())
     nome          String
     descricao     String?
-    identificador String
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt
 
@@ -126,6 +135,8 @@ model Instrutores {
 
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
+
+    @@map("instrutores")
 }
 
 // modelo de Certificados
@@ -142,4 +153,6 @@ model Certificado {
     usuario Usuario @relation(fields: [userId], references: [id])
 
     @@id([userId, cursoId])
+
+    @@map("certificados")
 }
