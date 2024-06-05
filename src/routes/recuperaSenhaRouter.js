@@ -7,6 +7,6 @@ const router = express.Router()
 
 router
     .post("/recuperarsenha", wrapException(recuperaSenhaValidation.recuperaSenhaValidate), wrapException(RecuperaSenhaController.recuperaSenha))
-//.post("/alterarsenha", recuperaSenhaValidation.alteraSenhaValidate, RecuperaSenhaController.alteraSenha)
+    .post("/alterarsenha", wrapException(recuperaSenhaValidation.alteraSenhaValidate), wrapException(RecuperaSenhaController.alteraSenha))
 
 export default router
