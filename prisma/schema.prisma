@@ -15,38 +15,9 @@ model Grupo {
     updated_at DateTime @updatedAt
 
     // Relacionamento com os usuários
-
-    // usuario        Usuario[]
-    regrasOnGrupos Regras_Grupo[]
-    usuarioOnGrupo UsuarioOnGrupo[]
+    usuario        Usuario[]
 
     @@map("grupos")
-}
-
-//regras de acesso a grupos
-model Regra {
-    id         String   @id @default(uuid())
-    nome       String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    regrasOnGrupos Regras_Grupo[]
-
-    @@map("regras")
-}
-
-model Regras_Grupo {
-    grupoId    String
-    regrasId   String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    grupo Grupo @relation(fields: [grupoId], references: [id])
-    Regra Regra @relation(fields: [regrasId], references: [id])
-
-    @@id([regrasId, grupoId])
-
-    @@map("regras_grupos")
 }
 
 // modelo de Usuários
@@ -55,7 +26,7 @@ model Usuario {
     nome               String
     email              String   @unique
     senha              String
-    tokenRecuperaSenha String?
+    tokenRecuperaSenha String? @db.VarChar(1024)
     fotoPerfil         String?
     ativo              Boolean  @default(true)
     grupoId            String?
@@ -66,25 +37,8 @@ model Usuario {
     inscricoes      Inscricao[]
     certificados    Certificado[]
     progressoCursos ProgressoCurso[]
-    instrutores     instrutores[]
-    usuarioOnGrupo  UsuarioOnGrupo[]
-    //Grupo           Grupo           @relation(fields: [grupoId], references: [id])
-
-    @@map("usuarios")
-}
-
-model UsuarioOnGrupo {
-    grupoId    String
-    usuarioId  String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    Grupo   Grupo   @relation(fields: [grupoId], references: [id])
-    Usuario Usuario @relation(fields: [usuarioId], references: [id])
-
-    @@id([grupoId, usuarioId])
-
-    @@map("usuarios_grupos")
+    instrutores     Instrutores[]
+    Grupo           Grupo?           @relation(fields: [grupoId], references: [id])
 }
 
 // modelo de Inscrições em Cursos
@@ -168,27 +122,11 @@ model Curso {
     aulas           Aula[]
     progressoCursos ProgressoCurso[]
     certificado     Certificado[]
-    instrutores     instrutores[]
-    categoria       Categoria[]
-
-    @@map("cursos")
-}
-
-// Criar um modelo de categoria de cursos para organizar os cursos
-model Categoria {
-    id         String   @id @default(uuid())
-    nome       String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-
-    // Relacionamento com os cursos
-    cursos Curso[]
-
-    @@map("categorias")
+    instrutores     Instrutores[]
 }
 
 // modelo de Instrutores
-model instrutores {
+model Instrutores {
     id         String   @id @default(uuid())
     cursoId    String
     userId     String
