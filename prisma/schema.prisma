@@ -15,7 +15,7 @@ model Grupo {
     updated_at DateTime @updatedAt
 
     // Relacionamento com os usuários
-    usuario        Usuario[]
+    usuario Usuario[]
 
     @@map("grupos")
 }
@@ -26,7 +26,7 @@ model Usuario {
     nome               String
     email              String   @unique
     senha              String
-    tokenRecuperaSenha String? @db.VarChar(1024)
+    tokenRecuperaSenha String?  @db.VarChar(1024)
     fotoPerfil         String?
     ativo              Boolean  @default(true)
     grupoId            String?
@@ -47,7 +47,7 @@ model Inscricao {
     cursoId       String
     userId        String
     status        String
-    dataInscricao DateTime
+    dataInscricao DateTime @default(now())
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt
 
@@ -111,11 +111,11 @@ model Aula {
 
 // modelo de Cursos
 model Curso {
-    id            String   @id @default(uuid())
-    nome          String
-    descricao     String?
-    created_at    DateTime @default(now())
-    updated_at    DateTime @updatedAt
+    id         String   @id @default(uuid())
+    nome       String
+    descricao  String?
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
     // Relacionamentos
     inscricoes      Inscricao[]
@@ -123,6 +123,20 @@ model Curso {
     progressoCursos ProgressoCurso[]
     certificado     Certificado[]
     instrutores     Instrutores[]
+    categoria       Categoria[]
+}
+
+// Criar um modelo de categoria de cursos para organizar os cursos
+model Categoria {
+    id         String   @id @default(uuid())
+    nome       String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    // Relacionamento com os cursos
+    cursos Curso[]
+
+    @@map("categorias")
 }
 
 // modelo de Instrutores
@@ -153,6 +167,5 @@ model Certificado {
     usuario Usuario @relation(fields: [userId], references: [id])
 
     @@id([userId, cursoId])
-
     @@map("certificados")
 }

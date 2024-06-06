@@ -11,4 +11,7 @@ router
     .get("/cursos/:id", wrapException(CursosController.listarCursoPorId))
     .delete("/cursos/:id", wrapException(CursosController.deletarCurso))
 
+
+    .get("/usuarios/:usuarioID/cursos", wrapException(CursosController.listarCursosPorUsuario))
+
 export default router;
