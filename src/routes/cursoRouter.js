@@ -14,4 +14,4 @@ router
 
     .get("/usuarios/:usuarioID/cursos", wrapException(CursosController.listarCursosPorUsuario))
 
-export default router;
+export default router;  

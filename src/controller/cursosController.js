@@ -95,7 +95,5 @@ export default class CursosController {
         });
 
         return sendResponse(res, 200, cursosInscritos);
-
     }
-
 }

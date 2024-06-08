@@ -155,12 +155,11 @@ model Instrutores {
 
 // modelo de Certificados
 model Certificado {
-    userId      String
-    cursoId     String
-    dataEmissao DateTime
-    validador   String
-    created_at  DateTime @default(now())
-    updated_at  DateTime @updatedAt
+    userId     String
+    cursoId    String
+    validador  String   @unique @default(uuid())
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
     // Relacionamento com o curso e usuário
     curso   Curso   @relation(fields: [cursoId], references: [id])

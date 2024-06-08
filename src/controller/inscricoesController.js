@@ -3,7 +3,7 @@ import messages, { sendResponse } from "../utils/mensagens.js";
 
 export default class InscricoesController {
     static async criarInscricao(req, res) {
-        let { cursoID, userID, status } = req.body
+        const { cursoID, userID } = req.body
 
         const inscricaoCriada = await prisma.inscricao.create({
             data: {
@@ -13,7 +13,7 @@ export default class InscricoesController {
                 usuario: {
                     connect: { id: userID } // conecta ao usuário existente
                 },
-                status
+                status: "Em Andamento"
             },
         });
 
@@ -24,57 +24,87 @@ export default class InscricoesController {
 
         const inscricoes = await prisma.inscricao.findMany({
             include: {
-                usuario: true,
-                curso: true
+                usuario: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true
+                    }
+                },
+                curso: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        descricao: true
+                    }
+                }
             }
         });
 
         return sendResponse(res, 200, inscricoes);
     }
 
-    static async listarCursosPorUsuario(req, res) {
-        const cursos = await prisma.curso.findMany({
+    static async listarInscricaoPorId(req, res) {
+        const { id } = req.params
 
-        })
-    }
-
-    static async listarCursoPorId(req, res) {
-        const { id } = req.params;
-        const curso = await prisma.curso.findUnique({
+        const inscricao = await prisma.inscricao.findUnique({
             where: {
                 id: id
             },
             include: {
-                categoria: true
-            }
-        });
-
-        if (!curso) {
-            const cursos = await prisma.curso.findMany({
-                include: {
-                    categoria: true
+                usuario: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true
+                    }
+                },
+                curso: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        descricao: true
+                    }
                 }
-            });
-            return sendResponse(res, 404);
-        }
-        return sendResponse(res, 200, curso);
+            }
+        })
+
+        return sendResponse(res, 200, inscricao);
     }
 
-    static async deletarCurso(req, res) {
+    static async deletarInscricao(req, res) {
         const { id } = req.params;
-        if (!id) {
-            return sendResponse(res, 400, messages.httpCodes[400]);
-        }
-        const curso = await prisma.curso.delete({
+
+        await prisma.inscricao.delete({
             where: {
                 id: id
             }
         });
 
-        if (!curso) {
-            return sendResponse(res, 404, messages.httpCodes[404]);
-        }
-        return sendResponse(res, 204, messages.httpCodes[204]);
+        return sendResponse(res, 200, messages.httpCodes[200]);
+    }
+
+
+    static async concluirInscrição(req, res) {
+        const { id } = req.params
+
+        const inscricao = await prisma.inscricao.update({
+            where: {
+                id
+            },
+            data: {
+                status: "Concluído"
+            }
+        })
+
+        const certificado = await prisma.certificado.create({
+            data: {
+                userId: inscricao.userId,
+                cursoId: inscricao.cursoId,
+            }
+        })
+
+        return sendResponse(res, 200, certificado);
     }
 
 }

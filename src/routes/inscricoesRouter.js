@@ -7,7 +7,9 @@ const router = express.Router();
 router
     .post("/inscricoes", wrapException(InscricoesController.criarInscricao))
     .get("/inscricoes", wrapException(InscricoesController.listarInscricoes))
-    .get("/inscricoes/:id")
-    .delete("/inscricoes/:id")
+    .get("/inscricoes/:id", wrapException(InscricoesController.listarInscricaoPorId))
+    .delete("/inscricoes/:id", wrapException(InscricoesController.deletarInscricao))
+
+    .post("/inscricoes/:id/concluir", wrapException(InscricoesController.concluirInscrição))
 
 export default router;
