@@ -71,4 +71,29 @@ export default class CursosController {
         return sendResponse(res, 204, messages.httpCodes[204]);
     }
 
+    static async listarCursosPorUsuario(req, res) {
+        let { usuarioID } = req.params
+
+        const cursosInscritos = await prisma.usuario.findUnique({
+            where: { id: usuarioID },
+            select: {
+                inscricoes: {
+                    select: {
+                        curso: {
+                            select: {
+                                id: true,
+                                nome: true,
+                                descricao:true,
+                                
+                            },
+                        },
+                        status: true,
+                        dataInscricao: true,
+                    },
+                },
+            },
+        });
+
+        return sendResponse(res, 200, cursosInscritos);
+    }
 }

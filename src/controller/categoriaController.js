@@ -11,6 +11,7 @@ export default class CategoriaController {
             }
         });
 
+
         return sendResponse(res, 201, categoriaCriada);
     }
 
