@@ -15,14 +15,29 @@ export async function AuthMiddleware(req, res, next) {
         let user = await prisma.usuario.findUnique({
             where: {
                 id: decodificado.id
+            },
+            include:{
+                Grupo:{
+                    select: {
+                        nome: true
+                    }
+                }
             }
         })
-
+        
         if (!user) {
             return sendError(res, 498, messages.auth.invalidToken)
         }
+        
+        if(!user.ativo){
+            return sendError(res, 498, messages.auth.invalidToken)
+        }
 
-        req.user_id = decodificado.id
+        req.user = {
+            id: user.id,
+            email: user.email,
+            grupo: user.Grupo.nome
+        }
 
         return next()
     })

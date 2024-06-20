@@ -19,7 +19,8 @@ const obterValorDoPath = (objeto, path) => {
 
 const definirValorNoPath = (objeto, path, valor) => {
     if (!path.includes(".")) {
-        return objeto[path] = valor
+        objeto[path] = valor
+        return objeto
     }
 
     let partes = path.split(".")
@@ -58,7 +59,6 @@ export class Validador {
                 return this
             }
         }
-
         return this
     }
 
@@ -70,7 +70,6 @@ export class Validador {
         return path in this.validacoes
             && this.validacoes[path] !== undefined
             && this.validacoes[path].error === false;
-
     }
 
     obterValor(path) {
@@ -96,7 +95,6 @@ export class Validador {
     obterValoresLimpos() {
         let bodyLimpo = {}
         for (let path of Object.keys(this.validacoes)) {
-
             if (path.includes(".")) return
 
             let valor = this.validacoes[path].obterValor()
@@ -107,8 +105,6 @@ export class Validador {
         }
         return bodyLimpo
     }
-
-
 }
 
 export class ResultadoValidacao {
@@ -126,10 +122,14 @@ export class ResultadoValidacao {
         return obterValorDoPath(this.body, this.path)
     }
 
-    definirValor(valor) {
-        definirValorNoPath(this.body, this.path, valor)
+    definirValor1(valor) {
+        return definirValorNoPath(this.body, this.path, valor)
+    }
+    definirValor(path,valor) {
+        return definirValorNoPath(this.body, path, valor)
     }
 
+    
     toString() {
         return JSON.stringify({
             path: this.path,
@@ -140,7 +140,7 @@ export class ResultadoValidacao {
 }
 
 export class funcoesDeValidacao {
-    static Obrigatorio = (opcoes = { allowNull: false }) => async (valor, resultadoValidacao) => {
+    static Obrigatorio = (opcoes = { allowNull: false}) => async (valor, resultadoValidacao) => {
         if (valor === undefined || (!opcoes.allowNull && (valor === null || valor === ""))) {
             return opcoes.mensagem || messages.validationGeneric.fieldIsRequired(resultadoValidacao.path).message
         }
@@ -177,12 +177,16 @@ export class funcoesDeValidacao {
         return opcoes.messagem || messages.validationGeneric.fieldIsRepeated(resultadoValidacao.path).message
     }
 
-    static Existe = (opcoes = { tabela: false, query: false }) => async (valor, resultadoValidacao) => {
+    static Existe = (opcoes = { tabela: false, query: false, saveResult: false  }) => async (valor, resultadoValidacao) => {
         if (opcoes.tabela === false) throw new Error("A função existe da validação deve receber a tabela")
-
+        
         let resultado = await prisma[opcoes.tabela].findMany(opcoes.query || { where: { [resultadoValidacao.path]: { contains: valor } } })
         if (resultado.length === 0) {
             return opcoes.messagem || messages.validationGeneric.notFound(resultadoValidacao.path).message
+        }
+
+        if(opcoes.saveResult){
+            resultadoValidacao.definirValor(opcoes.tabela,resultado)
         }
 
         return true
