@@ -1,7 +1,6 @@
 import { Validador, funcoesDeValidacao as funcoes } from "../utils/validation.js"
 import { sendError, messages } from "../utils/mensagens.js"
-import { prisma } from "../config/prismaClient.js";
-import jwt from "jsonwebtoken"
+
 export default class usuarioValidation {
     static async criarUsuario(req, res, next) {
 
@@ -17,10 +16,6 @@ export default class usuarioValidation {
     }
 
     static async alterarUsuario(req, res, next) {
-
-        let [, token] = req.headers.authorization.split(" ")
-        const tokenDecoded = jwt.verify(token, process.env.JWT_SECRET)
-
         req.body.id = req.params.id
         let validador = new Validador(req.body)
 
@@ -28,7 +23,7 @@ export default class usuarioValidation {
         if (validador.contemErros()) return sendError(res, 422, validador.obterErros())
 
 
-        if (tokenDecoded.id !== req.params.id && tokenDecoded.grupo !== "Administradores") {
+        if (req.user.id !== req.params.id && req.user.grupo !== "Administradores") {
             return sendError(res, 401, messages.auth.invalidPermission)
         }
 
@@ -42,9 +37,6 @@ export default class usuarioValidation {
     }
 
     static async deletarUsuario(req, res, next) {
-        let [, token] = req.headers.authorization.split(" ")
-        const tokenDecoded = jwt.verify(token, process.env.JWT_SECRET)
-
         req.body.id = req.params.id
         let validador = new Validador(req.body)
 
@@ -52,7 +44,7 @@ export default class usuarioValidation {
 
         if (validador.contemErros()) return sendError(res, 422, validador.obterErros())
 
-        if (tokenDecoded.id !== req.params.id && tokenDecoded.grupo !== "Administradores") {
+        if (req.user.id !== req.params.id && req.user.grupo !== "Administradores") {
             return sendError(res, 401, messages.auth.invalidPermission)
         }
 
