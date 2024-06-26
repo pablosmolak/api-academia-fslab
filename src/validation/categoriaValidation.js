@@ -1,6 +1,5 @@
 import { Validador, funcoesDeValidacao as func } from "../utils/validation.js";
 import { sendError, messages } from "../utils/mensagens.js";
-import jwt from "jsonwebtoken"
 
 export default class categoriaValidation {
     static async criarCategoria(req, res, next) {
@@ -53,12 +52,10 @@ export default class categoriaValidation {
     static async buscarCategoriaPorID(req, res, next) {
         let validador = new Validador(req.params)
 
-        await validador.validacao("id", func.Obrigatorio(), func.UUID({ message: messages.error.invalidID }), func.Existe({ tabela: "Categoria",saveResult: true }))
-
-        req.body.categoria = validador.body.Categoria
+        await validador.validacao("id", func.Obrigatorio(), func.UUID({ message: messages.error.invalidID }), func.Existe({ tabela: "Categoria"}))
 
         if (validador.contemErros()) return sendError(res, 422, validador.obterErros())
 
         return next()
     }
-}
+}  

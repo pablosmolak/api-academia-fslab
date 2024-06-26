@@ -159,7 +159,7 @@ export class funcoesDeValidacao {
 
         let resultado = await prisma[opcoes.tabela].findMany(opcoes.query || { where: { [resultadoValidacao.path]: { contains: valor } } })
         if (resultado.length !== 0) {
-            return opcoes.messagem || messages.validationGeneric.fieldIsRepeated(resultadoValidacao.path).message
+            return opcoes.message || messages.validationGeneric.fieldIsRepeated(resultadoValidacao.path).message
         }
 
         return true
@@ -170,11 +170,11 @@ export class funcoesDeValidacao {
 
         let resultado = await prisma[opcoes.tabela].findUnique(opcoes.query || { where: { [resultadoValidacao.path]: valor }  })
 
-        if (!resultado || (resultado.id === resultadoValidacao.body.id)) {
+        if (!resultado || (resultado.id != undefined && (resultado.id === resultadoValidacao.body.id))) {
             return true
         }
 
-        return opcoes.messagem || messages.validationGeneric.fieldIsRepeated(resultadoValidacao.path).message
+        return opcoes.message || messages.validationGeneric.fieldIsRepeated(resultadoValidacao.path).message
     }
 
     static Existe = (opcoes = { tabela: false, query: false, saveResult: false  }) => async (valor, resultadoValidacao) => {
@@ -182,7 +182,7 @@ export class funcoesDeValidacao {
         
         let resultado = await prisma[opcoes.tabela].findMany(opcoes.query || { where: { [resultadoValidacao.path]: { contains: valor } } })
         if (resultado.length === 0) {
-            return opcoes.messagem || messages.validationGeneric.notFound(resultadoValidacao.path).message
+            return opcoes.message || messages.validationGeneric.notFound(resultadoValidacao.path).message
         }
 
         if(opcoes.saveResult){
@@ -210,21 +210,21 @@ export class funcoesDeValidacao {
         const valida = valor.split('@') // separa o email em 2
 
         if (valida.length < 2 || valida.length > 2) { // se não tiver @ ou mais de 1 @ da erro
-            return opcoes.messagem || messages.customValidation.invalidMail
+            return opcoes.message || messages.customValidation.invalidMail
         }
 
         if (valida[0].includes(" ") || valida[1].includes(" ")) {  // verifica se não tem espaços em brancos
-            return opcoes.messagem || messages.customValidation.invalidMail
+            return opcoes.message || messages.customValidation.invalidMail
         }
 
         if (!valida[1].includes('.') || valida[1].includes("..")) {  // verifica regras de pontos na segunda parte do email
-            return opcoes.messagem || messages.customValidation.invalidMail
+            return opcoes.message || messages.customValidation.invalidMail
         }
 
         if (valida[0][0] === '.' || valida[0][valida[0].length - 1] === '.' ||
             valida[1][0] === '.' || valida[1][valida[1].length - 1] === '.') { // verifica regras de pontos no email
 
-            return opcoes.messagem || messages.customValidation.invalidMail
+            return opcoes.message || messages.customValidation.invalidMail
         }
 
         return true
