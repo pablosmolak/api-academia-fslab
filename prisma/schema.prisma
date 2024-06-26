@@ -43,7 +43,6 @@ model Usuario {
 
 // modelo de Inscrições em Cursos
 model Inscricao {
-    id            String   @id @default(uuid())
     cursoId       String
     userId        String
     status        String
@@ -55,6 +54,7 @@ model Inscricao {
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
 
+    @@id([userId, cursoId])
     @@map("inscricoes")
 }
 

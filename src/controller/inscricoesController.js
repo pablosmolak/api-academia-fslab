@@ -3,15 +3,15 @@ import messages, { sendResponse } from "../utils/mensagens.js";
 
 export default class InscricoesController {
     static async criarInscricao(req, res) {
-        const { cursoID, userID } = req.body
+        const { cursoId } = req.body
 
         const inscricaoCriada = await prisma.inscricao.create({
             data: {
                 curso: {
-                    connect: { id: cursoID } // conecta ao curso existente
+                    connect: { id: cursoId } // conecta ao curso existente
                 },
                 usuario: {
-                    connect: { id: userID } // conecta ao usuário existente
+                    connect: { id: req.user.id } // conecta ao usuário existente
                 },
                 status: "Em Andamento"
             },
