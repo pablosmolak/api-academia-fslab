@@ -5,20 +5,13 @@ import { SendRespostaDTO } from './Respostas.dto';
 @Injectable()
 export class UtilsService {
 
-    respostaPadrao(code: number, resp): SendRespostaDTO {
-        let _data = undefined;
-        if (Array.isArray(resp)) {
-            _data = resp
-        } else {
-            _data = [resp]
-        }
-
+    respostaPadrao(code: number, data: Record<string, any>[], errors: string[]): SendRespostaDTO {
         return {
-            data: _data,
-            error: false,
+            data: data,
+            error: errors.length > 0 ? true : false,
             code: code,
             message: messages.httpCodes[code],
-            errors: []
+            errors: errors
         }
     }
 }
