@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { HttpException, Injectable } from '@nestjs/common'
 import { messages } from './mensagens';
 import { SendRespostaDTO } from './Respostas.dto';
 
@@ -8,11 +8,24 @@ export class UtilsService {
     respostaPadrao(code: number, data: Record<string, any>[], errors: string[]): SendRespostaDTO {
         return {
             data: data,
-            error: errors.length > 0 ? true : false,
+            error: false,
             code: code,
             message: messages.httpCodes[code],
             errors: errors
         }
+    }
+
+    respostaErro(code: number, data: Record<string, any>[], errors: string[]): SendRespostaDTO {
+        throw new HttpException(
+            {
+                data: data,
+                error: true,
+                code: code,
+                message: messages.httpCodes[code],
+                errors: errors
+            },
+            code
+        )
     }
 }
 

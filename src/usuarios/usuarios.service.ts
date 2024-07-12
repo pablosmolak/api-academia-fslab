@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestj
 import { FiltersUsuarioDTO, UsuariosDTO } from './usuarios.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from 'src/utils/utils.service';
+import { messages } from 'src/utils/mensagens';
 
 @Injectable()
 export class UsuariosService {
@@ -16,33 +17,35 @@ export class UsuariosService {
         const erros: string[] = []
 
         if (!user.nome) {
-            erros.push("teste teste")
+            erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
         }else{
-            if(user.nome.length < 3 || user.nome.length > 200){
-                erros.push("teste 2")
+            if(user.nome.length < 3){
+                erros.push(messages.customValidation.lengthMaior("Nome", 3))
+            }else if(user.nome.length > 200){
+                erros.push(messages.customValidation.lengthMenor("Nome", 200))
             }
         }
 
         if(!user.email){
-            erros.push("")
+            erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
         }else{
             let userExist:{} = await this.prisma.usuario.findUnique({
                 where:{email: user.email}
             })
 
             if(userExist !== null){
-                erros.push('0')
+                erros.push(messages.auth.emailAlreadyExists(user.email))
             }
 
         }
 
         if(!user.senha){
-            erros.push("")
+            erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
         }else{
 
         }
 
-        if (erros.length > 0) throw new HttpException(this.respostas.respostaPadrao(422, [], erros), HttpStatus.UNPROCESSABLE_ENTITY)
+        if (erros.length > 0) this.respostas.respostaErro(422, [], erros)
 
         const newUser: UsuariosDTO = await this.prisma.usuario.create({
             data: {
@@ -81,8 +84,46 @@ export class UsuariosService {
         return this.respostas.respostaPadrao(200, [findUser], [])
     }
 
-    async update(id: string, users: UsuariosDTO) {
+    async update(id: string, user: UsuariosDTO) {
+        const erros: string[] = []
 
+        if (!user.nome) {
+            erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
+        }else{
+            if(user.nome.length < 3){
+                erros.push(messages.customValidation.lengthMaior("Nome", 3))
+            }else if(user.nome.length > 200){
+                erros.push(messages.customValidation.lengthMenor("Nome", 200))
+            }
+        }
+
+        if(!user.email){
+            erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
+        }else{
+            let userExist:{} = await this.prisma.usuario.findUnique({
+                where:{email: user.email}
+            })
+
+            if(userExist !== null){
+                erros.push(messages.auth.emailAlreadyExists(user.email))
+            }
+
+        }
+
+        if(!user.senha){
+            erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
+        }else{
+
+        }
+
+        if (erros.length > 0) this.respostas.respostaErro(422, [], erros)
+
+        const newUser: UsuariosDTO = await this.prisma.usuario.update({
+            where:{id:id},
+            data: {
+                ...user
+            }
+        })
     }
 
     async remove(id: string) {
