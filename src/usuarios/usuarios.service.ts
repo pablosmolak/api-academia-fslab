@@ -3,13 +3,14 @@ import { FiltersUsuarioDTO, UsuariosDTO } from './usuarios.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { messages } from 'src/utils/mensagens';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
 
     constructor(
         private readonly prisma: PrismaService,
-        private readonly respostas: UtilsService
+        private readonly utils: UtilsService
     ) { }
 
     async create(user: UsuariosDTO) {
@@ -18,34 +19,35 @@ export class UsuariosService {
 
         if (!user.nome) {
             erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
-        }else{
-            if(user.nome.length < 3){
+        } else {
+            if (user.nome.length < 3) {
                 erros.push(messages.customValidation.lengthMaior("Nome", 3))
-            }else if(user.nome.length > 200){
+            } else if (user.nome.length > 200) {
                 erros.push(messages.customValidation.lengthMenor("Nome", 200))
             }
         }
 
-        if(!user.email){
+        if (!user.email) {
             erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
-        }else{
-            let userExist:{} = await this.prisma.usuario.findUnique({
-                where:{email: user.email}
+        } else if (this.utils.validarEmail(user.email, erros)) {
+            let userExist: {} = await this.prisma.usuario.findUnique({
+                where: { email: user.email }
             })
 
-            if(userExist !== null){
+            if (userExist !== null) {
                 erros.push(messages.auth.emailAlreadyExists(user.email))
             }
-
         }
 
-        if(!user.senha){
+        if (!user.senha) {
             erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
-        }else{
-
+        } else {
+            this.utils.validarSenha(user.senha, erros)
         }
 
-        if (erros.length > 0) this.respostas.respostaErro(422, [], erros)
+        if (erros.length > 0) this.utils.respostaErro(422, [], erros)
+
+        user.senha = bcrypt.hashSync(user.senha, 10)
 
         const newUser: UsuariosDTO = await this.prisma.usuario.create({
             data: {
@@ -53,7 +55,7 @@ export class UsuariosService {
             }
         })
 
-        return this.respostas.respostaPadrao(201, [newUser], [])
+        return this.utils.respostaPadrao(201, [newUser])
     }
 
     async findAll(filter: FiltersUsuarioDTO) {
@@ -69,7 +71,7 @@ export class UsuariosService {
             delete user.senha
         }
 
-        return this.respostas.respostaPadrao(200, [userExiste], [])
+        return this.utils.respostaPadrao(200, [userExiste])
     }
 
     async findByID(id: string) {
@@ -81,49 +83,44 @@ export class UsuariosService {
 
         delete findUser.senha
 
-        return this.respostas.respostaPadrao(200, [findUser], [])
+        return this.utils.respostaPadrao(200, [findUser])
     }
 
     async update(id: string, user: UsuariosDTO) {
         const erros: string[] = []
 
-        if (!user.nome) {
-            erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
-        }else{
-            if(user.nome.length < 3){
+        if (user.nome) {
+            if (user.nome.length < 3) {
                 erros.push(messages.customValidation.lengthMaior("Nome", 3))
-            }else if(user.nome.length > 200){
+            } else if (user.nome.length > 200) {
                 erros.push(messages.customValidation.lengthMenor("Nome", 200))
             }
         }
 
-        if(!user.email){
-            erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
-        }else{
-            let userExist:{} = await this.prisma.usuario.findUnique({
-                where:{email: user.email}
+        if (user.email && this.utils.validarEmail(user.email, erros)) {
+            let userExist: {} = await this.prisma.usuario.findUnique({
+                where: { email: user.email }
             })
 
-            if(userExist !== null){
+            if (userExist !== null) {
                 erros.push(messages.auth.emailAlreadyExists(user.email))
             }
-
         }
 
-        if(!user.senha){
-            erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
-        }else{
-
+        if (user.senha) {
+            this.utils.validarSenha(user.senha, erros)
         }
 
-        if (erros.length > 0) this.respostas.respostaErro(422, [], erros)
+        if (erros.length > 0) this.utils.respostaErro(422, [], erros)
 
         const newUser: UsuariosDTO = await this.prisma.usuario.update({
-            where:{id:id},
+            where: { id: id },
             data: {
                 ...user
             }
         })
+
+        return this.utils.respostaPadrao(201,[])
     }
 
     async remove(id: string) {
@@ -144,6 +141,6 @@ export class UsuariosService {
             }
         })
 
-        return this.respostas.respostaPadrao(200, [], [])
+        return this.utils.respostaPadrao(200, [])
     }
 }
