@@ -102,7 +102,7 @@ export class UsuariosService {
                 where: { email: user.email }
             })
 
-            if (userExist !== null) {
+            if (userExist !== null && ) {
                 erros.push(messages.auth.emailAlreadyExists(user.email))
             }
         }
