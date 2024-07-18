@@ -15,10 +15,10 @@ export class UtilsService {
         }
     }
 
-    respostaErro(code: number, data: Record<string, any>[], errors: string[]): SendRespostaDTO {
+    respostaErro(code: number, errors: string[]): SendRespostaDTO {
         throw new HttpException(
             {
-                data: data,
+                data: [],
                 error: true,
                 code: code,
                 message: messages.httpCodes[code],

@@ -29,12 +29,12 @@ export class UsuariosController {
     @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
     findByID(
         @Param('id') id: string
-
     ) {
         return this.usuarioService.findByID(id);
     };
 
     @Patch()
+    @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
     update(
         @Param('id') id: string,
         @Body() users: UsuariosDTO

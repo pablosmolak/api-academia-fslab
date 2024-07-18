@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { messages } from 'src/utils/mensagens';
 import * as bcrypt from 'bcrypt';
+import { error } from 'console';
 
 @Injectable()
 export class UsuariosService {
@@ -30,7 +31,7 @@ export class UsuariosService {
         if (!user.email) {
             erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
         } else if (this.utils.validarEmail(user.email, erros)) {
-            let userExist: {} = await this.prisma.usuario.findUnique({
+            let userExist: UsuariosDTO = await this.prisma.usuario.findUnique({
                 where: { email: user.email }
             })
 
@@ -45,7 +46,7 @@ export class UsuariosService {
             this.utils.validarSenha(user.senha, erros)
         }
 
-        if (erros.length > 0) this.utils.respostaErro(422, [], erros)
+        if (erros.length > 0) this.utils.respostaErro(422, erros)
 
         user.senha = bcrypt.hashSync(user.senha, 10)
 
@@ -59,7 +60,6 @@ export class UsuariosService {
     }
 
     async findAll(filter: FiltersUsuarioDTO) {
-
         let filtros: any = { where: {} }
 
         if (filter.nome) filtros.where.nome = { contains: filter.nome }
@@ -75,15 +75,29 @@ export class UsuariosService {
     }
 
     async findByID(id: string) {
-        let findUser: UsuariosDTO = await this.prisma.usuario.findUnique({
-            where: {
-                id
+        const erros: string[] = []
+
+        let userExist: UsuariosDTO
+
+        if (!id) {
+            erros.push(messages.error.invalidID)
+        }else{
+            userExist = await this.prisma.usuario.findUnique({
+                where: {
+                    id:id
+                }
+            })
+
+            if(userExist === null){
+                erros.push(messages.auth.userNotFound(id))
             }
-        })
+        }
 
-        delete findUser.senha
+        if (erros.length > 0) this.utils.respostaErro(422, erros)
 
-        return this.utils.respostaPadrao(200, [findUser])
+        delete userExist.senha
+
+        return this.utils.respostaPadrao(200, [userExist])
     }
 
     async update(id: string, user: UsuariosDTO) {
@@ -98,11 +112,11 @@ export class UsuariosService {
         }
 
         if (user.email && this.utils.validarEmail(user.email, erros)) {
-            let userExist: {} = await this.prisma.usuario.findUnique({
+            let userExist: UsuariosDTO = await this.prisma.usuario.findUnique({
                 where: { email: user.email }
             })
 
-            if (userExist !== null && ) {
+            if (userExist !== null) {
                 erros.push(messages.auth.emailAlreadyExists(user.email))
             }
         }
@@ -111,29 +125,38 @@ export class UsuariosService {
             this.utils.validarSenha(user.senha, erros)
         }
 
-        if (erros.length > 0) this.utils.respostaErro(422, [], erros)
+        if (erros.length > 0) this.utils.respostaErro(422, erros)
 
-        const newUser: UsuariosDTO = await this.prisma.usuario.update({
+        await this.prisma.usuario.update({
             where: { id: id },
             data: {
                 ...user
             }
         })
 
-        return this.utils.respostaPadrao(201,[])
+        return this.utils.respostaPadrao(201, [])
     }
 
     async remove(id: string) {
+        const erros: string[] = []
 
-        const userExiste: UsuariosDTO = await this.prisma.usuario.findUnique({
-            where: {
-                id
+        let userExist: UsuariosDTO
+        
+        if (!id) {
+            erros.push(messages.error.invalidID)
+        }else{
+            userExist = await this.prisma.usuario.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if(userExist !== null){
+                erros.push(messages.auth.userNotFound(id))
             }
-        })
-
-        if (!userExiste) {
-            throw new NotFoundException()
         }
+
+        if (erros.length > 0) this.utils.respostaErro(422, erros) 
 
         await this.prisma.usuario.delete({
             where: {
