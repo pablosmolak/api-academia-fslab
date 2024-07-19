@@ -58,14 +58,14 @@ export class CategoriaService {
 
         if (!id) {
             erros.push(messages.error.invalidID)
-        }else{
+        } else {
             categoriaExist = await this.prisma.categoria.findUnique({
                 where: {
-                    id:id
+                    id: id
                 }
             })
 
-            if(categoriaExist === null){
+            if (categoriaExist === null) {
                 erros.push(messages.auth.userNotFound(id))
             }
         }
@@ -75,30 +75,77 @@ export class CategoriaService {
         return this.utils.respostaPadrao(200, [categoriaExist])
     }
 
-    async update(id: string) {
-
-    }
-
-    async remove(id: string) {
+    async update(id: string, categoria: categoriaDTO) {
         const erros: string[] = []
 
         let categoriaExist: categoriaDTO
-        
+
         if (!id) {
             erros.push(messages.error.invalidID)
-        }else{
+        } else {
             categoriaExist = await this.prisma.usuario.findUnique({
                 where: {
                     id
                 }
             })
 
-            if(categoriaExist !== null){
+            if (categoriaExist !== null) {
                 erros.push(messages.auth.userNotFound(id))
             }
         }
 
-        if (erros.length > 0) this.utils.respostaErro(422, erros) 
+        if (categoria.nome) {
+            const findCategoria: categoriaDTO = await this.prisma.categoria.findFirst({
+                where: {
+                    nome: categoria.nome
+                }
+            })
+
+            if (findCategoria !== null && findCategoria.id !== id) {
+                erros.push(messages.validationGeneric.fieldIsRepeated("Nome"))
+            } else {
+                if (categoria.nome.length < 3) {
+                    erros.push(messages.customValidation.lengthMaior("Nome", 3))
+                } else if (categoria.nome.length > 200) {
+                    erros.push(messages.customValidation.lengthMenor("Nome", 200))
+                }
+            }
+        }
+
+        if (erros.length > 0) this.utils.respostaErro(422, erros)
+
+        const categoriaUpdate: categoriaDTO = await this.prisma.categoria.update({
+            where: { 
+                id: id 
+            },
+            data: {
+                ...categoria
+            }
+        })
+
+        return this.utils.respostaPadrao(201, [categoriaUpdate])
+    }
+
+    async remove(id: string) {
+        const erros: string[] = []
+
+        let categoriaExist: categoriaDTO
+
+        if (!id) {
+            erros.push(messages.error.invalidID)
+        } else {
+            categoriaExist = await this.prisma.usuario.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if (categoriaExist !== null) {
+                erros.push(messages.auth.userNotFound(id))
+            }
+        }
+
+        if (erros.length > 0) this.utils.respostaErro(422, erros)
 
         await this.prisma.usuario.delete({
             where: {

@@ -32,9 +32,10 @@ export class CategoriaController {
     @Patch('/:id')
     @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
     update(
-        @Param('id') id: string
+        @Param('id') id: string,
+        @Body() categoria: categoriaDTO
     ){
-        return this.categoriaService.update(id)
+        return this.categoriaService.update(id,categoria)
     }
 
     @Delete('/:id')

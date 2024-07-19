@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Module({
     imports: [JwtModule.registerAsync({
@@ -15,7 +16,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
         }),
         inject: [ConfigService]
     })],
-    providers: [AuthService, PrismaService],
+    providers: [AuthService, PrismaService, UtilsService],
     controllers: [AuthController]
 })
 export class AuthModule {}

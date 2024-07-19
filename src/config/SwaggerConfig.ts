@@ -7,6 +7,7 @@ export const config = new DocumentBuilder()
   .addTag('Login')
   .addTag('Usuários')
   .addTag("Categorias")
+  .addTag("Inscrições")
   .setVersion('1.0')
   .addBearerAuth()
   .build();
