@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { CursoService } from './curso.service';
 import { CursoDTO } from './curso.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guard/auth.guard';
 
 @ApiTags('Cursos')
-@Controller('curso')
+@Controller('cursos')
 export class CursoController {
 
     constructor(private readonly cursoService: CursoService) {}
@@ -14,9 +14,10 @@ export class CursoController {
     @ApiBearerAuth()
     @UseGuards(AuthGuard)
     create(
+        @Req() request: any,
         @Body() curso: CursoDTO
     ){
-        return this.cursoService.create(curso)
+        return this.cursoService.create(request, curso)
     }
 
     @Get()

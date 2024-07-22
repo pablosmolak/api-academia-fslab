@@ -45,7 +45,7 @@ model Usuario {
 model Inscricao {
     cursoId       String
     userId        String
-    status        String @default("Em Andamento")
+    status        String   @default("Em Andamento")
     dataInscricao DateTime @default(now())
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt
@@ -141,11 +141,12 @@ model Categoria {
 
 // modelo de Instrutores
 model Instrutores {
-    id         String   @id @default(uuid())
-    cursoId    String
-    userId     String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    id             String   @id @default(uuid())
+    cursoId        String
+    userId         String
+    criadorDoCurso Boolean @default(false)
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
 
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
