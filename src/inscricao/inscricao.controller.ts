@@ -1,49 +1,41 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { InscricaoService } from './inscricao.service';
-import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { InscricaoDTO } from './inscricao.dto';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FiltersInscricaoDTO, InscricaoDTO } from './inscricao.dto';
+import { AuthGuard } from 'src/guard/auth.guard';
 
 @ApiTags("Inscrições")
-@Controller('inscricao')
+@Controller('inscricoes')
 export class InscricaoController {
 
     constructor(private readonly inscricaoService: InscricaoService) { }
 
     @Post()
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
     create(
+        @Req() request: any,
         @Body() inscricao: InscricaoDTO
     ) {
-        return this.inscricaoService.create(inscricao);
+        return this.inscricaoService.create(request, inscricao);
     }
 
     @Get()
+    @ApiQuery({name:'usuarioId', type: String, required:false})
+    @ApiQuery({name:'cursoId', type: String, required:false})
     findAll(
+        @Query() filter: FiltersInscricaoDTO
     ) {
-        return this.inscricaoService.findAll();
+        return this.inscricaoService.findAll(filter);
     }
 
-    @Get('/:id')
-    @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
-    findByID(
-        @Param('id') id: string
-    ) {
-        return this.inscricaoService.findByID(id);
-    }
-
-    @Patch()
-    @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
-    update(
-        @Param('id') id: string,
-        @Body() inscricao: InscricaoDTO
-    ) {
-        return this.inscricaoService.update(id, inscricao);
-    }
-
-    @Delete('/:id')
-    @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
+    @Delete('/:userid/:cursoid')
+    @ApiParam({ name: 'usuarioid', type: String, description: 'ID do usuário' })
+    @ApiParam({ name: 'cursoid', type: String, description: 'ID do curso' })
     remove(
-        @Param('id') id: string
+        @Param('usuarioid') userID: string,
+        @Param('cursoid') cursoID: string
     ) {
-        return this.inscricaoService.remove(id);
+        return this.inscricaoService.remove(userID, cursoID);
     }
 }

@@ -45,7 +45,7 @@ export class AuthService {
         if (!(await bcript.compare(auth.senha, findUser.senha))) this.utils.respostaErro(401, ["Usuário ou senha incorretos!"])
 
         if (!findUser.ativo) this.utils.respostaErro(401, ["Usuário ou senha incorretos!"])
-            
+
         const token = {
             token: this.jwtService.sign(
                 {
@@ -53,7 +53,7 @@ export class AuthService {
                     nome: findUser.nome,
                     email: findUser.email,
                     ativo: findUser.ativo,
-                    grupo: findUser.Grupo.nome
+                   // grupo: findUser.Grupo.nome
                 }
             )
         }

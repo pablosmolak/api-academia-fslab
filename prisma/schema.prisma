@@ -45,7 +45,7 @@ model Usuario {
 model Inscricao {
     cursoId       String
     userId        String
-    status        String
+    status        String @default("Em Andamento")
     dataInscricao DateTime @default(now())
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt

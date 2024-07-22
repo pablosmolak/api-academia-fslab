@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { FiltersUsuarioDTO, UsuariosDTO } from './usuarios.dto';
-import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guard/auth.guard';
 
 @ApiTags('Usuários')
 @Controller('usuarios')
@@ -17,6 +18,8 @@ export class UsuariosController {
     };
 
     @Get()
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
     @ApiQuery({name:'email', type: String, required:false})
     @ApiQuery({name:'nome', type: String, required:false})
     findAll(
@@ -26,6 +29,8 @@ export class UsuariosController {
     };
 
     @Get('/:id')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
     @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
     findByID(
         @Param('id') id: string
@@ -34,6 +39,8 @@ export class UsuariosController {
     };
 
     @Patch()
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
     @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
     update(
         @Param('id') id: string,
@@ -43,6 +50,8 @@ export class UsuariosController {
     };
 
     @Delete('/:id')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
     @ApiParam({ name: 'id', type: String, description: 'ID do usuário' })
     remove(
         @Param('id') id: string

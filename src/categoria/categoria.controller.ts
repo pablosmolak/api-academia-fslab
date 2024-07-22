@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { CategoriaService } from './categoria.service';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { categoriaDTO } from './categoria.dto';
+import { AuthGuard } from 'src/guard/auth.guard';
 
 @ApiTags('Categorias')
 @Controller('categoria')
@@ -10,6 +11,8 @@ export class CategoriaController {
     constructor(private readonly categoriaService: CategoriaService){}
 
     @Post()
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard)
     create(
         @Body() categoria: categoriaDTO
     ){
