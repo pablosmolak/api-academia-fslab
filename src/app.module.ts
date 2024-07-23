@@ -11,11 +11,12 @@ import { CertificadoModule } from './certificado/certificado.module';
 import { CursoModule } from './curso/curso.module';
 import { InscricaoModule } from './inscricao/inscricao.module';
 import { RecuperaSenhaModule } from './recupera-senha/recupera-senha.module';
+import { AulaModule } from './aula/aula.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    UsuariosModule, PrismaModule, AuthModule, UtilsModule, CategoriaModule, CertificadoModule, CursoModule, InscricaoModule, RecuperaSenhaModule
+    UsuariosModule, PrismaModule, AuthModule, UtilsModule, CategoriaModule, CertificadoModule, CursoModule, InscricaoModule, RecuperaSenhaModule, AulaModule
   ],
   controllers: [AppController],
   providers: [AppService],
