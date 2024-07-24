@@ -1,5 +1,4 @@
 export const messages = {
-    // Mensagens para respostas via rotas da api
     httpCodes: {
         200: "Requisição bem sucedida!",
         201: "Requisição bem sucedida, recurso foi criado!",
@@ -68,31 +67,31 @@ export const messages = {
     validationGeneric: {
         // deve retornar um objeto com a propriedade message
         fieldIsRequired: (fieldName) => {
-            return { message: `O campo ${fieldName} é obrigatório!` };
+            return `O campo ${fieldName} é obrigatório!` 
         },
         fieldIsRepeated: (fieldName) => {
-            return { message: `O campo ${fieldName} informado já está cadastrado!` };
+            return `O campo ${fieldName} informado já está cadastrado!` 
         },
         invalidInputFormatForField: (fieldName) => {
-            return { message: `Formato de entrada inválido para o campo ${fieldName}!` };
+            return `Formato de entrada inválido para o campo ${fieldName}!`
         },
         resourceInUse: (fieldName) => {
-            return { message:`Recurso em uso em ${fieldName}!` };
+            return `Recurso em uso em ${fieldName}!`
         },
         invalid: (fieldName) => {
-            return { message: `Valor informado em ${fieldName} é inválido!` };
+            return `Valor informado em ${fieldName} é inválido!`
         },
         mascCamp: (campo) => {
-            return { message: `${campo} não encontrado!` };
+            return `${campo} não encontrado!`
         },
         femCamp: (campo) => {
-            return { message: `${campo} não encontrada!` };
+            return `${campo} não encontrada!`
         },
         notFound: (fieldName) => {
-            return { message: `Nenhum registro encontrado com este ${fieldName}!` };
+            return `Nenhum registro encontrado com este ${fieldName}!`
         },
         mustBeOneOf: (fieldName, values) => {
-            return { message: `O campo ${fieldName} deve ser um dos seguintes valores: ${values.join(", ")}` };
+            return `O campo ${fieldName} deve ser um dos seguintes valores: ${Object.values(values).join(', ')}`
         }
     },
     // Mensagens de validação personalizadas
@@ -109,8 +108,8 @@ export const messages = {
         invalidDateMonths: "A data final da vigência não pode ser um período maior que 12 meses após a data de início da vigência!",
         invalidDataNascimento: "Data de nascimento deve ser uma data passada e maior que 18!",
         inventarioAndamento: "Inventario em andamento.",
-        lengthMenor: (campo, tamanho) => {return {message: `O campo ${campo} precisa ter no mínimo ${tamanho} ${tamanho <= 1 ? "caracter" : "caracteres"}!`}},
-        lengthMaior: (campo, tamanho) => {return {message: `O campo ${campo} deve ter no máximo ${tamanho} ${tamanho <= 1 ? "caracter" : "caracteres"}!`}}
+        lengthMenor: (campo, tamanho) => { return `O campo ${campo} precisa ter no mínimo ${tamanho} ${tamanho <= 1 ? "caracter" : "caracteres"}!`  },
+        lengthMaior: (campo, tamanho) => { return`O campo ${campo} deve ter no máximo ${tamanho} ${tamanho <= 1 ? "caracter" : "caracteres"}!`  }
     },
     auth: {
         authenticationFailed: "Falha na autenticação! Credenciais inválidas!",
@@ -128,7 +127,7 @@ export const messages = {
 
         invalidCredentials: "Credenciais inválidas! Verifique seu usuário e senha!",
     },
-};
+}
 
 export const sendError = (res,code, errors = []) => {
     // Detecta diferentes formas de usar:

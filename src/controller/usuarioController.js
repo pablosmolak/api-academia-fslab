@@ -1,10 +1,42 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../config/prismaClient.js";
-import { sendResponse } from "../utils/mensagens.js";
+import messages, { sendError, sendResponse } from "../utils/mensagens.js";
+import { validarEmail, validarSenha } from "../utils/validations.js";
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {
+        const erros = []
         let { nome, email, senha, fotoPerfil } = req.body
+
+        if (!nome) {
+            erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
+        } else {
+            if (nome.length < 3) {
+                erros.push(messages.customValidation.lengthMaior("Nome", 3))
+            } else if (nome.length > 200) {
+                erros.push(messages.customValidation.lengthMenor("Nome", 200))
+            }
+        }
+
+        if (!email) {
+            erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
+        } else if (validarEmail(email, erros)) {
+            let userExist = await prisma.usuario.findUnique({
+                where: { email: email }
+            })
+
+            if (userExist !== null) {
+                erros.push(messages.auth.emailAlreadyExists(email))
+            }
+        }
+
+        if (!senha) {
+            erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
+        } else {
+            validarSenha(senha, erros)
+        }
+
+        if (erros.length > 0) return sendError(res,422,erros)
 
         const grupoId = await prisma.grupo.findFirst({
             where: {
@@ -30,7 +62,6 @@ export default class UsuarioController {
     }
 
     static async listarUsuario(req, res) {
-
         let filtros = { where: {} }
 
         const { nome, email } = req.query
@@ -40,33 +71,69 @@ export default class UsuarioController {
 
         let userExists = await prisma.usuario.findMany(filtros)
 
-        const usuarioCorreto = []
         for (let user of userExists) {
             delete user.senha
-            usuarioCorreto.push(user)
         }
 
-        return sendResponse(res, 200, usuarioCorreto);
+        return sendResponse(res, 200, userExists);
     }
 
     static async listarUsuarioPorID(req, res) {
-        const id = req.params.id
+        const erros = []
 
-        let findUser = await prisma.usuario.findUnique({
-            where: {
-                id: id
+        let userExist
+
+        if (!id) {
+            erros.push(messages.error.invalidID)
+        }else{
+            userExist = await prisma.usuario.findUnique({
+                where: {
+                    id:id
+                }
+            })
+
+            if(userExist === null){
+                erros.push(messages.auth.userNotFound(id))
             }
-        })
+        }
 
-        delete findUser.senha  
+        if (erros.length > 0) return sendError(res,404,erros)
 
-        return sendResponse(res, 200, findUser)
+        delete userExist.senha  
+
+        return sendResponse(res, 200, userExist)
     }
 
     static async alterarUsuario(req, res) {
-        const id = req.params.id
-
+        const erros = []
+        
+        const {id} = req.params
         let { nome, email, senha, fotoPerfil } = req.body
+
+
+        if (user.nome) {
+            if (nome.length < 3) {
+                erros.push(messages.customValidation.lengthMaior("Nome", 3))
+            } else if (nome.length > 200) {
+                erros.push(messages.customValidation.lengthMenor("Nome", 200))
+            }
+        }
+
+        if (user.email && this.utils.validarEmail(user.email, erros)) {
+            let userExist = await prisma.usuario.findUnique({
+                where: { email: email }
+            })
+
+            if (userExist !== null && userExist.id !== id) {
+                erros.push(messages.auth.emailAlreadyExists(user.email))
+            }
+        }
+
+        if (user.senha) {
+            this.utils.validarSenha(user.senha, erros)
+        }
+
+        if (erros.length > 0) return sendError(res,422,erros)
 
         if(senha) senha = bcrypt.hashSync(senha, 10)
 
@@ -86,7 +153,25 @@ export default class UsuarioController {
     }
 
     static async deletarUsuario(req, res) {
-        const id = req.params.id
+        const erros= []
+        
+        const {id} = req.params
+ 
+        if (!id) {
+            erros.push(messages.error.invalidID)
+        }else{
+            const userExist = await prisma.usuario.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if(userExist === null){
+                erros.push(messages.auth.userNotFound(id))
+            }
+        }
+
+        if (erros.length > 0) sendError(res,422,erros)
 
         await prisma.usuario.delete({
             where: {

@@ -45,7 +45,7 @@ model Usuario {
 model Inscricao {
     cursoId       String
     userId        String
-    status        String
+    status        String   @default("Em Andamento")
     dataInscricao DateTime @default(now())
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt
@@ -78,21 +78,21 @@ model ProgressoCurso {
 // modelo de Conteúdo do Curso
 model ConteudoCurso {
     id         String   @id @default(uuid())
-    aulaId     String
+    topicoId     String
     tipo       String // tipo de conteúdo (texto, vídeo, questão, etc.)
     conteudo   String // conteúdo em si (texto formatado, URL do vídeo, etc.)
     ordem      Int
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    // Relacionamento com a aula
-    aula Aula @relation(fields: [aulaId], references: [id])
+    // Relacionamento com o topico
+    topico Topico @relation(fields: [topicoId], references: [id])
 
     @@map("conteudos_cursos")
 }
 
-// modelo de Aulas
-model Aula {
+// modelo de topicos
+model Topico {
     id         String   @id @default(uuid())
     titulo     String
     ordem      Int
@@ -106,7 +106,7 @@ model Aula {
     // Relacionamento com o conteúdo
     conteudos ConteudoCurso[]
 
-    @@map("aulas")
+    @@map("topicos")
 }
 
 // modelo de Cursos
@@ -119,7 +119,7 @@ model Curso {
 
     // Relacionamentos
     inscricoes      Inscricao[]
-    aulas           Aula[]
+    topicos           Topico[]
     progressoCursos ProgressoCurso[]
     certificado     Certificado[]
     instrutores     Instrutores[]
@@ -141,11 +141,12 @@ model Categoria {
 
 // modelo de Instrutores
 model Instrutores {
-    id         String   @id @default(uuid())
-    cursoId    String
-    userId     String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    id             String   @id @default(uuid())
+    cursoId        String
+    userId         String
+    criadorDoCurso Boolean @default(false)
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
 
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])

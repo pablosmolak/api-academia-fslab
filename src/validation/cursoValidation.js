@@ -1,4 +1,4 @@
-import { Validador, funcoesDeValidacao as func } from "../utils/validation.js";
+
 import { sendError } from "../utils/mensagens.js";
 
 export default class cursoValidation {

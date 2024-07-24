@@ -1,19 +1,45 @@
 import { prisma } from "../config/prismaClient.js";
-import messages, { sendResponse } from "../utils/mensagens.js";
+import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 
 export default class InscricoesController {
     static async criarInscricao(req, res) {
+        const erros = []
+
         const { cursoId } = req.body
+
+        if (!cursoId) {
+            erros.push(messages.validationGeneric.fieldIsRequired("CursoID"))
+        } else {
+            const findCurso = await this.prisma.curso.findUnique({
+                where: { id: inscricao.cursoId }
+            })
+
+            if (findCurso === null) {
+                erros.push(messages.validationGeneric.invalid("CursoID"))
+            } else {
+                const findInscricaoCurso = await this.prisma.inscricao.findFirst({
+                    where: {
+                        userId: req.user.id,
+                        cursoId: inscricao.cursoId,
+                    }
+                })
+
+                if (findInscricaoCurso !== null) {
+                    erros.push("Já existe uma inscrição neste curso para o usuário")
+                }
+            }
+        }
+
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         const inscricaoCriada = await prisma.inscricao.create({
             data: {
                 curso: {
-                    connect: { id: cursoId } // conecta ao curso existente
+                    connect: { id: cursoId }
                 },
                 usuario: {
-                    connect: { id: req.user.id } // conecta ao usuário existente
-                },
-                status: "Em Andamento"
+                    connect: { id: req.user.id }
+                }
             },
         });
 
@@ -21,8 +47,15 @@ export default class InscricoesController {
     }
 
     static async listarInscricoes(req, res) {
+        const { cursoId, usuarioId } = req.query
+
+        const filtros = {}
+
+        if (cursoId) filtros.where.cursoId = { contains: cursoId }
+        if (usuarioId) filtros.where.userId = { contains: usuarioId }
 
         const inscricoes = await prisma.inscricao.findMany({
+            ...filtros,
             include: {
                 usuario: {
                     select: {
@@ -44,67 +77,63 @@ export default class InscricoesController {
         return sendResponse(res, 200, inscricoes);
     }
 
-    static async listarInscricaoPorId(req, res) {
-        const { id } = req.params
+    static async deletarInscricao(req, res) {
+        const erros = []
 
-        const inscricao = await prisma.inscricao.findUnique({
-            where: {
-                id: id
-            },
-            include: {
-                usuario: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        email: true
-                    }
-                },
-                curso: {
-                    select: {
-                        id: true,
-                        nome: true,
-                        descricao: true
-                    }
+        let { usuarioid, cursoid } = req.params
+
+        if (!usuarioid) {
+            erros.push(messages.validationGeneric.fieldIsRequired("usuarioid"))
+        } else {
+            const userExist = await prisma.usuario.findUnique({
+                where: {
+                    id: usuarioid
                 }
+            })
+
+            if (userExist === null) {
+                erros.push(messages.validationGeneric.notFound("usuarioid"))
             }
+        }
+
+        if (!cursoid) {
+            erros.push(messages.validationGeneric.fieldIsRequired("cursoid"))
+        } else {
+            const cursoExist = await prisma.curso.findUnique({
+                where: {
+                    id: cursoid
+                }
+            })
+
+            if (cursoExist === null) {
+                erros.push(messages.validationGeneric.notFound("cursoid"))
+            }
+        }
+
+        if (erros.length > 0) sendError(res, 422, erros)
+
+        const inscricaoExist = await prisma.inscricao.findUnique({
+            where: {
+                userId_cursoId: {
+                    userId: usuarioid,
+                    cursoId: cursoid,
+                },
+            },
         })
 
-        return sendResponse(res, 200, inscricao);
-    }
-
-    static async deletarInscricao(req, res) {
-        const { id } = req.params;
+        if (inscricaoExist === null) {
+            return sendError(res,422, [messages.validationGeneric.femCamp("Inscrição")])
+        }
 
         await prisma.inscricao.delete({
             where: {
-                id: id
-            }
-        });
-
-        return sendResponse(res, 200, messages.httpCodes[200]);
-    }
-
-
-    static async concluirInscrição(req, res) {
-        const { id } = req.params
-
-        const inscricao = await prisma.inscricao.update({
-            where: {
-                id
+                userId_cursoId: {
+                    userId: usuarioid,
+                    cursoId: cursoid,
+                },
             },
-            data: {
-                status: "Concluído"
-            }
         })
 
-        const certificado = await prisma.certificado.create({
-            data: {
-                userId: inscricao.userId,
-                cursoId: inscricao.cursoId,
-            }
-        })
-
-        return sendResponse(res, 200, certificado);
+        return sendResponse(res, 200, [])
     }
-
 }

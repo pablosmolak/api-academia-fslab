@@ -3,10 +3,9 @@ import messages, { sendError } from "./mensagens.js"
 export const wrapException = (fn) => {
     return async (req, res, next) => {
         // Medir o tempo que levou para executar
-        let tempoInicio
 
         if (process.env.DEBUGLOG === "true") {
-            tempoInicio = performance.now()
+            console.time("Tempo de execução")
         }
 
         try {
@@ -18,10 +17,8 @@ export const wrapException = (fn) => {
             return sendError(res, 500, err.message || "" + err )
 
         } finally {
-            // Medir o tempo que levou para executar
             if (process.env.DEBUGLOG === "true") {
-                const millis = parseInt(performance.now() - tempoInicio)
-                console.log(`Tempo de execução: ${millis}ms`)
+               console.timeEnd("Tempo de execução")
             }
         }
     }

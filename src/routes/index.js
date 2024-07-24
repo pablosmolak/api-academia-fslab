@@ -1,11 +1,12 @@
 import logRoutes from "../middleware/logRoutesMiddleware.js";
-import usuarios from "./usuarioRouter.js";
-import cursos from "./cursoRouter.js";
-import categoria from "./categoriaRouter.js";
+import categorias from "./categoriaRouter.js";
 import auth from "./authRouter.js";
-import recuperarsenha from "./recuperaSenhaRouter.js";
+import topicos from "./TopicoRouter.js";
+import usuarios from "./usuarioRouter.js";
+import conteudos from "./conteudoRouter.js";
+import cursos from "./cursoRouter.js";
 import inscricoes from "./inscricoesRouter.js";
-import certificados from "./certificadoRouter.js";
+
 
 const routes = (app) => {
 
@@ -18,14 +19,13 @@ const routes = (app) => {
     })
 
     app.use(
-        usuarios,
-        cursos,
-        categoria,
         auth,
+        categorias,
+        topicos,
         usuarios,
-        recuperarsenha,
-        inscricoes,
-        certificados
+        conteudos,
+        cursos,
+        inscricoes
     )
 }
 
