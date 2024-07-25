@@ -7,12 +7,12 @@ export default class CategoriaController {
 
         let { nome } = req.body
 
-        if (nome) {
+        if (!nome) {
             erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
         } else {
             const findCategoria = await prisma.categoria.findFirst({
                 where: {
-                    nome: categoria.nome
+                    nome: nome
                 }
             })
 
@@ -27,7 +27,7 @@ export default class CategoriaController {
             }
         }
 
-        if (erros.length > 0) sendError(res, 422, erros)
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         const categoriaCriada = await prisma.categoria.create({
             data: {

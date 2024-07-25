@@ -12,7 +12,7 @@ export default class CursosController {
         } else {
             if (nome.length < 3) {
                 erros.push(messages.customValidation.lengthMaior("Nome", 3))
-            } else if (curso.nome.length > 200) {
+            } else if (nome.length > 200) {
                 erros.push(messages.customValidation.lengthMenor("Nome", 200))
             }
         }
@@ -25,8 +25,26 @@ export default class CursosController {
             }
         }
 
-        if (categoria) {
+        if (!categoria) {
             erros.push(messages.validationGeneric.fieldIsRequired("Categoria"))
+        } else {
+            const findCategoria = await prisma.categoria.findMany({
+                where: {
+                    id: {
+                        in: categoria
+                    }
+                },
+                select: { id: true }
+            })
+
+            const categoriasEncontradas = findCategoria.map(item => item.id);
+
+            // Filtra os IDs não encontrados
+            const categoriasNaoEncontradas = categoria.filter(id => !categoriasEncontradas.includes(id));
+
+            if (categoriasNaoEncontradas.length > 0) {
+                erros.push(`Nenhuma categoria encontrada com os IDS: ${categoriasNaoEncontradas.join(', ')}`);
+            }
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
@@ -76,7 +94,7 @@ export default class CursosController {
                 id,
             },
             include: {
-                aulas: {
+                topicos: {
                     include: {
                         conteudos: true,
                     },
@@ -104,7 +122,7 @@ export default class CursosController {
         })
 
         if (cursoExist === null) {
-           return sendError(res, 404, [messages.validationGeneric.notFound("id")])
+            return sendError(res, 404, [messages.validationGeneric.notFound("id")])
         }
 
         await prisma.$transaction(async (prisma) => {
@@ -134,7 +152,7 @@ export default class CursosController {
                 }
             })
         })
-        return sendResponse(res,200, [])
+        return sendResponse(res, 200, [])
     }
 
     static async listarCursosInscritosPorUsuario(req, res) {
