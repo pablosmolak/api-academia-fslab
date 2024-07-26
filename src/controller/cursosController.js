@@ -156,10 +156,10 @@ export default class CursosController {
     }
 
     static async listarCursosInscritosPorUsuario(req, res) {
-        const { usuarioID } = req.params
+        const { usuarioid } = req.params
 
         const cursosInscritos = await prisma.usuario.findUnique({
-            where: { id: usuarioID },
+            where: { id: usuarioid },
             select: {
                 inscricoes: {
                     select: {

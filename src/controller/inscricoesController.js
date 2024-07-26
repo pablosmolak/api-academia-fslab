@@ -5,22 +5,22 @@ export default class InscricoesController {
     static async criarInscricao(req, res) {
         const erros = []
 
-        const { cursoId } = req.body
+        const { cursoid } = req.body
 
-        if (!cursoId) {
-            erros.push(messages.validationGeneric.fieldIsRequired("CursoID"))
+        if (!cursoid) {
+            erros.push(messages.validationGeneric.fieldIsRequired("cursoid"))
         } else {
-            const findCurso = await this.prisma.curso.findUnique({
-                where: { id: inscricao.cursoId }
+            const findCurso = await prisma.curso.findUnique({
+                where: { id: cursoid }
             })
 
             if (findCurso === null) {
-                erros.push(messages.validationGeneric.invalid("CursoID"))
+                erros.push(messages.validationGeneric.invalid("cursoid"))
             } else {
-                const findInscricaoCurso = await this.prisma.inscricao.findFirst({
+                const findInscricaoCurso = await prisma.inscricao.findFirst({
                     where: {
                         userId: req.user.id,
-                        cursoId: inscricao.cursoId,
+                        cursoId: cursoid,
                     }
                 })
 
@@ -35,7 +35,7 @@ export default class InscricoesController {
         const inscricaoCriada = await prisma.inscricao.create({
             data: {
                 curso: {
-                    connect: { id: cursoId }
+                    connect: { id: cursoid }
                 },
                 usuario: {
                     connect: { id: req.user.id }

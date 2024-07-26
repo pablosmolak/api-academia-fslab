@@ -1,6 +1,14 @@
 import { AuthPath } from "../paths/authPath.js";
+import { CategoriaPath } from "../paths/categoriaPath.js";
+import { CategoriaSchemas } from "../schemas/categoriaSchema.js";
 import { UsuarioPath } from "../paths/usuarioPath.js";
-import { usuarioSchema } from "../schemas/usuarioSchema.js";
+import { UsuarioSchemas } from "../schemas/usuarioSchema.js";
+import { CursoSchemas } from "../schemas/cursoSchema.js";
+import { CursoPath } from "../paths/cursoPath.js";
+import { TopicoSchemas } from "../schemas/topicoSchema.js";
+import { ConteudoCursoSchemas } from "../schemas/conteudoSchema.js";
+import { TopicoPath } from "../paths/topicoPath.js";
+import { RecuperaSenhaPath } from "../paths/recuperaSenhaPath.js";
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -34,7 +42,11 @@ const swaggerOptions = {
         },
       },
       schemas: {
-        ...usuarioSchema
+        ...UsuarioSchemas,
+        ...CategoriaSchemas,
+        ...CursoSchemas,
+        ...TopicoSchemas,
+        ...ConteudoCursoSchemas
       },
     },
     security: [
@@ -45,23 +57,43 @@ const swaggerOptions = {
     tags: [
       {
         name: "Login",
-        description: "Login do usuário",
+        description: "Autenticação do usuário no sistema"
       },
       {
-        name: "Recuperar senha",
-        description: "Recuperação de senha",
+        name: "Recuperar Senha",
+        description: "Processo de recuperação de senha do usuário"
       },
       {
         name: "Usuários",
-        description: "Usuários do sistema",
+        description: "Gerenciamento de usuários do sistema"
+      },
+      {
+        name: "Categorias",
+        description: "Gerenciamento das categorias de cursos"
+      },
+      {
+        name: "Cursos",
+        description: "Gerenciamento e informações sobre os cursos"
+      },
+      {
+        name: "Tópicos",
+        description: "Gerenciamento e informações sobre os tópicos dos cursos"
+      },
+      {
+        name: "Inscrições",
+        description: "Gerenciamento das inscrições nos cursos"
       }
     ],
     paths: {
       ...AuthPath,
-      ...UsuarioPath
+      ...UsuarioPath,
+      ...CategoriaPath,
+      ...CursoPath,
+      ...TopicoPath,
+      ...RecuperaSenhaPath
     },
   },
   apis: ["./src/routes/*.js"],
-};
+}
 
 export default swaggerOptions;

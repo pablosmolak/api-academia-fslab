@@ -68,11 +68,11 @@ export default class TopicoController {
     }
 
     static async listarTopicoPorCurso(req,res) {
-        const {cursoId} = req.params
+        const {cursoid} = req.params
 
         const findAulas = await prisma.aula.findMany({
             where: {
-                cursoId: cursoId
+                cursoId: cursoid
             },
             orderBy: { ordem: 'asc' }
         })
@@ -80,7 +80,6 @@ export default class TopicoController {
         if (findAulas.length === 0) {
             return sendError(res,404,[messages.validationGeneric.notFound("ID")])
         }
-
 
         return sendResponse(res,200,findAulas) 
     }
