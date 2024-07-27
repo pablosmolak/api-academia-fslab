@@ -5,13 +5,14 @@ export const UsuarioPath = {
     "/usuarios": {
         get: {
             tags: ["Usuários"],
-            summary: "Listar Usuários",
-            description: "Lista todos os usuários",
+            security: [{jwtAuth: []}],
+            summary: "Obter Lista de Usuários",
+            description: "Recupera uma lista de todos os usuários cadastrados, com possibilidade de filtragem por nome e e-mail.",
             parameters: [
                 {
                     name: "nome",
                     in: "query",
-                    description: "Nome do usuário",
+                    description: "Filtra os usuários pelo nome.",
                     required: false,
                     schema: {
                         type: "string"
@@ -20,7 +21,7 @@ export const UsuarioPath = {
                 {
                     name: "email",
                     in: "query",
-                    description: "E-mail do usuário",
+                    description: "Filtra os usuários pelo e-mail.",
                     required: false,
                     schema: {
                         type: "string"
@@ -34,8 +35,8 @@ export const UsuarioPath = {
         },
         post: {
             tags: ["Usuários"],
-            summary: "Criar Usuário",
-            description: "Cria um novo usuário",
+            summary: "Registrar Novo Usuário",
+            description: "Cria um novo usuário no sistema com os dados fornecidos.",
             requestBody: {
                 required: true,
                 content: {
@@ -55,13 +56,14 @@ export const UsuarioPath = {
     "/usuarios/{id}": {
         get: {
             tags: ["Usuários"],
-            summary: "Obter Usuário por ID",
-            description: "Retorna um usuário por ID",
+            security: [{jwtAuth: []}],
+            summary: "Obter Detalhes do Usuário",
+            description: "Recupera as informações de um usuário específico, identificado pelo ID fornecido.",
             parameters: [
                 {
                     name: "id",
                     in: "path",
-                    description: "ID do usuário",
+                    description: "ID do usuário a ser recuperado.",
                     required: true,
                     schema: {
                         type: "string"
@@ -69,20 +71,20 @@ export const UsuarioPath = {
                 }
             ],
             responses: {
-                ...gerarRespostasCorretas(201, "#/components/schemas/Usuario"),
+                ...gerarRespostasCorretas(200, "#/components/schemas/Usuario"),
                 ...gerarRespostasDeErro([401, 422, 498, 500])
-
             },
         },
         patch: {
             tags: ["Usuários"],
-            summary: "Atualizar Usuário",
-            description: "Atualiza um usuário",
+            security: [{jwtAuth: []}],
+            summary: "Atualizar Informações do Usuário",
+            description: "Atualiza os dados de um usuário existente, identificado pelo ID fornecido.",
             parameters: [
                 {
                     name: "id",
                     in: "path",
-                    description: "ID do usuário",
+                    description: "ID do usuário a ser atualizado.",
                     required: true,
                     schema: {
                         type: "string"
@@ -106,13 +108,14 @@ export const UsuarioPath = {
         },
         delete: {
             tags: ["Usuários"],
-            summary: "Deletar Usuário",
-            description: "Deleta um usuário por ID",
+            security: [{jwtAuth: []}],
+            summary: "Excluir Usuário",
+            description: "Remove um usuário do sistema, identificado pelo ID fornecido.",
             parameters: [
                 {
                     name: "id",
                     in: "path",
-                    description: "ID do usuário",
+                    description: "ID do usuário a ser excluído.",
                     required: true,
                     schema: {
                         type: "string"

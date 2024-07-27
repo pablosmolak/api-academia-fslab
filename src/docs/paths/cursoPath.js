@@ -4,18 +4,20 @@ export const CursoPath = {
     "/cursos": {
         get: {
             tags: ["Cursos"],
-            summary: "Listar Curso",
-            description: "Lista todos os cursos",
+            security: [{jwtAuth: []}],
+            summary: "Listar Todos os Cursos",
+            description: "Recupera uma lista de todos os cursos disponíveis no sistema.",
             parameters: [],
             responses: {
-                ...gerarRespostasCorretas(200,"#/components/schemas/Curso"),
+                ...gerarRespostasCorretas(200, "#/components/schemas/Curso"),
                 ...gerarRespostasDeErro([401, 498, 500])
             }
         },
         post: {
             tags: ["Cursos"],
-            summary: "Criar curso",
-            description: "Cria um novo curso",
+            security: [{jwtAuth: []}],
+            summary: "Criar Novo Curso",
+            description: "Cria um novo curso com as informações fornecidas.",
             requestBody: {
                 required: true,
                 content: {
@@ -25,7 +27,7 @@ export const CursoPath = {
                 }
             },
             responses: {
-                ...gerarRespostasCorretas(201,"#/components/schemas/Curso"),
+                ...gerarRespostasCorretas(201, "#/components/schemas/Curso"),
                 ...gerarRespostasDeErro([401, 422, 498, 500])
             }
         }
@@ -33,37 +35,39 @@ export const CursoPath = {
     "/cursos/{id}": {
         get: {
             tags: ["Cursos"],
-            summary: "Obter curso por ID",
-            description: "Retorna um curso por ID",
+            security: [{jwtAuth: []}],
+            summary: "Obter Curso por ID",
+            description: "Recupera os detalhes de um curso específico identificado pelo ID fornecido.",
             parameters: [
                 {
                     name: "id",
                     in: "path",
-                    description: "ID do curso",
+                    description: "ID do curso a ser recuperado.",
                     required: true,
                     schema: { type: "string" }
                 }
             ],
             responses: {
-                ...gerarRespostasCorretas(200,"#/components/schemas/Curso"),
+                ...gerarRespostasCorretas(200, "#/components/schemas/Curso"),
                 ...gerarRespostasDeErro([401, 422, 498, 500])
             }
         },
         delete: {
             tags: ["Cursos"],
-            summary: "Deletar curso",
-            description: "Deleta um curso por ID",
+            security: [{jwtAuth: []}],
+            summary: "Excluir Curso",
+            description: "Remove um curso do sistema, identificado pelo ID fornecido.",
             parameters: [
                 {
                     name: "id",
                     in: "path",
-                    description: "ID do curso",
+                    description: "ID do curso a ser excluído.",
                     required: true,
                     schema: { type: "string" }
                 }
             ],
             responses: {
-                ...gerarRespostasCorretas(200,"",true),
+                ...gerarRespostasCorretas(200, "", true),
                 ...gerarRespostasDeErro([401, 422, 498, 500])
             }
         }
@@ -71,19 +75,20 @@ export const CursoPath = {
     "/cursos/inscricoes/usuario/{usuarioid}": {
         get: {
             tags: ["Cursos"],
-            summary: "Obter curso por ID",
-            description: "Retorna um curso por ID do usuário",
+            security: [{jwtAuth: []}],
+            summary: "Listar Cursos por ID do Usuário",
+            description: "Recupera todos os cursos nos quais um usuário específico está inscrito, identificado pelo ID do usuário.",
             parameters: [
                 {
                     name: "usuarioid",
                     in: "path",
-                    description: "ID do usuario",
+                    description: "ID do usuário cujas inscrições devem ser recuperadas.",
                     required: true,
                     schema: { type: "string" }
                 }
             ],
             responses: {
-                ...gerarRespostasCorretas(200,"#/components/schemas/Curso"),
+                ...gerarRespostasCorretas(200, "#/components/schemas/Curso"),
                 ...gerarRespostasDeErro([401, 422, 498, 500])
             }
         },

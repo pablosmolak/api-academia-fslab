@@ -49,11 +49,6 @@ const swaggerOptions = {
         ...ConteudoCursoSchemas
       },
     },
-    security: [
-      {
-        jwtAuth: [],
-      },
-    ],
     tags: [
       {
         name: "Login",

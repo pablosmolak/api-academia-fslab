@@ -97,7 +97,9 @@ export default class CursosController {
                 topicos: {
                     include: {
                         conteudos: true,
+                        
                     },
+                    orderBy: { ordem: 'asc' }
                 },
                 categoria: true
             },
@@ -111,8 +113,6 @@ export default class CursosController {
     }
 
     static async deletarCurso(req, res) {
-        const erros = []
-
         const { id } = req.params
 
         const cursoExist = await prisma.curso.findUnique({

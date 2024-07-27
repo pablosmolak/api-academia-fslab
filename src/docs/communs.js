@@ -5,7 +5,7 @@ const messagensDeErro = {
     422: "O ID informado deve estar em um formato válido (16 bytes)!",
     498: "Token inválido!",
     500: "grupoId is not defined"
-};
+}
 
 export const gerarRespostasCorretas = (codigo, schemaRef, isNull = false) => {
     return {

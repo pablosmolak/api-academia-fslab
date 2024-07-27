@@ -1,5 +1,5 @@
 import { prisma } from "../config/prismaClient.js"
-import { sendError, sendResponse } from "../utils/mensagens.js"
+import messages, { sendError, sendResponse } from "../utils/mensagens.js"
 
 export default class TopicoController {
 
@@ -18,7 +18,7 @@ export default class TopicoController {
             }
         }
 
-        if (cursoId) {
+        if (!cursoId) {
             erros.push(messages.validationGeneric.fieldIsRequired("cursoId"))
         } else {
             const findCursos = await prisma.curso.findUnique({
@@ -34,7 +34,7 @@ export default class TopicoController {
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
-        const quantidadeTopicos = await prisma.aula.count({
+        const quantidadeTopicos = await prisma.topico.count({
             where: {
                 cursoId: cursoId
             }

@@ -48,11 +48,6 @@ export const TopicoSchemas = {
                 description: "Título do tópico",
                 example: "Introdução à Programação"
             },
-            ordem: { 
-                type: 'integer', 
-                description: "Ordem do tópico dentro do curso",
-                example: 1
-            },
             cursoId: {
                 type: "string",
                 format: "uuid",
@@ -60,7 +55,7 @@ export const TopicoSchemas = {
                 example: "789e4567-e89b-12d3-a456-426614174000"
             }
         },
-        required: ['titulo', 'ordem', 'cursoId'],
+        required: ['titulo', 'cursoId'],
         description: "Corpo da requisição para criar ou atualizar um tópico"
     }
 }

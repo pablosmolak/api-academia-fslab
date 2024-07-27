@@ -4,8 +4,8 @@ export const AuthPath = {
     "/login": {
         post: {
             tags: ["Login"],
-            summary: "Login de usuário",
-            description: "Autentica o usuário na API utilizando email e senha. Retorna um token JWT para acesso autenticado aos recursos protegidos.",
+            summary: "Autenticação de Usuário",
+            description: "Autentica o usuário na API usando email e senha. Se as credenciais forem válidas, um token JWT é retornado, permitindo acesso autenticado aos recursos protegidos.",
             requestBody: {
                 required: true,
                 content: {
@@ -15,12 +15,12 @@ export const AuthPath = {
                             properties: {
                                 email: {
                                     type: "string",
-                                    description: "O endereço de email do usuário",
+                                    description: "Endereço de email do usuário",
                                     example: "dev@gmail.com"
                                 },
                                 senha: {
                                     type: "string",
-                                    description: "A senha do usuário",
+                                    description: "Senha do usuário",
                                     example: "Dev@1234"
                                 }
                             },
@@ -31,7 +31,7 @@ export const AuthPath = {
             },
             responses: {
                 200: {
-                    description: "Login efetuado com sucesso. Retorna um token JWT para acesso autenticado.",
+                    description: "Autenticação bem-sucedida. Retorna um token JWT para acesso a recursos protegidos.",
                     content: {
                         "application/json": {
                             schema: {

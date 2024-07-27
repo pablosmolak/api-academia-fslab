@@ -4,8 +4,9 @@ export const CategoriaPath = {
     "/categorias": {
         get: {
             tags: ["Categorias"],
-            summary: "Listar Categorias",
-            description: "Retorna uma lista de todas as categorias disponíveis.",
+            security: [{jwtAuth: []}],
+            summary: "Obter Lista de Categorias",
+            description: "Retorna uma lista de todas as categorias disponíveis, permitindo aos usuários visualizar todas as opções de categorias.",
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Categoria"),
                 ...gerarRespostasDeErro([401, 498, 500])
@@ -13,8 +14,9 @@ export const CategoriaPath = {
         },
         post: {
             tags: ["Categorias"],
-            summary: "Criar Categoria",
-            description: "Cria uma nova categoria. É necessário fornecer os dados da categoria no corpo da requisição.",
+            security: [{jwtAuth: []}],
+            summary: "Adicionar Nova Categoria",
+            description: "Cria uma nova categoria com base nos dados fornecidos pelo usuário. O corpo da requisição deve conter as informações necessárias para a criação da categoria.",
             requestBody: {
                 required: true,
                 content: {
@@ -32,13 +34,14 @@ export const CategoriaPath = {
     "/categorias/{id}": {
         get: {
             tags: ["Categorias"],
-            summary: "Obter Categoria por ID",
-            description: "Retorna uma categoria específica identificada pelo ID.",
+            security: [{jwtAuth: []}],
+            summary: "Obter Detalhes de Categoria",
+            description: "Recupera os detalhes de uma categoria específica identificada pelo ID fornecido, permitindo aos usuários visualizar informações detalhadas sobre a categoria.",
             parameters: [
                 {
                     name: "id",
                     in: "path",
-                    description: "ID da categoria",
+                    description: "ID da categoria a ser obtida",
                     required: true,
                     schema: { type: "string" }
                 }
@@ -50,13 +53,14 @@ export const CategoriaPath = {
         },
         patch: {
             tags: ["Categorias"],
-            summary: "Atualizar Categoria",
-            description: "Atualiza as informações de uma categoria específica identificada pelo ID. É necessário fornecer os novos dados da categoria no corpo da requisição.",
+            security: [{jwtAuth: []}],
+            summary: "Atualizar Categoria Existente",
+            description: "Atualiza as informações de uma categoria específica identificada pelo ID. Os novos dados da categoria devem ser fornecidos no corpo da requisição.",
             parameters: [
                 {
                     name: "id",
                     in: "path",
-                    description: "ID da categoria",
+                    description: "ID da categoria a ser atualizada",
                     required: true,
                     schema: { type: "string" }
                 }
@@ -76,13 +80,14 @@ export const CategoriaPath = {
         },
         delete: {
             tags: ["Categorias"],
-            summary: "Deletar Categoria",
-            description: "Remove uma categoria específica identificada pelo ID.",
+            security: [{jwtAuth: []}],
+            summary: "Remover Categoria",
+            description: "Deleta uma categoria específica identificada pelo ID fornecido. Esta operação é irreversível e removerá a categoria permanentemente do sistema.",
             parameters: [
                 {
                     name: "id",
                     in: "path",
-                    description: "ID da categoria",
+                    description: "ID da categoria a ser deletada",
                     required: true,
                     schema: { type: "string" }
                 }
