@@ -32,16 +32,29 @@ export default class InscricoesController {
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
-        const inscricaoCriada = await prisma.inscricao.create({
-            data: {
-                curso: {
-                    connect: { id: cursoid }
+        let inscricaoCriada
+        await prisma.$transaction(async (prisma) => {
+
+            inscricaoCriada = await prisma.inscricao.create({
+                data: {
+                    curso: {
+                        connect: { id: cursoid }
+                    },
+                    usuario: {
+                        connect: { id: req.user.id }
+                    }
                 },
-                usuario: {
-                    connect: { id: req.user.id }
+            })
+
+            await prisma.progressoCurso.create({
+                data: {
+                    userId: req.user.id,
+                    cursoId: cursoid,
+                    porcentagem: 0
                 }
-            },
-        });
+            })
+
+        })
 
         return sendResponse(res, 201, inscricaoCriada);
     }
@@ -122,7 +135,7 @@ export default class InscricoesController {
         })
 
         if (inscricaoExist === null) {
-            return sendError(res,422, [messages.validationGeneric.femCamp("Inscrição")])
+            return sendError(res, 422, [messages.validationGeneric.femCamp("Inscrição")])
         }
 
         await prisma.inscricao.delete({

@@ -104,10 +104,10 @@ export default class UsuarioController {
         const erros = []
 
         const { id } = req.params
+
         let { nome, email, senha, fotoPerfil } = req.body
 
-
-        if (user.nome) {
+        if (nome) {
             if (nome.length < 3) {
                 erros.push(messages.customValidation.lengthMaior("Nome", 3))
             } else if (nome.length > 200) {
@@ -115,7 +115,7 @@ export default class UsuarioController {
             }
         }
 
-        if (user.email && this.utils.validarEmail(user.email, erros)) {
+        if (email && validarEmail(email, erros)) {
             let userExist = await prisma.usuario.findUnique({
                 where: { email: email }
             })
@@ -125,8 +125,8 @@ export default class UsuarioController {
             }
         }
 
-        if (user.senha) {
-            this.utils.validarSenha(user.senha, erros)
+        if (senha) {
+            validarSenha(senha, erros)
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
@@ -167,7 +167,7 @@ export default class UsuarioController {
             }
         }
 
-        if (erros.length > 0) sendError(res, 422, erros)
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         await prisma.usuario.delete({
             where: {

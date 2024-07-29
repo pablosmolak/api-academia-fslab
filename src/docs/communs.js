@@ -7,7 +7,7 @@ const messagensDeErro = {
     500: "grupoId is not defined"
 }
 
-export const gerarRespostasCorretas = (codigo, schemaRef, isNull = false) => {
+export const gerarRespostasCorretas = (codigo, schemaRef) => {
     return {
         [codigo]: {
             description: messages.httpCodes[codigo],
@@ -16,7 +16,7 @@ export const gerarRespostasCorretas = (codigo, schemaRef, isNull = false) => {
                     schema: {
                         type: "object",
                         properties: {
-                            data: isNull ? {
+                            data: schemaRef.length === 0 ? {
                                 type: "string",
                                 example: []
                             } : {

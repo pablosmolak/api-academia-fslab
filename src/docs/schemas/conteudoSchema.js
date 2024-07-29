@@ -1,5 +1,5 @@
 export const ConteudoCursoSchemas = {
-    ConteudoCurso: {
+    Conteudo: {
         type: "object",
         properties: {
             id: {
@@ -16,13 +16,13 @@ export const ConteudoCursoSchemas = {
             },
             tipo: {
                 type: "string",
-                description: "Tipo de conteúdo (texto, vídeo, questão, etc.)",
-                example: "vídeo"
+                description: "Tipo de conteúdo (Youtube URL)",
+                example: "Youtube URL"
             },
             conteudo: {
                 type: "string",
-                description: "Conteúdo em si (texto formatado, URL do vídeo, etc.)",
-                example: "https://example.com/video.mp4"
+                description: "Conteúdo em si (Youtube URL)",
+                example: "https://youtu.be/dQw4w9WgXcQ"
             },
             ordem: {
                 type: "integer",
@@ -45,7 +45,7 @@ export const ConteudoCursoSchemas = {
         required: ["id", "topicoId", "tipo", "conteudo", "ordem", "created_at", "updated_at"],
         description: "Representação de um conteúdo dentro de um curso"
     },
-    ConteudoCursoRequestBody: {
+    ConteudoRequestBody: {
         type: 'object',
         properties: {
             topicoId: {
@@ -56,13 +56,13 @@ export const ConteudoCursoSchemas = {
             },
             tipo: { 
                 type: 'string', 
-                description: "Tipo de conteúdo (texto, vídeo, questão, etc.)",
-                example: "vídeo"
+                description: "Tipo de conteúdo (Youtube URL)",
+                example: "Youtube URL"
             },
             conteudo: { 
                 type: 'string', 
-                description: "Conteúdo em si (texto formatado, URL do vídeo, etc.)",
-                example: "https://example.com/video.mp4"
+                description: "Conteúdo em si (Youtube URL)",
+                example: "https://youtu.be/dQw4w9WgXcQ"
             },
         },
         required: ['topicoId', 'tipo', 'conteudo'],

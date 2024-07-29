@@ -54,7 +54,7 @@ export default class TopicoController {
     static async listarTopicoPorID(req,res){
         const {id} = req.params
         
-        const findAula = await prisma.aula.findUnique({
+        const findAula = await prisma.topico.findUnique({
             where: {
                 id: id
             }
@@ -70,7 +70,7 @@ export default class TopicoController {
     static async listarTopicoPorCurso(req,res) {
         const {cursoid} = req.params
 
-        const findAulas = await prisma.aula.findMany({
+        const findAulas = await prisma.topico.findMany({
             where: {
                 cursoId: cursoid
             },
@@ -89,30 +89,37 @@ export default class TopicoController {
 
         const {id} = req.params
 
-        const findAula = await prisma.aula.findUnique({
+        const findTopico = await prisma.topico.findUnique({
             where: {
                 id: id
             }
         })
 
-        if (!findAula) {
-            erros.push(messages.validationGeneric.femCamp("Aula"))
+        if (!findTopico) {
+            erros.push(messages.validationGeneric.mascCamp("Topico"))
         }
 
         if (erros.length > 0) return sendError(res,422,erros)
 
         await prisma.$transaction(async (prisma) => {
-            await prisma.aula.delete({
+
+            await prisma.conteudoCurso.deleteMany({
+                where:{
+                    topicoId: id
+                }
+            })
+
+            await prisma.topico.delete({
                 where: {
                     id: id
                 }
             })
 
-            await prisma.aula.updateMany({
+            await prisma.topico.updateMany({
                 where: {
-                    cursoId: findAula.cursoId,
+                    cursoId: findTopico.cursoId,
                     ordem: {
-                        gt: findAula.ordem
+                        gt: findTopico.ordem
                     }
                 },
                 data: {
@@ -132,7 +139,7 @@ export default class TopicoController {
         const {id} = req.params
         const {titulo, cursoId, ordem} = req.body
 
-        const findAula = await prisma.aula.findUnique({
+        const findAula = await prisma.topico.findUnique({
             where: {
                 id: id
             }
@@ -158,7 +165,7 @@ export default class TopicoController {
 
         if (erros.length > 0) return sendError(res,422,erros)
 
-        const totalAulas = await this.prisma.aula.count({
+        const totalAulas = await prisma.topico.count({
             where: {
                 cursoId: cursoId
             }
@@ -167,8 +174,8 @@ export default class TopicoController {
         const ordemAtual = findAula.ordem;
         let novaOrdem
 
-        if (aula.ordem) {
-            novaOrdem = Math.max(1, Math.min(aula.ordem, totalAulas))
+        if (ordem) {
+            novaOrdem = Math.max(1, Math.min(ordem, totalAulas))
         } else {
             novaOrdem = ordemAtual
         }
@@ -176,7 +183,7 @@ export default class TopicoController {
         await prisma.$transaction(async (prisma) => {
             if (ordemAtual !== novaOrdem) {
                 if (novaOrdem > ordemAtual) {
-                    await prisma.aula.updateMany({
+                    await prisma.topico.updateMany({
                         where: {
                             cursoId: cursoId,
                             ordem: {
@@ -191,7 +198,7 @@ export default class TopicoController {
                         }
                     })
                 } else if (novaOrdem < ordemAtual) {
-                    await prisma.aula.updateMany({
+                    await prisma.topico.updateMany({
                         where: {
                             cursoId: cursoId,
                             ordem: {
@@ -208,7 +215,7 @@ export default class TopicoController {
                 }
             }
 
-            await prisma.aula.update({
+            await prisma.topico.update({
                 where: {
                     id: id
                 },

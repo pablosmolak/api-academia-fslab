@@ -6,6 +6,8 @@ import usuarios from "./usuarioRouter.js";
 import conteudos from "./conteudoRouter.js";
 import cursos from "./cursoRouter.js";
 import inscricoes from "./inscricoesRouter.js";
+import progressos from "./progressoRouter.js";
+
 
 
 const routes = (app) => {
@@ -25,7 +27,8 @@ const routes = (app) => {
         usuarios,
         conteudos,
         cursos,
-        inscricoes
+        inscricoes,
+        progressos
     )
 }
 

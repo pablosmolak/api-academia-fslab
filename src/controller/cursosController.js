@@ -96,8 +96,9 @@ export default class CursosController {
             include: {
                 topicos: {
                     include: {
-                        conteudos: true,
-                        
+                        conteudos: {
+                            orderBy: { ordem: 'asc' }
+                        }
                     },
                     orderBy: { ordem: 'asc' }
                 },
@@ -106,7 +107,7 @@ export default class CursosController {
         })
 
         if (findCurso === null) {
-            sendError(res, 404, [messages.validationGeneric.notFound("ID")])
+            return sendError(res, 404, [messages.validationGeneric.notFound("ID")])
         }
 
         return sendResponse(res, 200, findCurso);
@@ -175,6 +176,7 @@ export default class CursosController {
                         dataInscricao: true,
                     },
                 },
+                progressoCursos: true
             },
         });
 

@@ -40,11 +40,11 @@ export default class ConteudoController{
             }
         })
 
-        const createConteudo = await this.prisma.conteudoCurso.create({
+        const createConteudo = await prisma.conteudoCurso.create({
             data: {
-                topicoId: conteudo.topicoId,
-                tipo: conteudo.tipo,
-                conteudo: conteudo.conteudo,
+                topicoId: topicoId,
+                tipo: tipo,
+                conteudo: conteudo,
                 ordem: (quantidadeConteudo + 1)
             }
         })
@@ -99,12 +99,12 @@ export default class ConteudoController{
 
         }
 
-        if (erros.length > 0) this.utils.respostaErro(422, erros)
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         await prisma.$transaction(async (prisma) => {
             await prisma.conteudoCurso.delete({
                 where: {
-                    id: conteudoID
+                    id: id
                 }
             })
 

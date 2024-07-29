@@ -47,24 +47,15 @@ export default class CategoriaController {
     static async listarCategoriasPorID(req, res) {
         const { id } = req.params
 
-        let categoriaExist
-
-        if (!id) {
-            erros.push(messages.error.invalidID)
-        } else {
-            categoriaExist = await prisma.categoria.findUnique({
-                where: {
-                    id: id
-                }
-            })
-
-            if (categoriaExist === null) {
-                erros.push(messages.validationGeneric.notFound("id"))
+        const categoriaExist = await prisma.categoria.findUnique({
+            where: {
+                id: id
             }
+        })
+
+        if (categoriaExist === null) {
+            return sendError(res,422,messages.validationGeneric.notFound("id"))
         }
-
-        if (erros.length > 0) this.utils.respostaErro(404, erros)
-
 
         return sendResponse(res, 200, categoriaExist)
     }
@@ -92,9 +83,9 @@ export default class CategoriaController {
         }
 
         if (nome) {
-            const findCategoria = await this.prisma.categoria.findFirst({
+            const findCategoria = await prisma.categoria.findFirst({
                 where: {
-                    nome: categoria.nome
+                    nome: nome
                 }
             })
 
@@ -141,7 +132,7 @@ export default class CategoriaController {
             }
         }
 
-        if (erros.length > 0) return sendError(res,422,erros)
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         await prisma.categoria.delete({
             where: {
@@ -149,6 +140,6 @@ export default class CategoriaController {
             }
         })
 
-        return sendResponse(res,200,[])
+        return sendResponse(res, 200, [])
     }
 }

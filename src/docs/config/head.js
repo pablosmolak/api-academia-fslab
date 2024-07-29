@@ -9,6 +9,7 @@ import { TopicoSchemas } from "../schemas/topicoSchema.js";
 import { ConteudoCursoSchemas } from "../schemas/conteudoSchema.js";
 import { TopicoPath } from "../paths/topicoPath.js";
 import { RecuperaSenhaPath } from "../paths/recuperaSenhaPath.js";
+import { ConteudoPath } from "../paths/conteudoPath.js";
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -75,6 +76,10 @@ const swaggerOptions = {
         description: "Gerenciamento e informações sobre os tópicos dos cursos"
       },
       {
+        name: "Conteúdos",
+        description: "Gerenciamento e informações sobre os conteúdo dos tópicos dos cursos"
+      },
+      {
         name: "Inscrições",
         description: "Gerenciamento das inscrições nos cursos"
       }
@@ -85,7 +90,8 @@ const swaggerOptions = {
       ...CategoriaPath,
       ...CursoPath,
       ...TopicoPath,
-      ...RecuperaSenhaPath
+      ...RecuperaSenhaPath,
+      ...ConteudoPath
     },
   },
   apis: ["./src/routes/*.js"],
