@@ -5,7 +5,7 @@ import { prisma } from "../config/prismaClient.js";
 export async function AuthMiddleware(req, res, next) {
     let token = req.headers.authorization
 
-    if (!token) { return sendError(res, 498, messages.auth.invalidToken) }
+    if (!token) { return sendError(res, 401, "Token de autenticação é necessario!") }
 
     [, token] = token.split(" ")
 

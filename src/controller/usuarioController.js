@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { validarEmail, validarSenha } from "../utils/validations.js";
+import { pagination } from "../utils/pagination.js";
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {
@@ -60,29 +61,36 @@ export default class UsuarioController {
 
         return sendResponse(res, 201, userCreated);
     }
-
+    
     static async listarUsuario(req, res) {
         let filtros = { where: {} }
 
-        const { nome, email } = req.query
+        const { nome, email, pagina = 1, limite = 10 } = req.query
 
         if (nome) filtros.where.nome = { contains: nome }
         if (email) filtros.where.email = { contains: email }
 
-        let userExists = await prisma.usuario.findMany(filtros)
+        const paginacao = await pagination('usuario', pagina,limite, filtros)
+
+        let userExists = await prisma.usuario.findMany({
+            ...filtros,
+            skip: paginacao.skip,
+            take: paginacao.take
+        })
 
         for (let user of userExists) {
             delete user.senha
         }
 
-        return sendResponse(res, 200, userExists);
+        return sendResponse(res, 200, userExists, 
+            {pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take})
     }
 
     static async listarUsuarioPorID(req, res) {
         const erros = []
 
-        const {id} = req.params
-        
+        const { id } = req.params
+
         const findUser = await prisma.usuario.findUnique({
             where: {
                 id: id

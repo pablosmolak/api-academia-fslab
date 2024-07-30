@@ -1,7 +1,8 @@
 import messages from "../utils/mensagens.js";
 
 const messagensDeErro = {
-    401: "Permissão insuficiente para executar a operação!",
+    401: "Token de autenticação é necessario!",
+    403: "Permissão insuficiente para executar a operação!",
     422: "O ID informado deve estar em um formato válido (16 bytes)!",
     498: "Token inválido!",
     500: "grupoId is not defined"

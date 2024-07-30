@@ -157,7 +157,7 @@ export const sendError = (res,code, errors = []) => {
  *    data: usuario
  * });
  */
-export const sendResponse = (res,code, resp = {}) => {
+export const sendResponse = (res,code, resp = {}, args) => {
     let _data = undefined;
     if(Array.isArray(resp)) { 
         // Se for um array de erros --> sendError(res, 400, ["A","B"}])
@@ -172,7 +172,8 @@ export const sendResponse = (res,code, resp = {}) => {
             error: false,
             code: code,
             message: messages.httpCodes[code],
-            errors: [] 
+            errors: [],
+            ...args
     });
 };
 

@@ -10,6 +10,12 @@ import { ConteudoCursoSchemas } from "../schemas/conteudoSchema.js";
 import { TopicoPath } from "../paths/topicoPath.js";
 import { RecuperaSenhaPath } from "../paths/recuperaSenhaPath.js";
 import { ConteudoPath } from "../paths/conteudoPath.js";
+import { InscricaoSchemas } from "../schemas/inscricaoSchema.js";
+import { InscricaoPath } from "../paths/inscricaoPath.js";
+import { ProgressoPath } from "../paths/progressoPath.js";
+import { ProgressoSchemas } from "../schemas/progressoSchema.js";
+import { CertificadoSchemas } from "../schemas/certificadoSchema.js";
+import { CertificadoPath } from "../paths/certificadoPath.js";
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -39,7 +45,7 @@ const swaggerOptions = {
         jwtAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT',
+          bearerFormat: 'JWT'
         },
       },
       schemas: {
@@ -47,7 +53,10 @@ const swaggerOptions = {
         ...CategoriaSchemas,
         ...CursoSchemas,
         ...TopicoSchemas,
-        ...ConteudoCursoSchemas
+        ...ConteudoCursoSchemas,
+        ...InscricaoSchemas,
+        ...ProgressoSchemas,
+        ...CertificadoSchemas
       },
     },
     tags: [
@@ -82,6 +91,14 @@ const swaggerOptions = {
       {
         name: "Inscrições",
         description: "Gerenciamento das inscrições nos cursos"
+      },
+      {
+        name: "Progressos",
+        description: "Gerenciamento do progresso dos estudantes nos cursos"
+      },
+      {
+        name: "Certificados",
+        description: "Gerenciamento do certificado dos estudantes nos cursos"
       }
     ],
     paths: {
@@ -91,7 +108,10 @@ const swaggerOptions = {
       ...CursoPath,
       ...TopicoPath,
       ...RecuperaSenhaPath,
-      ...ConteudoPath
+      ...ConteudoPath,
+      ...InscricaoPath,
+      ...ProgressoPath,
+      ...CertificadoPath
     },
   },
   apis: ["./src/routes/*.js"],

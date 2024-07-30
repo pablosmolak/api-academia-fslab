@@ -17,7 +17,7 @@ export const ConteudoPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Conteudo"),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401,403, 422, 498, 500])
             }
         }
     },
@@ -38,7 +38,7 @@ export const ConteudoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Conteudo"),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403,422, 498, 500])
             }
         },
         patch: {
@@ -65,7 +65,7 @@ export const ConteudoPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(200, ""),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403,422, 498, 500])
             }
         },
         delete: {
@@ -84,7 +84,7 @@ export const ConteudoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, ""),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403,422, 498, 500])
             }
         },
     },
@@ -105,7 +105,7 @@ export const ConteudoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Conteudo"),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401,403, 422, 498, 500])
             }
         }
     }

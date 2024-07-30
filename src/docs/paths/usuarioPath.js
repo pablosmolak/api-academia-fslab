@@ -5,14 +5,14 @@ export const UsuarioPath = {
     "/usuarios": {
         get: {
             tags: ["Usuários"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Obter Lista de Usuários",
             description: "Recupera uma lista de todos os usuários cadastrados, com possibilidade de filtragem por nome e e-mail.",
             parameters: [
                 {
                     name: "nome",
                     in: "query",
-                    description: "Filtra os usuários pelo nome.",
+                    description: "Filtra os usuários pelo nome",
                     required: false,
                     schema: {
                         type: "string"
@@ -21,16 +21,39 @@ export const UsuarioPath = {
                 {
                     name: "email",
                     in: "query",
-                    description: "Filtra os usuários pelo e-mail.",
+                    description: "Filtra os usuários pelo e-mail",
                     required: false,
                     schema: {
                         type: "string"
                     }
                 },
+                {
+                    name: "pagina",
+                    in: "query",
+                    description: "Número da página de resultados da pesquisa",
+                    required: false,
+                    schema: {
+                        type: "integer",
+                        default: 1,
+                        minimum: 1
+                    }
+                },
+                {
+                    name: "limite",
+                    in: "query",
+                    description: "Quantidade máxima de resultados por página",
+                    required: false,
+                    schema: {
+                        type: "integer",
+                        default: 10,
+                        minimum: 1,
+                        maximum: 100
+                    }
+                }
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Usuario"),
-                ...gerarRespostasDeErro([401, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 498, 500])
             },
         },
         post: {
@@ -56,7 +79,7 @@ export const UsuarioPath = {
     "/usuarios/{id}": {
         get: {
             tags: ["Usuários"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Obter Detalhes do Usuário",
             description: "Recupera as informações de um usuário específico, identificado pelo ID fornecido.",
             parameters: [
@@ -72,12 +95,12 @@ export const UsuarioPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Usuario"),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             },
         },
         patch: {
             tags: ["Usuários"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Atualizar Informações do Usuário",
             description: "Atualiza os dados de um usuário existente, identificado pelo ID fornecido.",
             parameters: [
@@ -103,12 +126,12 @@ export const UsuarioPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Usuario"),
-                ...gerarRespostasDeErro([401, 422, 498, 500]),
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
             }
         },
         delete: {
             tags: ["Usuários"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Excluir Usuário",
             description: "Remove um usuário do sistema, identificado pelo ID fornecido.",
             parameters: [
@@ -123,8 +146,8 @@ export const UsuarioPath = {
                 }
             ],
             responses: {
-                ...gerarRespostasCorretas(200, "", true),
-                ...gerarRespostasDeErro([401, 422, 498, 500]),
+                ...gerarRespostasCorretas(200, ""),
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
             }
         }
     }

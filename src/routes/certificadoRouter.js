@@ -6,7 +6,7 @@ const router = express.Router();
 
 router
     .get("/certificados", wrapException(CertificadoController.listarCertificados))
-    .get("/certificados/usuario/:id", wrapException(CertificadoController.listarCertificadosDoUsuario))
+    .get("/certificados/usuario/:usuarioid", wrapException(CertificadoController.listarCertificadosDoUsuario))
     .get("/certificados/validar/:validador", wrapException(CertificadoController.validarCertificado))
     
 export default router;

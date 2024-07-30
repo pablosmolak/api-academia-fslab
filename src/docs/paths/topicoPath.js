@@ -4,7 +4,7 @@ export const TopicoPath = {
     "/topicos": {
         post: {
             tags: ["Tópicos"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Criar Novo Tópico",
             description: "Cria um novo tópico no sistema com base nos dados fornecidos.",
             requestBody: {
@@ -17,14 +17,14 @@ export const TopicoPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Topico"),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         }
     },
     "/topicos/{id}": {
         get: {
             tags: ["Tópicos"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Obter Tópico por ID",
             description: "Recupera as informações de um tópico específico, identificado pelo ID fornecido.",
             parameters: [
@@ -38,12 +38,12 @@ export const TopicoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Topico"),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         },
         patch: {
             tags: ["Tópicos"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Atualizar Tópico",
             description: "Atualiza as informações de um tópico existente, identificado pelo ID fornecido.",
             parameters: [
@@ -65,12 +65,12 @@ export const TopicoPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Topico"),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         },
         delete: {
             tags: ["Tópicos"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Excluir Tópico",
             description: "Remove um tópico do sistema, identificado pelo ID fornecido.",
             parameters: [
@@ -83,15 +83,15 @@ export const TopicoPath = {
                 }
             ],
             responses: {
-                ...gerarRespostasCorretas(200, "", true),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasCorretas(200, ""),
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         }
     },
     "/topicos/curso/{cursoid}": {
         get: {
             tags: ["Tópicos"],
-            security: [{jwtAuth: []}],
+            security: [{ jwtAuth: [] }],
             summary: "Listar Tópicos por ID do Curso",
             description: "Recupera todos os tópicos associados a um curso específico, identificado pelo ID do curso.",
             parameters: [
@@ -105,7 +105,7 @@ export const TopicoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Topico"),
-                ...gerarRespostasDeErro([401, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         }
     }

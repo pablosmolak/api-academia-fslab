@@ -1,5 +1,6 @@
 import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
+import { pagination } from "../utils/pagination.js";
 
 export default class CursosController {
     static async criarCurso(req, res) {
@@ -77,13 +78,22 @@ export default class CursosController {
     }
 
     static async listarCursos(req, res) {
+
+        const { pagina = 1, limite = 10 } = req.query
+
+        const paginacao = await pagination("curso", pagina, limite)
+
         const cursos = await prisma.curso.findMany({
             include: {
                 categoria: true
-            }
+            },
+            skip: paginacao.skip,
+            take: paginacao.take
         })
 
-        return sendResponse(res, 200, cursos);
+        return sendResponse(res, 200, cursos,
+            {pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take}
+        )
     }
 
     static async listarCursoPorId(req, res) {
