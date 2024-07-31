@@ -12,6 +12,9 @@ RUN npm ci
 # Depois copia o projeto (Isto torna mais rápido o build devido ao cache)
 COPY . .
 
+# Gera os artefatos do Prisma
+RUN npx prisma generate
+
 # Ponto de partida
 CMD ["node","server.js"]
 
