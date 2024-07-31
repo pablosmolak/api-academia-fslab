@@ -1,0 +1,52 @@
+variables:
+  KUBECTL_CONFIG: $KUBECTL_CONFIG
+  IMAGEM_DOCKER: registry.fslab.dev/pablosmolak/api-academia
+  DATABASE_URL: "mysql://pablo:pablo123@localhost:3307/academiaFSlab"
+
+stages:
+  - setup
+  - build
+  - deploy
+
+setup-database:
+  stage: setup
+  services:
+    - docker:dind
+  script:
+    - docker-compose -f docker-compose-banco.yml up -d mysql
+    - sleep 10 # Aguarde o MySQL inicializar
+    - docker-compose -f docker-compose-banco.yml ps
+
+buildar-docker:
+  stage: build
+  image: docker:dind
+  only:
+    - 19-implementar-funcoes-de-conteudo
+  script:
+    - cp .env.example .env 
+    - >
+      docker build 
+      -t $IMAGEM_DOCKER
+      -f DockerFile
+      .
+    - docker push $IMAGEM_DOCKER
+
+fazer-deploy:
+  stage: deploy
+  needs: ['buildar-docker']
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
+  only:
+    - 19-implementar-funcoes-de-conteudo
+  script:
+    - cat $KUBECTL_CONFIG > ~/.kube/config
+    - kubectl config get-contexts
+    - kubectl get node
+    - kubectl get pods
+    - kubectl delete deployment api-levantamento || true
+    - kubectl apply -f deployment.yaml
+    - sleep 60
+    - kubectl get pods
+    - kubectl describe deploy/api-levantamento
+    - kubectl logs deploy/api-levantamento
