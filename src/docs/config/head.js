@@ -36,6 +36,10 @@ const swaggerOptions = {
     },
     servers: [
       {
+        url: `https://api-academia.app.fslab.dev/`,
+        description: "API em produção",
+      },
+      {
         url: `http://localhost:${process.env.PORT}`,
         description: "API em desenvolvimento",
       }
