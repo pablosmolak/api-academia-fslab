@@ -37,8 +37,9 @@ fazer-deploy:
     - kubectl delete deployment api-academia || true
     - kubectl apply -f deployment.yaml
     - sleep 60
+    - kubectl exec -it api-academia -- npx prisma migrate deploy
     - kubectl get pods
     - kubectl describe deploy/api-academia
     - kubectl logs deploy/api-academia
-    - docker run --rm -v $(pwd):/app -w /app $IMAGEM_DOCKER npx prisma migrate deploy
+
 
