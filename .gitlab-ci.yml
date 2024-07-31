@@ -20,7 +20,6 @@ buildar-docker:
       -f DockerFile
       .
     - docker push $IMAGEM_DOCKER
-    - docker run --rm -v $(pwd):/app -w /app $IMAGEM_DOCKER npx prisma migrate dev
 
 fazer-deploy:
   stage: deploy
@@ -41,3 +40,5 @@ fazer-deploy:
     - kubectl get pods
     - kubectl describe deploy/api-academia
     - kubectl logs deploy/api-academia
+    - docker run --rm -v $(pwd):/app -w /app $IMAGEM_DOCKER npx prisma migrate deploy
+
