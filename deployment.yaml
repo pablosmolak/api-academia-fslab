@@ -12,6 +12,7 @@ kind: Deployment
 metadata:
   name: api-academia
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: api-academia
@@ -28,9 +29,9 @@ spec:
         envFrom:
         - configMapRef:
             name: academia-env
-        resources: {}
         ports:
         - containerPort: 3000
+
 ---
 apiVersion: v1
 kind: Service
@@ -44,3 +45,19 @@ spec:
   - port: 80
     targetPort: 3000
 
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: prisma-migrate-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: prisma-migrate
+        image: registry.fslab.dev/pablosmolak/api-academia:latest
+        command: ["npx", "prisma", "migrate", "deploy"]
+        envFrom:
+        - configMapRef:
+            name: academia-env
+      restartPolicy: OnFailure
