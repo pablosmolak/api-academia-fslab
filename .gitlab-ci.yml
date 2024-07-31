@@ -1,39 +1,17 @@
 variables:
   KUBECTL_CONFIG: $KUBECTL_CONFIG
-  IMAGEM_DOCKER: registry.fslab.dev/pablosmolak/api-levantamento
-  MYSQL_CONTAINER_NAME: mysql_db
-  MYSQL_ROOT_PASSWORD: pablo123
-  MYSQL_DATABASE: academiaFSlab
-  MYSQL_USER: pablo
-  MYSQL_PASSWORD: pablo123
-  MYSQL_PORT: 3307
+  IMAGEM_DOCKER: registry.fslab.dev/pablosmolak/api-academia
+  DATABASE_URL: "mysql://pablo:pablo123@localhost:3307/academiaFSlab"
 
 stages:
-  - setup
   - build
   - deploy
-
-setup-database:
-  stage: setup
-  services:
-    - docker:dind
-  script:
-    - docker run -d --name $MYSQL_CONTAINER_NAME \
-      -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-      -e MYSQL_DATABASE=$MYSQL_DATABASE \
-      -e MYSQL_USER=$MYSQL_USER \
-      -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
-      -p $MYSQL_PORT:3306 \
-      -v $(pwd)/data:/var/lib/mysql \
-      mysql:latest
-    - sleep 10 # Aguarde o MySQL inicializar
-    - docker ps # Verifica se o container do MySQL está rodando
 
 buildar-docker:
   stage: build
   image: docker:dind
   only:
-    - dev
+    - 19-implementar-funcoes-de-conteudo
   script:
     - cp .env.example .env 
     - >
@@ -50,7 +28,7 @@ fazer-deploy:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   only:
-    - dev
+    - 19-implementar-funcoes-de-conteudo
   script:
     - cat $KUBECTL_CONFIG > ~/.kube/config
     - kubectl config get-contexts
