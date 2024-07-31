@@ -34,9 +34,9 @@ fazer-deploy:
     - kubectl config get-contexts
     - kubectl get node
     - kubectl get pods
-    - kubectl delete deployment api-levantamento || true
+    - kubectl delete deployment api-academia || true
     - kubectl apply -f deployment.yaml
     - sleep 60
     - kubectl get pods
-    - kubectl describe deploy/api-levantamento
-    - kubectl logs deploy/api-levantamento
+    - kubectl describe deploy/api-academia
+    - kubectl logs deploy/api-academia
