@@ -148,11 +148,7 @@ model Instrutores {
     id             String   @id @default(uuid())
     cursoId        String
     userId         String
-<<<<<<< HEAD
-    criadorDoCurso Boolean @default(false)
-=======
     criadorDoCurso Boolean  @default(false)
->>>>>>> 19-implementar-funcoes-de-conteudo
     created_at     DateTime @default(now())
     updated_at     DateTime @updatedAt
 

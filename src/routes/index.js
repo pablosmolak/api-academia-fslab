@@ -9,9 +9,6 @@ import inscricoes from "./inscricoesRouter.js";
 import progressos from "./progressoRouter.js";
 import certificados from "./certificadoRouter.js";
 
-
-
-
 const routes = (app) => {
 
     if (process.env.DEBUGLOG === "true") {

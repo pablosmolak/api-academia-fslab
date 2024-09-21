@@ -1,8 +1,4 @@
 export const messages = {
-<<<<<<< HEAD:src/utils/mensagens.ts
-
-=======
->>>>>>> 19-implementar-funcoes-de-conteudo:src/utils/mensagens.js
     httpCodes: {
         200: "Requisição bem sucedida!",
         201: "Requisição bem sucedida, recurso foi criado!",
@@ -46,7 +42,7 @@ export const messages = {
     // Mensagens informativas
     info: {
         welcome: "Bem-vindo à nossa aplicação!",
-        userLoggedIn: (username: string) => `Usuário ${username} logado com sucesso!`,
+        userLoggedIn: (username) => `Usuário ${username} logado com sucesso!`,
     },
 
     success: {
@@ -95,11 +91,7 @@ export const messages = {
             return `Nenhum registro encontrado com este ${fieldName}!`
         },
         mustBeOneOf: (fieldName, values) => {
-<<<<<<< HEAD:src/utils/mensagens.ts
-            return `O campo ${fieldName} deve ser um dos seguintes valores: ${values.join(", ")}`
-=======
             return `O campo ${fieldName} deve ser um dos seguintes valores: ${Object.values(values).join(', ')}`
->>>>>>> 19-implementar-funcoes-de-conteudo:src/utils/mensagens.js
         }
     },
     // Mensagens de validação personalizadas
@@ -135,9 +127,6 @@ export const messages = {
 
         invalidCredentials: "Credenciais inválidas! Verifique seu usuário e senha!",
     },
-<<<<<<< HEAD:src/utils/mensagens.ts
-}
-=======
 }
 
 export const sendError = (res,code, errors = []) => {
@@ -189,4 +178,3 @@ export const sendResponse = (res,code, resp = {}, args) => {
 };
 
 export default messages;
->>>>>>> 19-implementar-funcoes-de-conteudo:src/utils/mensagens.js
