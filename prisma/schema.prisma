@@ -60,39 +60,43 @@ model Inscricao {
 
 // modelo de Progresso do Curso
 model ProgressoCurso {
-    id              String   @id @default(uuid())
-    userId          String
-    cursoId         String
-    porcentagem     Float
-    ultimaAtividade String?
-    created_at      DateTime @default(now())
-    updated_at      DateTime @updatedAt
+    userId               String
+    cursoId              String
+    porcentagem          Float
+    atividadeAtual       String?
+    atividadesConcluidas Json?
+    created_at           DateTime @default(now())
+    updated_at           DateTime @updatedAt
 
     // Relacionamento com o curso e usuário
-    curso   Curso   @relation(fields: [cursoId], references: [id])
-    usuario Usuario @relation(fields: [userId], references: [id])
+    curso    Curso          @relation(fields: [cursoId], references: [id])
+    usuario  Usuario        @relation(fields: [userId], references: [id])
+    conteudo ConteudoCurso? @relation(fields: [atividadeAtual], references: [id])
 
+    @@id([userId, cursoId])
     @@map("progresso_cursos")
 }
 
 // modelo de Conteúdo do Curso
 model ConteudoCurso {
     id         String   @id @default(uuid())
-    aulaId     String
+    topicoId   String
     tipo       String // tipo de conteúdo (texto, vídeo, questão, etc.)
     conteudo   String // conteúdo em si (texto formatado, URL do vídeo, etc.)
     ordem      Int
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    // Relacionamento com a aula
-    aula Aula @relation(fields: [aulaId], references: [id])
+    // Relacionamento com o topico
+    topico Topico @relation(fields: [topicoId], references: [id])
+
+    progressoCurso ProgressoCurso[]
 
     @@map("conteudos_cursos")
 }
 
-// modelo de Aulas
-model Aula {
+// modelo de topicos
+model Topico {
     id         String   @id @default(uuid())
     titulo     String
     ordem      Int
@@ -106,7 +110,7 @@ model Aula {
     // Relacionamento com o conteúdo
     conteudos ConteudoCurso[]
 
-    @@map("aulas")
+    @@map("topicos")
 }
 
 // modelo de Cursos
@@ -119,7 +123,7 @@ model Curso {
 
     // Relacionamentos
     inscricoes      Inscricao[]
-    aulas           Aula[]
+    topicos         Topico[]
     progressoCursos ProgressoCurso[]
     certificado     Certificado[]
     instrutores     Instrutores[]
@@ -144,7 +148,11 @@ model Instrutores {
     id             String   @id @default(uuid())
     cursoId        String
     userId         String
+<<<<<<< HEAD
     criadorDoCurso Boolean @default(false)
+=======
+    criadorDoCurso Boolean  @default(false)
+>>>>>>> 19-implementar-funcoes-de-conteudo
     created_at     DateTime @default(now())
     updated_at     DateTime @updatedAt
 

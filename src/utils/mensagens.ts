@@ -1,5 +1,8 @@
 export const messages = {
+<<<<<<< HEAD:src/utils/mensagens.ts
 
+=======
+>>>>>>> 19-implementar-funcoes-de-conteudo:src/utils/mensagens.js
     httpCodes: {
         200: "Requisição bem sucedida!",
         201: "Requisição bem sucedida, recurso foi criado!",
@@ -92,7 +95,11 @@ export const messages = {
             return `Nenhum registro encontrado com este ${fieldName}!`
         },
         mustBeOneOf: (fieldName, values) => {
+<<<<<<< HEAD:src/utils/mensagens.ts
             return `O campo ${fieldName} deve ser um dos seguintes valores: ${values.join(", ")}`
+=======
+            return `O campo ${fieldName} deve ser um dos seguintes valores: ${Object.values(values).join(', ')}`
+>>>>>>> 19-implementar-funcoes-de-conteudo:src/utils/mensagens.js
         }
     },
     // Mensagens de validação personalizadas
@@ -128,4 +135,58 @@ export const messages = {
 
         invalidCredentials: "Credenciais inválidas! Verifique seu usuário e senha!",
     },
+<<<<<<< HEAD:src/utils/mensagens.ts
 }
+=======
+}
+
+export const sendError = (res,code, errors = []) => {
+    // Detecta diferentes formas de usar:
+    let _errors = undefined;
+    if(Array.isArray(errors)) { 
+        // Se for um array de erros --> sendError(res, 400, ["A","B"}])
+        _errors = errors;
+    } else {
+        // Se for uma string ou qualquer outro tipo --> sendError(res, 400, "A")
+        _errors = [errors];
+    }
+    return res.status(code).json({
+        data: [],
+        error: true,
+        code: code,
+        message: messages.httpCodes[code],
+        errors: _errors,
+    });
+};
+
+/**
+ * Envia uma resposta com o código e a mensagem especificada
+ * de acordo com o padrão de envio de respostas da API
+ * 
+ * @example
+ * sendResponse(res, 200, {
+ *    data: usuario
+ * });
+ */
+export const sendResponse = (res,code, resp = {}, args) => {
+    let _data = undefined;
+    if(Array.isArray(resp)) { 
+        // Se for um array de erros --> sendError(res, 400, ["A","B"}])
+        _data = resp;
+    } else {
+        // Se for uma string ou qualquer outro tipo --> sendError(res, 400, "A")
+        _data = [resp];
+    }
+
+    return res.status(code).json({
+            data: _data,
+            error: false,
+            code: code,
+            message: messages.httpCodes[code],
+            errors: [],
+            ...args
+    });
+};
+
+export default messages;
+>>>>>>> 19-implementar-funcoes-de-conteudo:src/utils/mensagens.js
