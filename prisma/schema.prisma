@@ -29,7 +29,7 @@ model Usuario {
     tokenRecuperaSenha String?  @db.VarChar(1024)
     fotoPerfil         String?
     ativo              Boolean  @default(true)
-    grupoId            String?
+    grupoId            String
     created_at         DateTime @default(now())
     updated_at         DateTime @updatedAt
 
@@ -38,7 +38,7 @@ model Usuario {
     certificados    Certificado[]
     progressoCursos ProgressoCurso[]
     instrutores     Instrutores[]
-    Grupo           Grupo?           @relation(fields: [grupoId], references: [id])
+    Grupo           Grupo           @relation(fields: [grupoId], references: [id])
 }
 
 // modelo de Inscrições em Cursos
@@ -83,6 +83,7 @@ model ConteudoCurso {
     topicoId   String
     tipo       String // tipo de conteúdo (texto, vídeo, questão, etc.)
     conteudo   String // conteúdo em si (texto formatado, URL do vídeo, etc.)
+    cargaHoraria String
     ordem      Int
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
@@ -117,7 +118,7 @@ model Topico {
 model Curso {
     id         String   @id @default(uuid())
     nome       String
-    descricao  String?
+    descricao  String         
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 

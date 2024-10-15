@@ -4,6 +4,7 @@ import swaggerUI from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';  
 import swaggerOptions from './src/docs/config/head.js'; 
 import * as dotenv from 'dotenv';
+import { verificarAdministradorPadrao, verificarGrupos } from "./src/config/initialConfig.js";
 
 dotenv.config();
 
@@ -17,5 +18,7 @@ app.use((req, res) => {
 
 app.listen(port, async () => {
     await verifyConnection()
+    await verificarGrupos()
+    await verificarAdministradorPadrao()
     console.log(`Servidor Rodando em http://localhost:${port}`)
 });

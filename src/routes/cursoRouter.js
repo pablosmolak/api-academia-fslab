@@ -11,6 +11,8 @@ router
     .get("/cursos/:id", AuthMiddleware, wrapException(CursosController.listarCursoPorId))
     .delete("/cursos/:id", AuthMiddleware, wrapException(CursosController.deletarCurso))
 
+    .get ("/cursos/informacoes/:cursoid",wrapException(CursosController.listarInformacoesCurso))
+
     .get("/cursos/inscricoes/usuario/:usuarioid", wrapException(CursosController.listarCursosInscritosPorUsuario))
 
 export default router;  

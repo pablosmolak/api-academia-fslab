@@ -92,7 +92,7 @@ export default class CursosController {
         })
 
         return sendResponse(res, 200, cursos,
-            {pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take}
+            { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take }
         )
     }
 
@@ -121,6 +121,64 @@ export default class CursosController {
         }
 
         return sendResponse(res, 200, findCurso);
+    }
+
+    static async listarInformacoesCurso(req, res) {
+        const { cursoid } = req.params
+
+        const curso = await prisma.curso.findUnique({
+            where: {
+                id: cursoid
+            },
+            include: {
+                categoria: {
+                    select: {
+                        nome: true
+                    }
+                },
+                topicos: {
+                    include: {
+                        conteudos: true
+                    }
+                },
+                instrutores: {
+                    include: {
+                        usuario:{
+                            select:{
+                                nome:true,
+                                fotoPerfil:true,
+                                id:true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        if (curso === null) {
+            return sendError(res, 404, [messages.validationGeneric.notFound("id")])
+        }
+
+
+        //console.log(JSON.stringify(curso, null, 2));
+
+        let informacoesCurso = {}
+
+        informacoesCurso.nomeCurso = curso.nome
+        informacoesCurso.descricao = curso.descricao
+        informacoesCurso.topicos =  curso.topicos.map(topico => topico.titulo)
+        informacoesCurso.instrutores = curso.instrutores.map(instrutor => instrutor.usuario)
+        informacoesCurso.cargaHoraria = () => {
+            const cargaHoraria = 0
+
+            for(let topico in curso.topicos){
+                console.log(topico)
+            }
+
+            return cargaHoraria
+        }
+
+        return sendResponse(res, 200, informacoesCurso)
     }
 
     static async deletarCurso(req, res) {

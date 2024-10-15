@@ -1,0 +1,66 @@
+import { prisma } from "./prismaClient.js";
+import bcrypt from "bcryptjs";
+
+export async function verificarGrupos() {
+    const grupos = await prisma.grupo.count()
+
+    if (grupos === 0) {
+        const grupos = [
+            {
+                nome: 'Administradores'
+            },
+            {
+                nome: 'Ministrantes'
+            },
+            {
+                nome: 'Cursantes'
+            }
+        ]
+
+        for (let grupo of grupos) {
+
+            const grupoCreate = await prisma.grupo.create({
+                data: grupo,
+            });
+
+            console.log('Grupo criado: ', grupoCreate.nome);
+        }
+    }
+}
+
+export async function verificarAdministradorPadrao(){
+    const email = process.env.LOGIN_ADMINISTRADOR_PADRAO
+    const senha = process.env.SENHA_ADMINISTRADOR_PADRAO
+
+    if(!email || !senha){
+        console.error("Configure corretamente as credenciais do usuário administrador padrão!")
+        process.exit(1);
+    }
+
+    const usuario = await  prisma.usuario.count({
+        where: {
+            email: email
+        }
+    })
+
+    if(usuario === 0){
+        const grupoId = await prisma.grupo.findFirst({
+            where: {
+                nome: { in: ["Administradores"] },
+            },
+            select: { id: true },
+        });
+
+
+        await prisma.usuario.create({
+            data:{
+                nome: "Administrador",
+                senha: bcrypt.hashSync(senha, 10),
+                email: email,
+                grupoId: grupoId.id
+            }
+        })
+
+        console.log("Usuário administrador criado com sucesso!")
+    }
+}
