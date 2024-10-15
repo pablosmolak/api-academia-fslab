@@ -1,4 +1,5 @@
 import { prisma } from "../config/prismaClient.js";
+import { tiposConteudosEnum } from "../utils/enums.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { pagination } from "../utils/pagination.js";
 
@@ -143,11 +144,11 @@ export default class CursosController {
                 },
                 instrutores: {
                     include: {
-                        usuario:{
-                            select:{
-                                nome:true,
-                                fotoPerfil:true,
-                                id:true
+                        usuario: {
+                            select: {
+                                nome: true,
+                                fotoPerfil: true,
+                                id: true
                             }
                         }
                     }
@@ -159,23 +160,46 @@ export default class CursosController {
             return sendError(res, 404, [messages.validationGeneric.notFound("id")])
         }
 
+        let cargaHoraria = () => {
+            let Totalminutos = 0
 
-        //console.log(JSON.stringify(curso, null, 2));
-
-        let informacoesCurso = {}
-
-        informacoesCurso.nomeCurso = curso.nome
-        informacoesCurso.descricao = curso.descricao
-        informacoesCurso.topicos =  curso.topicos.map(topico => topico.titulo)
-        informacoesCurso.instrutores = curso.instrutores.map(instrutor => instrutor.usuario)
-        informacoesCurso.cargaHoraria = () => {
-            const cargaHoraria = 0
-
-            for(let topico in curso.topicos){
-                console.log(topico)
+            for (const topico of curso.topicos) {
+                for (const conteudo of topico.conteudos) {
+                    if (conteudo.cargaHoraria) {
+                        let [horas, minutos, segundos] = conteudo.cargaHoraria.split(":").map(Number)
+                        Totalminutos += ((horas * 60) + minutos + (segundos / 60));
+                    }
+                }
             }
 
-            return cargaHoraria
+            const horasTotais = Math.floor(Totalminutos / 60);
+            const minutosRestantes = Math.round(Totalminutos % 60);
+
+            return `${horasTotais}h${minutosRestantes}m`;
+        }
+
+        let quantidadeConteudo = (tipo) => {
+            let qtdConteudo = 0
+
+            for (const topico of curso.topicos) {
+                for (const conteudo of topico.conteudos) {
+                    if(conteudo.tipo === tipo){
+                        qtdConteudo++
+                    }
+                }
+            }
+           
+            return qtdConteudo
+        }
+
+        let informacoesCurso = {
+            nomeCurso: curso.nome,
+            descricao: curso.descricao,
+            topicos: curso.topicos.map(topico => topico.titulo),
+            instrutores: curso.instrutores.map(instrutor => instrutor.usuario),
+            cargaHoraria: cargaHoraria(),
+            quantidadeDeVideo: quantidadeConteudo(tiposConteudosEnum.UrlYoutube),
+            quantidadeAtividade: (quantidadeConteudo(tiposConteudosEnum.UrlYoutube - quantidadeConteudo(true)))
         }
 
         return sendResponse(res, 200, informacoesCurso)
