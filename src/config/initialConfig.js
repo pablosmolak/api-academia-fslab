@@ -4,7 +4,7 @@ import { prisma } from "./prismaClient.js";
 import bcrypt from "bcryptjs";
 
 export async function verificarMinio() {
-    minioClient.listBuckets((err, buckets) => {
+    await minioClient.listBuckets(async (err, buckets) => {
         if (err) {
             console.error("Configure corretamente as credenciais do MinIO no arquivo ENV!")
             process.exit(1);
@@ -12,9 +12,9 @@ export async function verificarMinio() {
 
         const bucketsExistentes = buckets.map(bucket => bucket.name)
 
-        Object.values(bucketsMinio).forEach((bucket) => {
+        Object.values(bucketsMinio).forEach(async (bucket) => {
             if (!bucketsExistentes.includes(bucket)) {
-                minioClient.makeBucket(bucket, 'us-east-1', (err) => {
+                await minioClient.makeBucket(bucket, 'us-east-1', (err) => {
                     if (err) {
                         console.error(`Erro: ${err.message}, ao criar o bucket ${bucket}!`)
                         console.error(err)

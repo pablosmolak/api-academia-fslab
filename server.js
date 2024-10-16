@@ -1,9 +1,9 @@
-import { prisma, verifyConnection } from "./src/config/prismaClient.js";
-import app from "./src/app.js"
-import swaggerUI from 'swagger-ui-express'; 
-import swaggerJsDoc from 'swagger-jsdoc';  
-import swaggerOptions from './src/docs/config/head.js'; 
 import * as dotenv from 'dotenv';
+import { verifyConnection } from "./src/config/prismaClient.js";
+import app from "./src/app.js"
+import swaggerUI from 'swagger-ui-express';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerOptions from './src/docs/config/head.js';
 import { verificarAdministradorPadrao, verificarGrupos, verificarMinio } from "./src/config/initialConfig.js";
 
 dotenv.config();

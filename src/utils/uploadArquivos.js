@@ -11,6 +11,14 @@ export async function upload(file,bucket) {
 
         await minioConfig.fPutObject(bucket, objectName, file.path);
 
+
+        /*const tags = {
+            'tag1': 'value1',
+            'tag2': 'value2',
+        };*/
+
+        //await minioConfig.setObjectTagging(bucket, objectName, tags);
+
         fs.unlinkSync(file.path);
 
         return objectName

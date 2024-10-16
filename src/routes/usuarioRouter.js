@@ -4,7 +4,7 @@ import { AuthMiddleware } from "../middleware/authMiddleware.js";
 import UsuarioController from "../controller/usuarioController.js";
 import { permissaoMiddleware } from "../middleware/permissaoMiddleware.js";
 import { gruposEnum, permissaoEnum } from "../utils/enums.js";
-import { upload } from "../config/multerConfig.js";
+import { uploadMulter } from "../config/multerConfig.js";
 
 
 const router = express.Router();
@@ -19,7 +19,7 @@ router
         "/usuarios/:id/image/upload", 
         AuthMiddleware,
         permissaoMiddleware([gruposEnum.ADM], [permissaoEnum.ProprioUsuario]),
-        upload.single('file'),
+        uploadMulter,
         wrapException(UsuarioController.uploadFotoPerfil)
     )
 

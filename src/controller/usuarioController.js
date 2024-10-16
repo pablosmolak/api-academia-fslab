@@ -219,7 +219,7 @@ export default class UsuarioController {
 
         const nomeImagem = await upload(file, bucketsMinio.Usuarios)
 
-        await prisma.usuario.update({
+       const userUpdated =  await prisma.usuario.update({
             where: {
                 id: userid
             },
@@ -227,6 +227,10 @@ export default class UsuarioController {
                 fotoPerfil: nomeImagem
             }
         })
+
+        if(userUpdated){
+            remove(userExist.fotoPerfil, bucketsMinio.Usuarios)
+        }
 
         return sendResponse(res, 201, [])
     }
