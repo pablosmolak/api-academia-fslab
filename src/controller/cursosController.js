@@ -227,7 +227,7 @@ export default class CursosController {
 
             await prisma.conteudoCurso.deleteMany({
                 where: {
-                    aula: {
+                    topico: {
                         cursoId: id,
                     },
                 },

@@ -123,7 +123,7 @@ export default class InscricoesController {
             }
         }
 
-        if (erros.length > 0) sendError(res, 422, erros)
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         const inscricaoExist = await prisma.inscricao.findUnique({
             where: {

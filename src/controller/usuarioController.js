@@ -3,6 +3,9 @@ import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { validarEmail, validarSenha } from "../utils/validations.js";
 import { pagination } from "../utils/pagination.js";
+import { remove, upload } from "../utils/uploadArquivos.js";
+import { bucketsMinio } from "../utils/enums.js";
+import fs from 'fs';
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {
@@ -61,7 +64,7 @@ export default class UsuarioController {
 
         return sendResponse(res, 201, userCreated);
     }
-    
+
     static async listarUsuario(req, res) {
         let filtros = { where: {} }
 
@@ -70,7 +73,7 @@ export default class UsuarioController {
         if (nome) filtros.where.nome = { contains: nome }
         if (email) filtros.where.email = { contains: email }
 
-        const paginacao = await pagination('usuario', pagina,limite, filtros)
+        const paginacao = await pagination('usuario', pagina, limite, filtros)
 
         let userExists = await prisma.usuario.findMany({
             ...filtros,
@@ -82,8 +85,8 @@ export default class UsuarioController {
             delete user.senha
         }
 
-        return sendResponse(res, 200, userExists, 
-            {pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take})
+        return sendResponse(res, 200, userExists,
+            { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take })
     }
 
     static async listarUsuarioPorID(req, res) {
@@ -184,5 +187,47 @@ export default class UsuarioController {
         })
 
         return sendResponse(res, 200, [])
+    }
+
+    static async uploadFotoPerfil(req, res) {
+        const erros = []
+        const validImageTypes = [
+            'image/jpeg', 'image/jpg', 'image/png'
+        ];
+
+        const file = req.file
+        const userid = req.params.id
+
+        if (!validImageTypes.includes(file.mimetype)) {
+            erros.push(`O arquivo enviado não é uma imagem válida, os tipos aceitos são: ${validImageTypes.join(", ")}!`)
+        }
+
+       const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: userid
+            }
+        })
+
+        if (userExist === null) {
+            erros.push(messages.auth.userNotFound(userid))
+        }
+
+        if (erros.length > 0) {
+            fs.unlinkSync(file.path);
+            return sendError(res, 422, erros)
+        }
+
+        const nomeImagem = await upload(file, bucketsMinio.Usuarios)
+
+        await prisma.usuario.update({
+            where: {
+                id: userid
+            },
+            data: {
+                fotoPerfil: nomeImagem
+            }
+        })
+
+        return sendResponse(res, 201, [])
     }
 }
