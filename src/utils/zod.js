@@ -119,13 +119,13 @@ export const traduzirMensagemZod = (issue) => {
             return `Formato de string inválido, ${issue.validation}`;
         case ZodIssueCode.too_small:
             if (issue.type === "number" || issue.type === "bigint")
-                return `Deve ser no mínimo ${issue.minimum}`;
+                return `O campo ${issue.path.join(".")} deve ser no mínimo ${issue.minimum}`;
             else if (issue.type === "string")
-                return `Deve ter no mínimo ${issue.minimum} caracteres`;
+                return `O campo ${issue.path.join(".")} deve ter no mínimo ${issue.minimum} caracteres`;
             else if (issue.type === "date")
-                return `Deve ser após ${new Date(issue.minimum).toLocaleDateString()}`;
+                return `O campo ${issue.path.join(".")} deve ser após ${new Date(issue.minimum).toLocaleDateString()}`;
             else
-                return `Deve ter no mínimo ${issue.minimum} elementos`;
+                return `O campo ${issue.path.join(".")} deve ter no mínimo ${issue.minimum} elementos`;
         case ZodIssueCode.too_big:
             if (issue.type === "number" || issue.type === "bigint")
                 return `Deve ser no máximo ${issue.maximum}`;
