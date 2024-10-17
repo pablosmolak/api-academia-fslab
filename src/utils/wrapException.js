@@ -37,18 +37,6 @@ export const wrapException = (fn) => {
                     }
     
                     return sendError(res, 422, errors);
-                } else if (err.name === "ValidationError") {
-                    // Erros de validação do mongoose
-                    let errors = [{ message: "Erros no model do Mongoose" }];
-    
-                    Object.keys(err.errors).forEach((key) => {
-                        errors.push({
-                            message: err.errors[key].message,
-                            path: key
-                        });
-                    });
-    
-                    return sendError(res, 400, errors);
                 } else {
                     // Erro desconhecido
                     console.error(err);
