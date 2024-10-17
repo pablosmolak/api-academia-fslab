@@ -6,17 +6,18 @@ import { pagination } from "../utils/pagination.js";
 import { remove, upload } from "../utils/uploadArquivos.js";
 import { bucketsMinio } from "../utils/enums.js";
 import fs from 'fs';
+import { usuarioSchema } from "../schema/usuarioSchema.js";
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {
         const erros = []
-        let { nome, email, senha, fotoPerfil } = req.body
+        let { nome, email, senha, fotoPerfil } = usuarioSchema.criarUsuario.parse(req.body)
 
         if (!nome) {
             erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
         } else {
             if (nome.length < 3) {
-                erros.push(messages.customValidation.lengthMaior("Nome", 3))
+             //   erros.push(messages.customValidation.lengthMaior("Nome", 3))
             } else if (nome.length > 200) {
                 erros.push(messages.customValidation.lengthMenor("Nome", 200))
             }

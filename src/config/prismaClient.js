@@ -1,4 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import { zodConfig } from "./zodConfig.js";
+
+zodConfig();
+
 
 // Iniciando o Prisma Client com opções de conexão
 const prisma = new PrismaClient({

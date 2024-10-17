@@ -1,4 +1,13 @@
+import { ZodError } from "zod";
 import messages, { sendError } from "./mensagens.js"
+
+export class APIError extends Error {
+    constructor(errors, code = 400, options = undefined) {
+        super(errors? errors[0]?.message : "Erro com código " + code, options);
+        this.code = errors?.code || code;
+        this.errors = errors;
+    }
+}
 
 export const wrapException = (fn) => {
     return async (req, res, next) => {
@@ -14,7 +23,37 @@ export const wrapException = (fn) => {
         catch (err) {
             if (process.env.DEBUGLOG === "true") console.error(err)
 
-            return sendError(res, 500, err.message || "" + err )
+                if (err instanceof APIError) {
+                    // Erro retornado da API de autenticação
+                    return sendError(res, err.code, err.errors || err.message);
+                } else if (err instanceof ZodError) {
+                    // Erro de validação do Zod
+                    let errors = [];
+                    for(const issue of err.issues) {
+                        errors.push({
+                            message: issue.message,
+                            path: issue.path.join(".")
+                        });
+                    }
+    
+                    return sendError(res, 422, errors);
+                } else if (err.name === "ValidationError") {
+                    // Erros de validação do mongoose
+                    let errors = [{ message: "Erros no model do Mongoose" }];
+    
+                    Object.keys(err.errors).forEach((key) => {
+                        errors.push({
+                            message: err.errors[key].message,
+                            path: key
+                        });
+                    });
+    
+                    return sendError(res, 400, errors);
+                } else {
+                    // Erro desconhecido
+                    console.error(err);
+                    return sendError(res, 500, [{ message: err.message || "" + err }]);
+                }
 
         } finally {
             if (process.env.DEBUGLOG === "true") {
