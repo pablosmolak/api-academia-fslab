@@ -133,7 +133,6 @@ export default class ProgressoController {
                             userId: req.user.id,
                             cursoId: cursoid
                         }
-
                     },
                     data: {
                         status: "Finalizado"

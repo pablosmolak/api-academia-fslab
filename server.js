@@ -5,6 +5,7 @@ import swaggerUI from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerOptions from './src/docs/config/head.js';
 import { verificarAdministradorPadrao, verificarGrupos, verificarMinio } from "./src/config/initialConfig.js";
+import { sendError } from './src/utils/mensagens.js';
 
 dotenv.config();
 
@@ -14,6 +15,13 @@ app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerOptions)))
 
 app.use((req, res) => {
     res.status(404).json({ code: 404, mensagem: 'Página não encontrada' });
+});
+
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400) {
+        return sendError(res,400,'JSON malformado. Por favor, verifique a sintaxe.' )
+    }
+    next();
 });
 
 app.listen(port, async () => {

@@ -13,36 +13,6 @@ export default class UsuarioController {
         const erros = []
         let { nome, email, senha, fotoPerfil } = usuarioSchema.criarUsuario.parse(req.body)
 
-        if (!nome) {
-            erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
-        } else {
-            if (nome.length < 3) {
-             //   erros.push(messages.customValidation.lengthMaior("Nome", 3))
-            } else if (nome.length > 200) {
-                erros.push(messages.customValidation.lengthMenor("Nome", 200))
-            }
-        }
-
-        if (!email) {
-            erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
-        } else if (validarEmail(email, erros)) {
-            let userExist = await prisma.usuario.findUnique({
-                where: { email: email }
-            })
-
-            if (userExist !== null) {
-                erros.push(messages.auth.emailAlreadyExists(email))
-            }
-        }
-
-        if (!senha) {
-            erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
-        } else {
-            validarSenha(senha, erros)
-        }
-
-        if (erros.length > 0) return sendError(res, 422, erros)
-
         const grupoId = await prisma.grupo.findFirst({
             where: {
                 nome: { in: ["Cursantes"] },
