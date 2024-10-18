@@ -14,7 +14,7 @@ const port = process.env.PORT || 3010;
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc(swaggerOptions)));
 
 app.use((req, res) => {
-    res.status(404).json({ code: 404, mensagem: 'Página não encontrada' });
+    return sendError(res, 404, "Rota não encontrada!")
 });
 
 app.use((err, req, res, next) => {

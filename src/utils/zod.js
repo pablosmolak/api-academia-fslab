@@ -35,7 +35,8 @@ export const myZ = {
         .regex(/^\d{8}$/, "CEP inválido"),
 
     email: () => z.string()
-        .regex(/^(?!.*\s)(?!.*\.{2})(?!.*@$)(?!^\.)(?!.*@\.$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Email no formato inválido!"),
+        .regex(/^(?!.*\s)(?!.*\.{2})(?!.*@$)(?!^\.)(?!.*@\.$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 
+            "Email no formato inválido!"),
 
     senha: () => z.string()
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=:;,.<>?/~`|\\[\]{}]).{8,}$/,

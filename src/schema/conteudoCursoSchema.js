@@ -1,4 +1,4 @@
-import {object, z} from "zod"
+import {z} from "zod"
 import { myZ } from "../utils/zod.js"
 import { tiposConteudosEnum } from "../utils/enums.js"
 
