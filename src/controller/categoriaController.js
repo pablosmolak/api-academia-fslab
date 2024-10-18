@@ -1,30 +1,21 @@
 import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
+import { categoriaSchema } from "../schema/categoriaSchema.js";
 
 export default class CategoriaController {
     static async criarCategoria(req, res) {
         const erros = []
 
-        let { nome } = req.body
+        let { nome } = categoriaSchema.criarCategoria.parse(req.body)
 
-        if (!nome) {
-            erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
-        } else {
-            const findCategoria = await prisma.categoria.findFirst({
-                where: {
-                    nome: nome
-                }
-            })
-
-            if (findCategoria !== null) {
-                erros.push(messages.validationGeneric.fieldIsRepeated("Nome"))
-            } else {
-                if (nome.length < 3) {
-                    erros.push(messages.customValidation.lengthMaior("Nome", 3))
-                } else if (nome.length > 200) {
-                    erros.push(messages.customValidation.lengthMenor("Nome", 200))
-                }
+        const findCategoria = await prisma.categoria.findFirst({
+            where: {
+                nome: nome
             }
+        })
+
+        if (findCategoria !== null) {
+            erros.push(messages.validationGeneric.fieldIsRepeated("Nome"))
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
@@ -45,7 +36,7 @@ export default class CategoriaController {
     }
 
     static async listarCategoriasPorID(req, res) {
-        const { id } = req.params
+        const { id } = categoriaSchema.alterarCategoria.parse(req.params)
 
         const categoriaExist = await prisma.categoria.findUnique({
             where: {
@@ -54,7 +45,7 @@ export default class CategoriaController {
         })
 
         if (categoriaExist === null) {
-            return sendError(res,422,messages.validationGeneric.notFound("id"))
+            return sendError(res, 422, messages.validationGeneric.notFound("id"))
         }
 
         return sendResponse(res, 200, categoriaExist)
@@ -66,21 +57,18 @@ export default class CategoriaController {
         const { id } = req.params
         let { nome } = req.body
 
-        let categoriaExist
+        categoriaSchema.alterarCategoria.parse({ id, nome })
 
-        if (!id) {
-            erros.push(messages.error.invalidID)
-        } else {
-            categoriaExist = await prisma.usuario.findUnique({
-                where: {
-                    id
-                }
-            })
-
-            if (categoriaExist !== null) {
-                erros.push(messages.validationGeneric.notFound("id"))
+        const categoriaExist = await prisma.usuario.findUnique({
+            where: {
+                id
             }
+        })
+
+        if (categoriaExist !== null) {
+            erros.push(messages.validationGeneric.notFound("id"))
         }
+
 
         if (nome) {
             const findCategoria = await prisma.categoria.findFirst({
@@ -91,12 +79,6 @@ export default class CategoriaController {
 
             if (findCategoria !== null && findCategoria.id !== id) {
                 erros.push(messages.validationGeneric.fieldIsRepeated("Nome"))
-            } else {
-                if (nome.length < 3) {
-                    erros.push(messages.customValidation.lengthMaior("Nome", 3))
-                } else if (nome.length > 200) {
-                    erros.push(messages.customValidation.lengthMenor("Nome", 200))
-                }
             }
         }
 
@@ -116,20 +98,17 @@ export default class CategoriaController {
 
     static async deletarCategoria(req, res) {
         const erros = []
-        const { id } = req.params
+        const { id } = categoriaSchema.alterarCategoria.parse(req.params)
 
-        if (!id) {
-            erros.push(messages.error.invalidID)
-        } else {
-            const categoriaExist = await prisma.categoria.findUnique({
-                where: {
-                    id
-                }
-            })
 
-            if (categoriaExist === null) {
-                erros.push(messages.validationGeneric.notFound("id"))
+        const categoriaExist = await prisma.categoria.findUnique({
+            where: {
+                id
             }
+        })
+
+        if (categoriaExist === null) {
+            erros.push(messages.validationGeneric.notFound("id"))
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)

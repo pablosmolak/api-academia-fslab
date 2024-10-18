@@ -41,6 +41,10 @@ export const myZ = {
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=:;,.<>?/~`|\\[\]{}]).{8,}$/,
             "A senha deve conter no mínimo 8 caracteres, incluindo ao menos 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial."),
 
+    cargaHoraria: () => z.string()
+        .regex(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/,
+            "Formato inválido de carga horária, o formato correto é: 'HH:MM:SS'"),
+
 
     estado: () => z.string()
         .regex(/^[A-Z]{2}$/, "A sigla deve conter apenas letras maiúsculas"),
@@ -101,7 +105,7 @@ export const traduzirMensagemZod = (issue) => {
     switch (issue.code) {
         case ZodIssueCode.invalid_type:
             if (issue.received === "undefined" || issue.received === "null") {
-                return "Este campo é obrigatório"
+                return `O campo ${issue.path.join(".")} é obrigatório`
             }
             return `O campo ${issue.path.join(".")} recebeu um Tipo inválido, deveria ser ${traduzirNomeTipo(issue.expected)} mas recebeu ${traduzirNomeTipo(issue.received)}`
         case ZodIssueCode.invalid_literal:
@@ -113,7 +117,7 @@ export const traduzirMensagemZod = (issue) => {
         case ZodIssueCode.invalid_union_discriminator:
             return `Deveria ser um desses: ${issue.options?.join(", ")}`
         case ZodIssueCode.invalid_enum_value:
-            return `Deve ser um desses: ${issue.options?.join(", ")}`
+            return `O campo ${issue.path.join(".")} deve conter algum desses valores: ${issue.options?.join(", ")}`
         case ZodIssueCode.unrecognized_keys:
             return `Não esperava estas chaves: ${issue.keys?.join(", ")}`
         case ZodIssueCode.invalid_arguments:
@@ -123,9 +127,9 @@ export const traduzirMensagemZod = (issue) => {
         case ZodIssueCode.invalid_date:
             return "Formato de data inválido."
         case ZodIssueCode.invalid_string:
-            if(issue.validation === "uuid"){
+            if (issue.validation === "uuid") {
                 return `No campo ${issue.path.join(" na posição ")} contém um UUID em formato inválido!`
-            }else{
+            } else {
                 return `Formato de string inválido, ${issue.validation}`
             }
         case ZodIssueCode.too_small:
