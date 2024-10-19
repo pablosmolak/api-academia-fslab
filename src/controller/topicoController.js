@@ -1,36 +1,24 @@
 import { prisma } from "../config/prismaClient.js"
 import messages, { sendError, sendResponse } from "../utils/mensagens.js"
+import { topicoSchema } from "../schema/topicoSchema.js"
 
 export default class TopicoController {
 
-    static async criarTopico(req,res){
-        const erros = []    
+    static async criarTopico(req, res) {
+        const erros = []
 
-        const {titulo, cursoId} = req.body
+        const { titulo, cursoId } = topicoSchema.criarTopico.parse(req.body)
 
-        if (!titulo) {
-            erros.push(messages.validationGeneric.fieldIsRequired("titulo"))
-        } else {
-            if (titulo.length < 3) {
-                erros.push(messages.customValidation.lengthMaior("Titulo", 3))
-            } else if (titulo.length > 200) {
-                erros.push(messages.customValidation.lengthMenor("Titulo", 200))
+        const findCursos = await prisma.curso.findUnique({
+            where: {
+                id: cursoId
             }
+        })
+
+        if (findCursos === null) {
+            erros.push(messages.validationGeneric.notFound("CursoId"))
         }
 
-        if (!cursoId) {
-            erros.push(messages.validationGeneric.fieldIsRequired("cursoId"))
-        } else {
-            const findCursos = await prisma.curso.findUnique({
-                where: {
-                    id: cursoId
-                }
-            })
-
-            if (findCursos === null) {
-                erros.push(messages.validationGeneric.notFound("CursoId"))
-            }
-        }
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
@@ -48,12 +36,12 @@ export default class TopicoController {
             }
         })
 
-        return sendResponse(res,201,topicoCreate)
+        return sendResponse(res, 201, topicoCreate)
     }
 
-    static async listarTopicoPorID(req,res){
-        const {id} = req.params
-        
+    static async listarTopicoPorID(req, res) {
+        const { id } = req.params
+
         const findAula = await prisma.topico.findUnique({
             where: {
                 id: id
@@ -61,14 +49,14 @@ export default class TopicoController {
         })
 
         if (findAula === null) {
-            return sendError(res,404,[messages.validationGeneric.notFound("ID")])
+            return sendError(res, 404, [messages.validationGeneric.notFound("ID")])
         }
 
-        return sendResponse(res,200,findAula)
+        return sendResponse(res, 200, findAula)
     }
 
-    static async listarTopicoPorCurso(req,res) {
-        const {cursoid} = req.params
+    static async listarTopicoPorCurso(req, res) {
+        const { cursoid } = req.params
 
         const findAulas = await prisma.topico.findMany({
             where: {
@@ -78,16 +66,16 @@ export default class TopicoController {
         })
 
         if (findAulas.length === 0) {
-            return sendError(res,404,[messages.validationGeneric.notFound("ID")])
+            return sendError(res, 404, [messages.validationGeneric.notFound("ID")])
         }
 
-        return sendResponse(res,200,findAulas) 
+        return sendResponse(res, 200, findAulas)
     }
 
-    static async deletarTopico(req,res){
+    static async deletarTopico(req, res) {
         const erros = []
 
-        const {id} = req.params
+        const { id } = req.params
 
         const findTopico = await prisma.topico.findUnique({
             where: {
@@ -99,12 +87,12 @@ export default class TopicoController {
             erros.push(messages.validationGeneric.mascCamp("Topico"))
         }
 
-        if (erros.length > 0) return sendError(res,422,erros)
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         await prisma.$transaction(async (prisma) => {
 
             await prisma.conteudoCurso.deleteMany({
-                where:{
+                where: {
                     topicoId: id
                 }
             })
@@ -130,14 +118,14 @@ export default class TopicoController {
             })
         })
 
-        return sendResponse(res,200,[])
+        return sendResponse(res, 200, [])
     }
 
-    static async alterarTopico(req,res){
+    static async alterarTopico(req, res) {
         const erros = []
 
-        const {id} = req.params
-        const {titulo, cursoId, ordem} = req.body
+        const { id } = req.params
+        const { titulo, ordem } = topicoSchema.alterarTopico.parse(req.body)
 
         const findAula = await prisma.topico.findUnique({
             where: {
@@ -149,25 +137,11 @@ export default class TopicoController {
             erros.push(messages.validationGeneric.notFound("id"))
         }
 
-        if (titulo) {
-            if (titulo.length < 3) {
-                erros.push(messages.customValidation.lengthMaior("Titulo", 3))
-            } else if (titulo.length > 200) {
-                erros.push(messages.customValidation.lengthMenor("Titulo", 200))
-            }
-        }
-
-        if (ordem) {
-            if (!Number.isInteger(aula.ordem)) {
-                erros.push("O campo ordem precisa ser um número inteiro")
-            }
-        }
-
-        if (erros.length > 0) return sendError(res,422,erros)
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         const totalAulas = await prisma.topico.count({
             where: {
-                cursoId: cursoId
+                cursoId: findAula.cursoId
             }
         })
 
@@ -185,7 +159,7 @@ export default class TopicoController {
                 if (novaOrdem > ordemAtual) {
                     await prisma.topico.updateMany({
                         where: {
-                            cursoId: cursoId,
+                            cursoId: findAula.cursoId,
                             ordem: {
                                 gt: ordemAtual,
                                 lte: novaOrdem
@@ -200,7 +174,7 @@ export default class TopicoController {
                 } else if (novaOrdem < ordemAtual) {
                     await prisma.topico.updateMany({
                         where: {
-                            cursoId: cursoId,
+                            cursoId: findAula.cursoId,
                             ordem: {
                                 gte: novaOrdem,
                                 lt: ordemAtual
@@ -226,6 +200,6 @@ export default class TopicoController {
             })
         })
 
-        return sendResponse(res,200,[])
+        return sendResponse(res, 200, [])
     }
 }

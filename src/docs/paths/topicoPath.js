@@ -59,7 +59,7 @@ export const TopicoPath = {
                 required: true,
                 content: {
                     "application/json": {
-                        schema: { $ref: "#/components/schemas/TopicoRequestBody" }
+                        schema: { $ref: "#/components/schemas/TopicoUpdateRequestBody" }
                     }
                 }
             },

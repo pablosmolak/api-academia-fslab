@@ -8,6 +8,5 @@ export class conteudoCursoSchema{
         tipo: z.enum(Object.values(tiposConteudosEnum)),
         conteudo: z.string(),
         cargaHoraria: myZ.cargaHoraria()
-    
     })
 }

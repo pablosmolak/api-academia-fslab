@@ -1,5 +1,6 @@
 import { prisma } from "../config/prismaClient.js";
 import { sendError, sendResponse } from "../utils/mensagens.js";
+import { progressoSchema } from "../schema/progressoCursoSchema.js";
 
 export default class ProgressoController {
     static async listarProgresso(req, res) {
@@ -9,7 +10,7 @@ export default class ProgressoController {
 
     static async finalizarAtividade(req, res) {
 
-        const { conteudoid } = req.params
+        const { conteudoid } = progressoSchema.finalizarAtividade.parse(req.params)
 
         const conteudo = await prisma.conteudoCurso.findUnique({
             where: {
