@@ -1,34 +1,17 @@
 import { prisma } from "../config/prismaClient.js";
+import { tiposConteudosEnum } from "../utils/enums.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { pagination } from "../utils/pagination.js";
+import { cursoSchema } from "../schema/cursoSchema.js";
+
 
 export default class CursosController {
     static async criarCurso(req, res) {
         const erros = []
 
-        let { nome, descricao, categoria } = req.body
+        let { nome, descricao, categoria = [] } = cursoSchema.criarCurso.parse(req.body)
 
-        if (!nome) {
-            erros.push(messages.validationGeneric.fieldIsRequired("Nome"))
-        } else {
-            if (nome.length < 3) {
-                erros.push(messages.customValidation.lengthMaior("Nome", 3))
-            } else if (nome.length > 200) {
-                erros.push(messages.customValidation.lengthMenor("Nome", 200))
-            }
-        }
-
-        if (descricao) {
-            if (descricao.length < 3) {
-                erros.push(messages.customValidation.lengthMaior("Nome", 3))
-            } else if (descricao.length > 200) {
-                erros.push(messages.customValidation.lengthMenor("Nome", 200))
-            }
-        }
-
-        if (!categoria) {
-            erros.push(messages.validationGeneric.fieldIsRequired("Categoria"))
-        } else {
+        if(categoria && categoria.length > 0){
             const findCategoria = await prisma.categoria.findMany({
                 where: {
                     id: {
@@ -37,12 +20,12 @@ export default class CursosController {
                 },
                 select: { id: true }
             })
-
+    
             const categoriasEncontradas = findCategoria.map(item => item.id);
-
+    
             // Filtra os IDs não encontrados
             const categoriasNaoEncontradas = categoria.filter(id => !categoriasEncontradas.includes(id));
-
+    
             if (categoriasNaoEncontradas.length > 0) {
                 erros.push(`Nenhuma categoria encontrada com os IDS: ${categoriasNaoEncontradas.join(', ')}`);
             }
@@ -92,7 +75,7 @@ export default class CursosController {
         })
 
         return sendResponse(res, 200, cursos,
-            {pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take}
+            { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take }
         )
     }
 
@@ -123,6 +106,87 @@ export default class CursosController {
         return sendResponse(res, 200, findCurso);
     }
 
+    static async listarInformacoesCurso(req, res) {
+        const { cursoid } = req.params
+
+        const curso = await prisma.curso.findUnique({
+            where: {
+                id: cursoid
+            },
+            include: {
+                categoria: {
+                    select: {
+                        nome: true
+                    }
+                },
+                topicos: {
+                    include: {
+                        conteudos: true
+                    }
+                },
+                instrutores: {
+                    include: {
+                        usuario: {
+                            select: {
+                                nome: true,
+                                fotoPerfil: true,
+                                id: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        if (curso === null) {
+            return sendError(res, 404, [messages.validationGeneric.notFound("id")])
+        }
+
+        let cargaHoraria = () => {
+            let Totalminutos = 0
+
+            for (const topico of curso.topicos) {
+                for (const conteudo of topico.conteudos) {
+                    if (conteudo.cargaHoraria) {
+                        let [horas, minutos, segundos] = conteudo.cargaHoraria.split(":").map(Number)
+                        Totalminutos += ((horas * 60) + minutos + (segundos / 60));
+                    }
+                }
+            }
+
+            const horasTotais = Math.floor(Totalminutos / 60);
+            const minutosRestantes = Math.round(Totalminutos % 60);
+
+            return `${horasTotais}h${minutosRestantes}m`;
+        }
+
+        let quantidadeConteudo = (tipo) => {
+            let qtdConteudo = 0
+
+            for (const topico of curso.topicos) {
+                for (const conteudo of topico.conteudos) {
+                    if (conteudo.tipo === tipo) {
+                        qtdConteudo++
+                    }
+                }
+            }
+
+            return qtdConteudo
+        }
+
+        let informacoesCurso = {
+            nomeCurso: curso.nome,
+            descricao: curso.descricao,
+            topicos: curso.topicos.map(topico => topico.titulo),
+            instrutores: curso.instrutores.map(instrutor => instrutor.usuario),
+            cargaHoraria: cargaHoraria(),
+            quantidadeDeVideo: quantidadeConteudo(tiposConteudosEnum.UrlYoutube),
+            quantidadeAtividade: (quantidadeConteudo(tiposConteudosEnum.UrlYoutube - quantidadeConteudo(true)))
+        }
+
+        return sendResponse(res, 200, informacoesCurso)
+    }
+
     static async deletarCurso(req, res) {
         const { id } = req.params
 
@@ -145,7 +209,7 @@ export default class CursosController {
 
             await prisma.conteudoCurso.deleteMany({
                 where: {
-                    aula: {
+                    topico: {
                         cursoId: id,
                     },
                 },

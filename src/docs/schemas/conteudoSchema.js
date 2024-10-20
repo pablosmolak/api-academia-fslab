@@ -24,6 +24,12 @@ export const ConteudoCursoSchemas = {
                 description: "Conteúdo em si (Youtube URL)",
                 example: "https://youtu.be/dQw4w9WgXcQ"
             },
+            cargaHoraria: {
+                type: "string",
+                format: "time",
+                description: "Carga horaria do conteudo",
+                example: "00:18:00"
+            },
             ordem: {
                 type: "integer",
                 description: "Ordem do conteúdo dentro do tópico",
@@ -58,6 +64,12 @@ export const ConteudoCursoSchemas = {
                 type: 'string', 
                 description: "Tipo de conteúdo (Youtube URL)",
                 example: "Youtube URL"
+            },
+            cargaHoraria: {
+                type: "string",
+                format: "time",
+                description: "Carga horaria do conteudo",
+                example: "00:18:00"
             },
             conteudo: { 
                 type: 'string', 

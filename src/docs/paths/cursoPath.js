@@ -96,6 +96,31 @@ export const CursoPath = {
             }
         }
     },
+    "/cursos/informacoes/{cursoid}": {
+        get: {
+            tags: ["Cursos"],
+            security: [{ jwtAuth: [] }],
+            summary: "Obter Informações do Curso",
+            description: "Recupera informações detalhadas de um curso específico com base no ID fornecido.",
+            parameters: [
+                {
+                    name: "cursoid",
+                    in: "path",
+                    description: "ID único do curso",
+                    required: true,
+                    schema: {
+                        type: "string",
+                        format: "uuid",
+                        example: "123e4567-e89b-12d3-a456-426614174000"
+                    }
+                }
+            ],
+            responses: {
+                ...gerarRespostasCorretas(200, "#/components/schemas/CursoInformacoesResponse"),
+                ...gerarRespostasDeErro([401, 403, 498, 500])
+            }
+        }
+    },
     "/cursos/inscricoes/usuario/{usuarioid}": {
         get: {
             tags: ["Cursos"],
