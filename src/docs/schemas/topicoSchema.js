@@ -57,5 +57,22 @@ export const TopicoSchemas = {
         },
         required: ['titulo', 'cursoId'],
         description: "Corpo da requisição para criar ou atualizar um tópico"
+    },
+    TopicoUpdateRequestBody: {
+        type: 'object',
+        properties: {
+            titulo: { 
+                type: 'string', 
+                description: "Título do tópico",
+                example: "Introdução à Programação"
+            },
+            ordem: {
+                type: "integer",
+                description: "Ordem do tópico dentro do curso",
+                example: 1
+            },
+        },
+        required: ['titulo', 'ordem'],
+        description: "Corpo da requisição para criar ou atualizar um tópico"
     }
 }

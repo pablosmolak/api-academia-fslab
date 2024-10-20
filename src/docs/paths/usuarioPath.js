@@ -150,5 +150,78 @@ export const UsuarioPath = {
                 ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
             }
         }
+    },
+    "/usuarios/{id}/image/upload": {
+        post: {
+            tags: ["Usuários"],
+            security: [{ jwtAuth: [] }],
+            summary: "Adicionar/Atualizar Foto do Usuário",
+            description: "Adiciona ou atualiza a foto de perfil de um usuário existente no sistema. A imagem é obrigatória e não pode ser enviada vazia.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do usuário cuja foto será adicionada ou atualizada.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "multipart/form-data": {
+                        schema: {
+                            type: "object",
+                            required: ["file"],
+                            properties: {
+                                file: {
+                                    type: "string",
+                                    format: "binary",
+                                    description: "Arquivo da imagem do usuário."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            responses: {
+                ...gerarRespostasCorretas(201, ""),
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
+            }
+        }
+    },
+    "/usuarios/{id}/image": {
+    get: {
+        tags: ["Usuários"],
+        summary: "Obter Foto do Usuário",
+        description: "Retorna a foto de perfil do usuário com o ID fornecido. Se o usuário não tiver uma foto cadastrada, será retornada uma resposta de erro.",
+        parameters: [
+            {
+                name: "id",
+                in: "path",
+                description: "ID do usuário cuja foto será retornada.",
+                required: true,
+                schema: {
+                    type: "string"
+                }
+            }
+        ],
+        responses: {
+            200: {
+                description: "Foto do usuário retornada com sucesso.",
+                content: {
+                    "image/*": {
+                        schema: {
+                            type: "string",
+                            format: "binary"
+                        }
+                    }
+                }
+            },
+            ...gerarRespostasDeErro([422, 500])
+        }
     }
+}
 }

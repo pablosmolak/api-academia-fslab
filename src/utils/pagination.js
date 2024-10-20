@@ -6,7 +6,7 @@ export const pagination = async (table, pagina = 1, limite = 10, filtros) => {
     limite = Math.min(limite, 100) // limite maximo
 
     const totalRegistros = await prisma[table].count(filtros);
-    const totalPaginas = Math.ceil(totalRegistros / limite);
+    const totalPaginas = Math.max(Math.ceil(totalRegistros / limite), 1);
     const paginaAtual = Math.min(pagina, totalPaginas);
 
     const pagination = {

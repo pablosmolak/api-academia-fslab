@@ -11,7 +11,7 @@ buildar-docker:
   stage: build
   image: docker:dind
   only:
-    - 19-implementar-funcoes-de-conteudo
+    - development
   script:
     - cp .env.example .env 
     - >
@@ -28,7 +28,7 @@ fazer-deploy:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   only:
-    - 19-implementar-funcoes-de-conteudo
+    - development
   script:
     - cat $KUBECTL_CONFIG > ~/.kube/config
     - kubectl config get-contexts
