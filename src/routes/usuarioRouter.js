@@ -35,6 +35,12 @@ router
         wrapException(UsuarioController.listarUsuarioPorID)
     )
 
+    .get(
+        "/usuarios/:id/image",
+        AuthMiddleware,
+        wrapException(UsuarioController.visualizarImagem)
+    )
+
     .patch(
         "/usuarios/:id",
         AuthMiddleware,

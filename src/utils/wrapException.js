@@ -40,7 +40,7 @@ export const wrapException = (fn) => {
                 } else {
                     // Erro desconhecido
                     console.error(err);
-                    return sendError(res, 500, [{ message: err.message || "" + err }]);
+                    return sendError(res, 500, [err.message || "" + err ]);
                 }
 
         } finally {
