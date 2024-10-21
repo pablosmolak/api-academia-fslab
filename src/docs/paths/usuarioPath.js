@@ -193,35 +193,36 @@ export const UsuarioPath = {
         }
     },
     "/usuarios/{id}/image": {
-    get: {
-        tags: ["Usuários"],
-        summary: "Obter Foto do Usuário",
-        description: "Retorna a foto de perfil do usuário com o ID fornecido. Se o usuário não tiver uma foto cadastrada, será retornada uma resposta de erro.",
-        parameters: [
-            {
-                name: "id",
-                in: "path",
-                description: "ID do usuário cuja foto será retornada.",
-                required: true,
-                schema: {
-                    type: "string"
-                }
-            }
-        ],
-        responses: {
-            200: {
-                description: "Foto do usuário retornada com sucesso.",
-                content: {
-                    "image/*": {
-                        schema: {
-                            type: "string",
-                            format: "binary"
-                        }
+        get: {
+            tags: ["Usuários"],
+            security: [{ jwtAuth: [] }],
+            summary: "Obter Foto do Usuário",
+            description: "Retorna a foto de perfil do usuário com o ID fornecido. Se o usuário não tiver uma foto cadastrada, será retornada uma resposta de erro.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do usuário cuja foto será retornada.",
+                    required: true,
+                    schema: {
+                        type: "string"
                     }
                 }
-            },
-            ...gerarRespostasDeErro([422, 500])
+            ],
+            responses: {
+                200: {
+                    description: "Foto do usuário retornada com sucesso.",
+                    content: {
+                        "image/*": {
+                            schema: {
+                                type: "string",
+                                format: "binary"
+                            }
+                        }
+                    }
+                },
+                ...gerarRespostasDeErro([422, 500])
+            }
         }
     }
-}
 }
