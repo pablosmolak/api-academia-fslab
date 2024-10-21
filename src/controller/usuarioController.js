@@ -226,7 +226,7 @@ export default class UsuarioController {
 
         find(userExist.fotoPerfil, bucketsMinio.Usuarios)
             .then(image => {
-                res.status(200).end(image)
+                res.setHeader('Content-Type', 'image/*').status(200).end(image)
             })
             .catch(err => {
                 return sendError(res, 404, err.message)
