@@ -16,7 +16,9 @@ export const CategoriaPath = {
             tags: ["Categorias"],
             security: [{ jwtAuth: [] }],
             summary: "Adicionar Nova Categoria",
-            description: "Cria uma nova categoria com base nos dados fornecidos pelo usuário. O corpo da requisição deve conter as informações necessárias para a criação da categoria.",
+            description: "Cria uma nova categoria com base nos dados fornecidos pelo usuário.<br>" +
+                        "O corpo da requisição deve conter as informações necessárias para a criação da categoria.<br><br>" +
+                        "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             requestBody: {
                 required: true,
                 content: {
@@ -27,7 +29,7 @@ export const CategoriaPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Categoria"),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
             }
         }
     },
@@ -55,7 +57,9 @@ export const CategoriaPath = {
             tags: ["Categorias"],
             security: [{ jwtAuth: [] }],
             summary: "Atualizar Categoria Existente",
-            description: "Atualiza as informações de uma categoria específica identificada pelo ID. Os novos dados da categoria devem ser fornecidos no corpo da requisição.",
+            description: "Atualiza as informações de uma categoria específica identificada pelo ID.<br>" +
+                        "Os novos dados da categoria devem ser fornecidos no corpo da requisição.<br><br>" +
+                        "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
                     name: "id",
@@ -75,14 +79,16 @@ export const CategoriaPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Categoria"),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
             }
         },
         delete: {
             tags: ["Categorias"],
             security: [{ jwtAuth: [] }],
             summary: "Remover Categoria",
-            description: "Deleta uma categoria específica identificada pelo ID fornecido. Esta operação é irreversível e removerá a categoria permanentemente do sistema.",
+            description: "Deleta uma categoria específica identificada pelo ID fornecido.<br>" +
+                        "Esta operação é irreversível e removerá a categoria permanentemente do sistema.<br><br>" +
+                        "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
                     name: "id",
@@ -99,3 +105,5 @@ export const CategoriaPath = {
         }
     }
 }
+
+

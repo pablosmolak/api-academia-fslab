@@ -35,7 +35,7 @@ export const RecuperaSenhaPath = {
                         }
                     }
                 }),
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([400, 422, 500])
             }
         }
     },
@@ -78,7 +78,7 @@ export const RecuperaSenhaPath = {
                         }
                     }
                 }),
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([400, 422, 500])
             }
         }
     }

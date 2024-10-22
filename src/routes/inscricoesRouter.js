@@ -6,8 +6,19 @@ import { AuthMiddleware } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router
-    .post("/inscricoes", AuthMiddleware,  wrapException(InscricoesController.criarInscricao))
-    .get("/inscricoes", AuthMiddleware, wrapException(InscricoesController.listarInscricoes))
-    .delete("/inscricoes/:id", AuthMiddleware, wrapException(InscricoesController.deletarInscricao))
+    .post("/inscricoes",
+        AuthMiddleware,
+        wrapException(InscricoesController.criarInscricao)
+    )
+
+    .get("/inscricoes",
+        AuthMiddleware,
+        wrapException(InscricoesController.listarInscricoes)
+    )
+
+    .delete("/inscricoes/:id",
+        AuthMiddleware,
+        wrapException(InscricoesController.deletarInscricao)
+    )
 
 export default router;

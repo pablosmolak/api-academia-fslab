@@ -11,7 +11,7 @@ router
     .post(
         "/categorias",
         AuthMiddleware,
-        permissaoMiddleware(gruposEnum.ADM, gruposEnum.Professores),
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(CategoriaController.criarCategoria)
     )
 
@@ -27,13 +27,13 @@ router
 
     .patch("/categorias/:id",
         AuthMiddleware,
-        permissaoMiddleware(gruposEnum.ADM, gruposEnum.Professores),
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(CategoriaController.alterarCategoria)
     )
 
     .delete("/categorias/:id",
         AuthMiddleware,
-        permissaoMiddleware(gruposEnum.ADM, gruposEnum.Professores),
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(CategoriaController.deletarCategoria)
     )
 

@@ -6,11 +6,30 @@ import TopicoController from "../controller/topicoController.js";
 const router = express.Router();
 
 router
-    .post("/topicos", AuthMiddleware, wrapException(TopicoController.criarTopico))
-    .get("/topicos/:id", AuthMiddleware,wrapException(TopicoController.listarTopicoPorID))
-    .get("/topicos/curso/:cursoid", AuthMiddleware,wrapException(TopicoController.listarTopicoPorCurso))
-    .patch("/topicos/:id", AuthMiddleware,wrapException(TopicoController.alterarTopico))
-    .delete("/topicos/:id", AuthMiddleware, wrapException(TopicoController.deletarTopico))
+    .post("/topicos", 
+        AuthMiddleware, 
+        wrapException(TopicoController.criarTopico)
+    )
+
+    .get("/topicos/:id", 
+        AuthMiddleware,
+        wrapException(TopicoController.listarTopicoPorID)
+    )
+
+    .get("/topicos/curso/:cursoid", 
+        AuthMiddleware,
+        wrapException(TopicoController.listarTopicoPorCurso)
+    )
+
+    .patch("/topicos/:id", 
+        AuthMiddleware,
+        wrapException(TopicoController.alterarTopico)
+    )
+
+    .delete("/topicos/:id", 
+        AuthMiddleware, 
+        wrapException(TopicoController.deletarTopico)
+    )
 
 export default router;
 

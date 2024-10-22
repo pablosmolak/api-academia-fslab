@@ -5,6 +5,8 @@ import AuthController from "../controller/authController.js";
 const router = express.Router();
 
 router
-    .post("/login", wrapException(AuthController.logar))
+    .post("/login", 
+        wrapException(AuthController.logar)
+    )
 
 export default router;

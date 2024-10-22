@@ -72,7 +72,7 @@ export const UsuarioPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Usuario"),
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([400, 422, 500])
             }
         },
     },
@@ -126,7 +126,7 @@ export const UsuarioPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Usuario"),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500]),
             }
         },
         delete: {
@@ -221,7 +221,7 @@ export const UsuarioPath = {
                         }
                     }
                 },
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
             }
         }
     }

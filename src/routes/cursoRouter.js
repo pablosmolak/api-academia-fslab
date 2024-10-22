@@ -6,13 +6,32 @@ import { AuthMiddleware } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router
-    .post("/cursos", AuthMiddleware, wrapException(CursosController.criarCurso))
-    .get("/cursos", AuthMiddleware, wrapException(CursosController.listarCursos))
-    .get("/cursos/:id", AuthMiddleware, wrapException(CursosController.listarCursoPorId))
-    .delete("/cursos/:id", AuthMiddleware, wrapException(CursosController.deletarCurso))
+    .post("/cursos", 
+        AuthMiddleware, 
+        wrapException(CursosController.criarCurso)
+    )
 
-    .get ("/cursos/informacoes/:cursoid",wrapException(CursosController.listarInformacoesCurso))
+    .get("/cursos", 
+        AuthMiddleware,
+        wrapException(CursosController.listarCursos)
+    )
 
-    .get("/cursos/inscricoes/usuario/:usuarioid", wrapException(CursosController.listarCursosInscritosPorUsuario))
+    .get("/cursos/:id", 
+        AuthMiddleware, 
+        wrapException(CursosController.listarCursoPorId)
+    )
+
+    .delete("/cursos/:id", 
+        AuthMiddleware, 
+        wrapException(CursosController.deletarCurso)
+    )
+
+    .get ("/cursos/informacoes/:cursoid",
+        wrapException(CursosController.listarInformacoesCurso)
+    )
+
+    .get("/cursos/inscricoes/usuario/:usuarioid", 
+        wrapException(CursosController.listarCursosInscritosPorUsuario)
+    )
 
 export default router;  

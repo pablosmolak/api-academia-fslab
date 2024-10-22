@@ -28,7 +28,7 @@ export const InscricaoPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Inscricao"),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
             }
         }
     },

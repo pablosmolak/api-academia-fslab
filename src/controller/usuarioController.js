@@ -7,10 +7,22 @@ import minioFunctions from "../utils/minioFunctions.js";
 import { bucketsMinio } from "../utils/enums.js";
 import fs from 'fs';
 import { usuarioSchema } from "../schema/usuarioSchema.js";
+import { error } from "console";
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {
-        let { nome, email, senha, fotoPerfil } = usuarioSchema.criarUsuario.parse(req.body)
+        const erros =[]
+        let { nome, email, senha } = usuarioSchema.criarUsuario.parse(req.body)
+
+        let userExist = await prisma.usuario.findUnique({
+            where: { email: email }
+        })
+
+        if (userExist !== null) {
+            erros.push(messages.auth.emailAlreadyExists(userExist.email))
+        }
+
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         const grupoId = await prisma.grupo.findFirst({
             where: {
@@ -24,7 +36,6 @@ export default class UsuarioController {
                 nome,
                 email,
                 senha: bcrypt.hashSync(senha, 10),
-                fotoPerfil,
                 grupoId: grupoId.id
             },
         });
@@ -86,28 +97,16 @@ export default class UsuarioController {
 
         const { id } = req.params
 
-        let { nome, email, senha, fotoPerfil } = req.body
+        let { nome, email, senha } = usuarioSchema.alterarUsuario.parse(req.body)
 
-        if (nome) {
-            if (nome.length < 3) {
-                erros.push(messages.customValidation.lengthMaior("Nome", 3))
-            } else if (nome.length > 200) {
-                erros.push(messages.customValidation.lengthMenor("Nome", 200))
-            }
-        }
-
-        if (email && validarEmail(email, erros)) {
+        if (email) {
             let userExist = await prisma.usuario.findUnique({
                 where: { email: email }
             })
 
             if (userExist !== null && userExist.id !== id) {
-                erros.push(messages.auth.emailAlreadyExists(user.email))
+                erros.push(messages.auth.emailAlreadyExists(email))
             }
-        }
-
-        if (senha) {
-            validarSenha(senha, erros)
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
@@ -121,8 +120,7 @@ export default class UsuarioController {
             data: {
                 nome,
                 email,
-                senha: senha,
-                fotoPerfil
+                senha: senha
             },
         })
 
@@ -189,7 +187,7 @@ export default class UsuarioController {
 
         const nomeImagem = await minioFunctions.upload(file, bucketsMinio.Usuarios)
 
-        const userUpdated = await prisma.usuario.update({
+        await prisma.usuario.update({
             where: {
                 id: userid
             },
@@ -198,8 +196,9 @@ export default class UsuarioController {
             }
         })
 
-        if (userUpdated) {
+        if(userExist.fotoPerfil){
             await minioFunctions.remove(userExist.fotoPerfil, bucketsMinio.Usuarios)
+                .catch(err)
         }
 
         return sendResponse(res, 201, [])

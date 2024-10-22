@@ -47,7 +47,7 @@ export const AuthPath = {
                         }
                     }
                 },
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([400, 422, 500])
             }
         }
     }

@@ -44,6 +44,10 @@ export default class minioFunctions {
     }
 
     static async remove(nameFile, bucket) {
-        await minioConfig.removeObject(bucket, nameFile)
+        await minioConfig.removeObject(bucket, nameFile, (err) => {
+            if (err) {
+                throw new Error(`Não foi possivel encontrar o arquivo`)
+            }
+        })
     }
 }
