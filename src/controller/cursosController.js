@@ -11,7 +11,7 @@ export default class CursosController {
 
         let { nome, descricao, categoria = [] } = cursoSchema.criarCurso.parse(req.body)
 
-        if(categoria && categoria.length > 0){
+        if (categoria && categoria.length > 0) {
             const findCategoria = await prisma.categoria.findMany({
                 where: {
                     id: {
@@ -20,12 +20,12 @@ export default class CursosController {
                 },
                 select: { id: true }
             })
-    
+
             const categoriasEncontradas = findCategoria.map(item => item.id);
-    
+
             // Filtra os IDs não encontrados
             const categoriasNaoEncontradas = categoria.filter(id => !categoriasEncontradas.includes(id));
-    
+
             if (categoriasNaoEncontradas.length > 0) {
                 erros.push(`Nenhuma categoria encontrada com os IDS: ${categoriasNaoEncontradas.join(', ')}`);
             }
@@ -260,4 +260,86 @@ export default class CursosController {
 
         return sendResponse(res, 200, cursosInscritos);
     }
+
+    static async listarInstrutoresDoCurso(req, res) {
+        const cursoID = req.params.id
+
+        const findCurso = await prisma.curso.findUnique({
+            where: {
+                id: cursoID,
+            },
+            include: {
+                instrutores: {
+                    include: {
+                        usuario: {
+                            select: {
+                                nome: true,
+                                email: true,
+                                fotoPerfil: true,
+                                id: true
+                            }
+                        }
+                    }
+                }
+            },
+        })
+
+        if (findCurso === null) {
+            return sendError(res, 404, [messages.validationGeneric.notFound("ID")])
+        }
+
+        const instrutores = findCurso.instrutores.map(instrutor => instrutor.usuario)
+
+        return sendResponse(res, 200, instrutores);
+    }
+
+    static async adicionarInstrutores(req, res) {
+        const erros = [];
+        const cursoID = req.params.id;
+        const { usersID } = req.body;
+
+        // Verifica se o curso existe
+        const findCurso = await prisma.curso.findUnique({
+            where: {
+                id: cursoID,
+            }
+        });
+
+        if (!findCurso) {
+            erros.push(messages.validationGeneric.notFound("ID do Curso"));
+        }
+
+        // Verifica se cada usuário existe
+        for (const user of usersID) {
+            const findUser = await prisma.usuario.findUnique({
+                where: {
+                    id: user,
+                },
+            });
+
+            if (!findUser) {
+                erros.push(messages.validationGeneric.notFound(`ID do Usuário: ${user}`));
+            }
+        }
+
+        if (erros.length > 0) return sendError(res, 422, erros);
+
+        const instrutores = []
+        await prisma.$transaction(async (prisma) =>{
+            
+            for(const user of usersID){
+                instrutores.push(
+                    await prisma.instrutores.create({
+                        data:{
+                            cursoId: cursoID,
+                            userId: user
+                        }
+                    })
+                )
+            }
+        })
+
+        sendResponse(res,201,instrutores)
+    }
+
 }

@@ -157,6 +157,7 @@ model Instrutores {
     usuario Usuario @relation(fields: [userId], references: [id])
 
     @@map("instrutores")
+    @@unique([cursoId, userId])
 }
 
 // modelo de Certificados
