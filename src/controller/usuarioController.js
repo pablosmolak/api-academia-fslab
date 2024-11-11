@@ -198,7 +198,7 @@ export default class UsuarioController {
 
         if(userExist.fotoPerfil){
             await minioFunctions.remove(userExist.fotoPerfil, bucketsMinio.Usuarios)
-                .catch(err)
+                .catch()
         }
 
         return sendResponse(res, 201, [])

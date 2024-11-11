@@ -37,7 +37,6 @@ router
 
     .get(
         "/usuarios/:id/image",
-        AuthMiddleware,
         wrapException(UsuarioController.visualizarImagem)
     )
 

@@ -1,8 +1,10 @@
 import { prisma } from "../config/prismaClient.js";
-import { tiposConteudosEnum } from "../utils/enums.js";
+import { bucketsMinio, tiposConteudosEnum } from "../utils/enums.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { pagination } from "../utils/pagination.js";
 import { cursoSchema } from "../schema/cursoSchema.js";
+import fs from 'fs';
+import minioFunctions from "../utils/minioFunctions.js";
 
 
 export default class CursosController {
@@ -68,11 +70,20 @@ export default class CursosController {
 
         const cursos = await prisma.curso.findMany({
             include: {
-                categoria: true
+                categoria: true,
+                instrutores: {
+                    include: {
+                        usuario: true
+                    }
+                }
             },
             skip: paginacao.skip,
             take: paginacao.take
         })
+
+        for (let curso of cursos) {
+            curso.instrutores = curso.instrutores.map(instrutor => instrutor.usuario)
+        }
 
         return sendResponse(res, 200, cursos,
             { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take }
@@ -325,12 +336,12 @@ export default class CursosController {
         if (erros.length > 0) return sendError(res, 422, erros);
 
         const instrutores = []
-        await prisma.$transaction(async (prisma) =>{
-            
-            for(const user of usersID){
+        await prisma.$transaction(async (prisma) => {
+
+            for (const user of usersID) {
                 instrutores.push(
                     await prisma.instrutores.create({
-                        data:{
+                        data: {
                             cursoId: cursoID,
                             userId: user
                         }
@@ -339,7 +350,81 @@ export default class CursosController {
             }
         })
 
-        sendResponse(res,201,instrutores)
+        sendResponse(res, 201, instrutores)
     }
 
+    static async uploadCapa(req, res) {
+        const erros = []
+        const validImageTypes = [
+            'image/jpeg', 'image/jpg', 'image/png'
+        ];
+
+        const file = req.file
+        const cursoid = req.params.id
+
+        if (!validImageTypes.includes(file.mimetype)) {
+            erros.push(`O arquivo enviado não é uma imagem válida, os tipos aceitos são: ${validImageTypes.join(", ")}!`)
+        }
+
+        const cursoExist = await prisma.curso.findUnique({
+            where: {
+                id: cursoid
+            }
+        })
+
+        if (cursoExist === null) {
+            erros.push(messages.validationGeneric.notFound("id"))
+        }
+
+
+        if (erros.length > 0) {
+            fs.unlinkSync(file.path);
+            return sendError(res, 422, erros)
+        }
+
+        const nomeImagem = await minioFunctions.upload(file, bucketsMinio.Cursos)
+
+        await prisma.curso.update({
+            where: {
+                id: cursoid
+            },
+            data: {
+                capa: nomeImagem
+            }
+        })
+
+        if (cursoExist.capa) {
+            await minioFunctions.remove(cursoExist.capa, bucketsMinio.Cursos)
+                .catch()
+        }
+
+        return sendResponse(res, 201, [])
+    }
+
+    static async visualizarCapa(req, res) {
+        const erros = []
+        const cursoid = req.params.id
+
+        const cursoExist = await prisma.curso.findUnique({
+            where: {
+                id: cursoid
+            }
+        })
+
+        if (cursoExist === null) {
+            erros.push(messages.validationGeneric.notFound("id"))
+        }
+
+        if (erros.length > 0) {
+            return sendError(res, 422, erros)
+        }
+
+        await minioFunctions.find(cursoExist.capa, bucketsMinio.Cursos)
+            .then(image => {
+                res.setHeader('Content-Type', 'image/*').status(200).end(image)
+            })
+            .catch(err => {
+                return sendError(res, 404, err.message)
+            })
+    }
 }

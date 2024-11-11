@@ -119,6 +119,7 @@ model Curso {
     id         String   @id @default(uuid())
     nome       String
     descricao  String   @db.Text
+    capa       String?
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
@@ -156,8 +157,8 @@ model Instrutores {
     curso   Curso   @relation(fields: [cursoId], references: [id])
     usuario Usuario @relation(fields: [userId], references: [id])
 
-    @@map("instrutores")
     @@unique([cursoId, userId])
+    @@map("instrutores")
 }
 
 // modelo de Certificados

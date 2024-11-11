@@ -3,7 +3,8 @@ export const tiposConteudosEnum = Object.freeze({
 })
 
 export const bucketsMinio = Object.freeze({
-    Usuarios: "usuarios"
+    Usuarios: "usuarios",
+    Cursos: "cursos"
 })
 
 export const gruposEnum = Object.freeze({
