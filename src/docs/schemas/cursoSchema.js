@@ -17,7 +17,9 @@ export const CursoSchemas = {
                 type: "string",
                 nullable: true,
                 description: "Descrição detalhada do curso",
-                example: "Este curso fornece uma introdução aos fundamentos da programação."
+                example: `Este curso oferece uma introdução completa aos fundamentos da programação, abordando conceitos 
+                essenciais como variáveis, estruturas de controle, funções e manipulação de dados. Ao final, você terá as habilidades 
+                para escrever códigos básicos e resolver problemas simples.`
             },
             created_at: {
                 type: "string",
@@ -47,7 +49,9 @@ export const CursoSchemas = {
                 type: 'string',
                 nullable: true,
                 description: "Descrição do curso",
-                example: "Este curso fornece uma introdução aos fundamentos da programação."
+                example: "Este curso oferece uma introdução completa aos fundamentos da programação, abordando conceitos " + 
+                "essenciais como variáveis, estruturas de controle, funções e manipulação de dados. Ao final, você terá as habilidades " +
+                "para escrever códigos básicos e resolver problemas simples."
             },
             categoria: {
                 type: "array",

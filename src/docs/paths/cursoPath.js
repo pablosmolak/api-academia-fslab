@@ -4,10 +4,18 @@ export const CursoPath = {
     "/cursos": {
         get: {
             tags: ["Cursos"],
-            security: [{ jwtAuth: [] }],
             summary: "Listar Todos os Cursos",
             description: "Recupera uma lista de todos os cursos disponíveis no sistema.",
             parameters: [
+                {
+                    name: "filtro",
+                    in: "query",
+                    description: "Filtros para refinar os resultados da pesquisa. Permite filtrar por nome, descrição, categoria e instrutores.",
+                    required: false,
+                    schema: {
+                        type: "string"
+                    }
+                },
                 {
                     name: "pagina",
                     in: "query",
@@ -59,7 +67,6 @@ export const CursoPath = {
     "/cursos/{id}": {
         get: {
             tags: ["Cursos"],
-            security: [{ jwtAuth: [] }],
             summary: "Obter Curso por ID",
             description: "Recupera os detalhes de um curso específico identificado pelo ID fornecido.",
             parameters: [

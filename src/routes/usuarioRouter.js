@@ -25,13 +25,11 @@ router
 
     .get(
         "/usuarios",
-        AuthMiddleware,
         wrapException(UsuarioController.listarUsuario)
     )
 
     .get(
         "/usuarios/:id",
-        AuthMiddleware,
         wrapException(UsuarioController.listarUsuarioPorID)
     )
 

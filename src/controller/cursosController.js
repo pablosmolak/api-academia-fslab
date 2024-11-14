@@ -13,6 +13,16 @@ export default class CursosController {
 
         let { nome, descricao, categoria = [] } = cursoSchema.criarCurso.parse(req.body)
 
+        const findCurso = await prisma.curso.findFirst({
+            where: {
+                nome: nome
+            }
+        })
+
+        if (findCurso !== null) {
+            erros.push(messages.validationGeneric.fieldIsRepeated("Nome"))
+        }
+
         if (categoria && categoria.length > 0) {
             const findCategoria = await prisma.categoria.findMany({
                 where: {
@@ -63,12 +73,25 @@ export default class CursosController {
     }
 
     static async listarCursos(req, res) {
+        let filtros = { where: {} }
 
-        const { pagina = 1, limite = 10 } = req.query
+        const { filtro, pagina = 1, limite = 10 } = req.query
 
-        const paginacao = await pagination("curso", pagina, limite)
+        console.log(filtro)
+
+        if (filtro) filtros.where = {
+            OR: [
+                { nome: { contains: filtro } },
+                { descricao: { contains: filtro } },
+                { categoria: { some: { nome: { contains: filtro } } } },
+                { instrutores: { some: { usuario: { nome: { contains: filtro } } } } }
+            ]
+        }
+
+        const paginacao = await pagination("curso", pagina, limite, filtros)
 
         const cursos = await prisma.curso.findMany({
+            ...filtros,
             include: {
                 categoria: true,
                 instrutores: {

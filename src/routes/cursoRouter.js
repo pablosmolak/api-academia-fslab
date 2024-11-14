@@ -13,12 +13,10 @@ router
     )
 
     .get("/cursos",
-        AuthMiddleware,
         wrapException(CursosController.listarCursos)
     )
 
     .get("/cursos/:id",
-        AuthMiddleware,
         wrapException(CursosController.listarCursoPorId)
     )
 
