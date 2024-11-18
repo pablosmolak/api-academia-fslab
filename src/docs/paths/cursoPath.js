@@ -148,5 +148,78 @@ export const CursoPath = {
                 ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         },
+    },
+    "/cursos/{id}/capa/upload": {
+        post: {
+            tags: ["Cursos"],
+            security: [{ jwtAuth: [] }],
+            summary: "Adicionar/Atualizar capa do Curso",
+            description: "Adiciona ou atualiza a capa de um curso existente no sistema. A imagem é obrigatória e não pode ser enviada vazia.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do curso cuja a capa será adicionada ou atualizada.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "multipart/form-data": {
+                        schema: {
+                            type: "object",
+                            required: ["file"],
+                            properties: {
+                                file: {
+                                    type: "string",
+                                    format: "binary",
+                                    description: "Arquivo da imagem da capa do curso."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            responses: {
+                ...gerarRespostasCorretas(201, ""),
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
+            }
+        }
+    },
+    "/cursos/{id}/capa": {
+        get: {
+            tags: ["Cursos"],
+            summary: "Obter Capa do Curso",
+            description: "Retorna a capa do curso com o ID fornecido. Se o curso não tiver uma capa cadastrada, será retornada uma resposta de erro.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do curso cuja a capa será retornada.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                }
+            ],
+            responses: {
+                200: {
+                    description: "Capa do curso retornada com sucesso.",
+                    content: {
+                        "image/*": {
+                            schema: {
+                                type: "string",
+                                format: "binary"
+                            }
+                        }
+                    }
+                },
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
+            }
+        }
     }
 }

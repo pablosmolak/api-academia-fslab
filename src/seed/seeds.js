@@ -6,7 +6,7 @@ import imagemSeed from "./imagemSeed.js";
 import cursoSeed from "./cursoSeed.js";
 import usuarioSeed from "./usuarioSeed.js";
 import instrutorSeed from "./instrutorSeed.js";
-/*
+
 await prisma.instrutores.deleteMany()
 await prisma.curso.deleteMany()
 await prisma.categoria.deleteMany();
@@ -17,6 +17,6 @@ await gruposSeed()
 await usuarioSeed(100)
 
 await categoriaSeed()
-await imagemSeed(100)
-await cursoSeed(10000)*/
+await imagemSeed(1)
+await cursoSeed(1)
 instrutorSeed()
