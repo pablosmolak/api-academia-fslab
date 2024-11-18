@@ -39,6 +39,7 @@ model Usuario {
     progressoCursos ProgressoCurso[]
     instrutores     Instrutores[]
     Grupo           Grupo            @relation(fields: [grupoId], references: [id])
+    Curso           Curso[]
 }
 
 // modelo de Inscrições em Cursos
@@ -120,6 +121,7 @@ model Curso {
     nome       String
     descricao  String   @db.Text
     capa       String?
+    criador    String
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
@@ -130,6 +132,7 @@ model Curso {
     certificado     Certificado[]
     instrutores     Instrutores[]
     categoria       Categoria[]
+    usuario         Usuario          @relation(fields: [criador], references: [id])
 }
 
 // Criar um modelo de categoria de cursos para organizar os cursos
@@ -150,7 +153,6 @@ model Instrutores {
     id             String   @id @default(uuid())
     cursoId        String
     userId         String
-    criadorDoCurso Boolean  @default(false)
     created_at     DateTime @default(now())
     updated_at     DateTime @updatedAt
 

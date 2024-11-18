@@ -1,13 +1,12 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
-import { validarEmail, validarSenha } from "../utils/validations.js";
 import { pagination } from "../utils/pagination.js";
 import minioFunctions from "../utils/minioFunctions.js";
 import { bucketsMinio } from "../utils/enums.js";
 import fs from 'fs';
 import { usuarioSchema } from "../schema/usuarioSchema.js";
-import { error } from "console";
+
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {

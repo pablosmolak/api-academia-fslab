@@ -45,28 +45,18 @@ export default class CursosController {
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
-        let cursoCriado
-        await prisma.$transaction(async (prisma) => {
-            cursoCriado = await prisma.curso.create({
-                data: {
-                    nome,
-                    descricao,
-                    categoria: {
-                        connect: categoria.map((id) => {
-                            return { id }
-                        }
-                        )
+        const cursoCriado = await prisma.curso.create({
+            data: {
+                nome,
+                descricao,
+                categoria: {
+                    connect: categoria.map((id) => {
+                        return { id }
                     }
+                    )
                 },
-            })
-
-            await prisma.instrutores.create({
-                data: {
-                    cursoId: cursoCriado.id,
-                    userId: req.user.id,
-                    criadorDoCurso: true
-                }
-            })
+                criador: req.user.id
+            },
         })
 
         return sendResponse(res, 201, cursoCriado);
@@ -76,8 +66,6 @@ export default class CursosController {
         let filtros = { where: {} }
 
         const { filtro, pagina = 1, limite = 10 } = req.query
-
-        console.log(filtro)
 
         if (filtro) filtros.where = {
             OR: [
@@ -212,6 +200,7 @@ export default class CursosController {
             nomeCurso: curso.nome,
             descricao: curso.descricao,
             topicos: curso.topicos.map(topico => topico.titulo),
+            categorias: curso.categoria.map(categoria => categoria.nome),
             instrutores: curso.instrutores.map(instrutor => instrutor.usuario),
             cargaHoraria: cargaHoraria(),
             quantidadeDeVideo: quantidadeConteudo(tiposConteudosEnum.UrlYoutube),
