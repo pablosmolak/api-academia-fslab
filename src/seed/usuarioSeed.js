@@ -1,8 +1,9 @@
 import { verificarAdministradorPadrao } from "../config/initialConfig.js";
 import { prisma } from "../config/prismaClient.js";
 import bcrypt from "bcryptjs";
-import { gruposEnum } from "../utils/enums.js";
+import { bucketsMinio, gruposEnum } from "../utils/enums.js";
 import faker from 'faker-br';
+import minioConfig from "../config/minioConfig.js";
 
 export default async function usuarioSeed(qtd) {
 
@@ -17,18 +18,21 @@ export default async function usuarioSeed(qtd) {
     });
 
     const gruposid = grupos.map(grupo => grupo.id)
+    
+    const imagens = [];
+    const objetos = minioConfig.listObjectsV2(bucketsMinio.Usuarios, "", true); // Garantir que aguarda a resposta do MinIO
 
-    console.log(gruposid)
+    for await (const objeto of objetos) {
+        imagens.push(objeto.name);
+    }
 
     const usuarios = []
     for (let index = 0; index < qtd; index++) {
-        const senha = "Dev@1234"
-        const email = faker.internet.email();
-
         usuarios.push({
             nome: `${faker.name.firstName()} ${faker.name.lastName()}`,
-            senha: bcrypt.hashSync(senha, 10),
-            email,
+            senha: bcrypt.hashSync("Dev@1234", 10),
+            email: faker.internet.email(),
+            fotoPerfil: imagens.length > 0 ? faker.random.arrayElement(imagens) : null,
             grupoId: faker.random.arrayElement(gruposid)
         })
 

@@ -17,6 +17,10 @@ export default async function imagemSeed(quantity) {
     }
 
     const buckets = [bucketsMinio.Cursos, bucketsMinio.Usuarios]
+    const urls = {
+        [bucketsMinio.Cursos]: "https://picsum.photos/400",
+        [bucketsMinio.Usuarios]: "https://thispersondoesnotexist.com/"
+    }
 
     for (let bucket of buckets) {
         let count = 0
@@ -26,7 +30,7 @@ export default async function imagemSeed(quantity) {
             try {
                 const response = await axios({
                     method: "get",
-                    url: "https://picsum.photos/300",
+                    url: urls[bucket],
                     responseType: "stream",
                 });
 
@@ -46,10 +50,10 @@ export default async function imagemSeed(quantity) {
                     originalname: fileName
                 }
                 // Faz upload ao MinIO
-               await minioFunctions.upload(file, bucket)
+                await minioFunctions.upload(file, bucket)
 
-               count++
-               console.log(`imagem ${count} criada`)
+                count++
+                console.log(`imagem ${count} criada`)
             } catch (error) {
                 console.error(`Erro ao processar imagem ${i + 1}:`, error);
             }
