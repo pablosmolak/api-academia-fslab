@@ -70,7 +70,7 @@ export default class CursosController {
         if (filtro) filtros.where = {
             OR: [
                 { nome: { contains: filtro } },
-                { descricao: { contains: filtro } },
+               // { descricao: { contains: filtro } },
                 { categoria: { some: { nome: { contains: filtro } } } },
                 { instrutores: { some: { usuario: { nome: { contains: filtro } } } } }
             ]
@@ -197,6 +197,7 @@ export default class CursosController {
         }
 
         let informacoesCurso = {
+            id: curso.id,
             nomeCurso: curso.nome,
             descricao: curso.descricao,
             topicos: curso.topicos.map(topico => topico.titulo),
