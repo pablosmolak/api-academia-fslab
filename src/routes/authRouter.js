@@ -8,5 +8,9 @@ router
     .post("/login", 
         wrapException(AuthController.logar)
     )
+    .post("/login/github",
+        wrapException(AuthController.logarGithub
+        )
+    )
 
 export default router;

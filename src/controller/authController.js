@@ -3,6 +3,7 @@ import messages, { sendError } from "../utils/mensagens.js"
 import { prisma } from "../config/prismaClient.js"
 import { validarEmail } from "../utils/validations.js"
 import bcript from "bcryptjs"
+import criarUsuario from "../utils/criarUsuario.js"
 
 export default class AuthController {
     static async logar(req, res) {
@@ -54,5 +55,44 @@ export default class AuthController {
         }
 
         res.status(200).json(token)
+    }
+
+    static async logarGithub(req,res){
+        const {token} = req.body
+
+        fetch("https://api.github.com/user", {
+            method: "GET",
+            headers: {
+              "Authorization": `token ${token.githubAccessToken}`,
+              "Accept": "application/vnd.github.v3+json"
+            }
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.message === "Bad credentials") {
+                console.log("Token inválido ou expirado!");
+              } else {
+                console.log("Informações do usuário:", data);
+              }
+            })
+            .catch(error => console.error("Erro na requisição:", error));
+
+        const findUser = await prisma.usuario.findUnique({
+            where: { email: email },
+            include: {
+                Grupo: {
+                    select: {
+                        nome: true
+                    }
+                }
+            }
+        })
+
+        if (findUser === null) {
+            criarUsuario(token)
+        }
+
+
+
     }
 }
