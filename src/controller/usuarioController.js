@@ -3,7 +3,7 @@ import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { pagination } from "../utils/pagination.js";
 import minioFunctions from "../utils/minioFunctions.js";
-import { bucketsMinio } from "../utils/enums.js";
+import { bucketsMinio, gruposEnum } from "../utils/enums.js";
 import fs from 'fs';
 import { usuarioSchema } from "../schema/usuarioSchema.js";
 
@@ -25,7 +25,7 @@ export default class UsuarioController {
 
         const grupoId = await prisma.grupo.findFirst({
             where: {
-                nome: { in: ["Cursantes"] },
+                nome: { in: [gruposEnum.Alunos] },
             },
             select: { id: true },
         });

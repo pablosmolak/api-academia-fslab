@@ -25,7 +25,7 @@ model Usuario {
     id                 String   @id @default(uuid())
     nome               String
     email              String   @unique
-    senha              String
+    senha              String?
     tokenRecuperaSenha String?  @db.VarChar(1024)
     fotoPerfil         String?
     ativo              Boolean  @default(true)

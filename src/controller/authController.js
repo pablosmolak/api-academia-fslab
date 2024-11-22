@@ -3,18 +3,21 @@ import messages, { sendError } from "../utils/mensagens.js"
 import { prisma } from "../config/prismaClient.js"
 import { validarEmail } from "../utils/validations.js"
 import bcript from "bcryptjs"
-import criarUsuario from "../utils/criarUsuario.js"
+
+import SaveImageToWeb from "../utils/SaveImageToWeb.js"
+import minioFunctions from "../utils/minioFunctions.js"
+import { bucketsMinio, gruposEnum } from "../utils/enums.js"
 
 export default class AuthController {
     static async logar(req, res) {
         const erros = []
 
-        const {email,senha} = req.body
+        const { email, senha } = req.body
 
         if (!email) {
             erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
         } else {
-            validarEmail(email,erros)
+            validarEmail(email, erros)
         }
 
         if (!senha) {
@@ -34,11 +37,11 @@ export default class AuthController {
             }
         })
 
-        if (findUser === null) return sendError(res,401, ["Usuário ou senha incorretos!"])
+        if (findUser === null) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
-        if (!(await bcript.compare(senha, findUser.senha))) return sendError(res,401, ["Usuário ou senha incorretos!"])
+        if (!(await bcript.compare(senha, findUser.senha))) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
-        if (!findUser.ativo) return sendError(res,401, ["Usuário ou senha incorretos!"])
+        if (!findUser.ativo) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
         const token = {
             token: jwt.sign(
@@ -57,28 +60,53 @@ export default class AuthController {
         res.status(200).json(token)
     }
 
-    static async logarGithub(req,res){
-        const {token} = req.body
+    static async logarGithub(req, res) {
+        const { access_token } = req.body
 
-        fetch("https://api.github.com/user", {
+        const githubInfos = await fetch("https://api.github.com/user", {
             method: "GET",
             headers: {
-              "Authorization": `token ${token.githubAccessToken}`,
-              "Accept": "application/vnd.github.v3+json"
+                "Authorization": `token ${access_token}`,
+                "Accept": "application/vnd.github.v3+json"
             }
-          })
+        })
             .then(response => response.json())
             .then(data => {
-              if (data.message === "Bad credentials") {
-                console.log("Token inválido ou expirado!");
-              } else {
-                console.log("Informações do usuário:", data);
-              }
-            })
-            .catch(error => console.error("Erro na requisição:", error));
+                if (data.message === "Bad credentials") {
+                    return sendError(res, 401, ["Usuário ou senha incorretos!"])
+                }
 
-        const findUser = await prisma.usuario.findUnique({
-            where: { email: email },
+                return data
+            })
+            .catch(error => {
+                return sendError(res, 401, ["Usuário ou senha incorretos!"])
+            });
+
+        const githubEmail = await fetch("https://api.github.com/user/emails", {
+            method: "GET",
+            headers: {
+                "Authorization": `token ${access_token}`,
+                "Accept": "application/vnd.github.v3+json"
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Bad credentials") {
+                    return sendError(res, 401, ["Usuário ou senha incorretos!"])
+                }
+
+                const email = data.filter(email => email.primary === true)
+                    .map(email => email.email)
+                    .join('')
+
+                return email
+            })
+            .catch(error => {
+                return sendError(res, 401, ["Usuário ou senha incorretos!"])
+            });
+
+        let findUser = await prisma.usuario.findUnique({
+            where: { email: githubEmail },
             include: {
                 Grupo: {
                     select: {
@@ -89,10 +117,56 @@ export default class AuthController {
         })
 
         if (findUser === null) {
-            criarUsuario(token)
+
+            const user = {
+                nome: githubInfos.name,
+                email: githubEmail,
+                fotoPerfil: githubInfos.avatar_url
+            }
+
+            findUser= await criarUsuario(user)
         }
 
-
-
+        const token = {
+            token: jwt.sign(
+                {
+                    id: findUser.id,
+                    nome: findUser.nome,
+                    email: findUser.email,
+                    ativo: findUser.ativo,
+                    grupo: findUser.Grupo.nome
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRATION }
+            )
+        }
+        
+        res.status(200).json(token)
     }
+}
+
+async function criarUsuario(user) {
+
+    const imagePath = await SaveImageToWeb(user.fotoPerfil)
+
+    const imagem = await minioFunctions.upload(imagePath, bucketsMinio.Usuarios)
+
+    const grupoId = await prisma.grupo.findFirst({
+        where: {
+            nome: { in: [gruposEnum.Alunos] },
+        },
+        select: { id: true },
+    });
+
+    const usuario = await prisma.usuario.create({
+        data: {
+            nome: user.nome,
+            email: user.email,
+            fotoPerfil: imagem,
+            grupoId: grupoId.id
+        }
+    })
+
+    return ({...usuario, Grupo: {nome: gruposEnum.Alunos}})
+    
 }
