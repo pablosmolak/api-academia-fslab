@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import messages, { sendError } from "../utils/mensagens.js"
+import messages, { sendError, sendResponse } from "../utils/mensagens.js"
 import { prisma } from "../config/prismaClient.js"
 import { validarEmail } from "../utils/validations.js"
 import bcript from "bcryptjs"
@@ -24,7 +24,7 @@ export default class AuthController {
             erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
         }
 
-        if (erros.length > 0) sendError(res, 422, erros)
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         const findUser = await prisma.usuario.findUnique({
             where: { email: email },
@@ -39,25 +39,29 @@ export default class AuthController {
 
         if (findUser === null) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
-        if (!(await bcript.compare(senha, findUser.senha))) return sendError(res, 401, ["Usuário ou senha incorretos!"])
+        if (!(bcript.compare(senha, findUser.senha))) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
         if (!findUser.ativo) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
-        const token = {
-            token: jwt.sign(
-                {
-                    id: findUser.id,
-                    nome: findUser.nome,
-                    email: findUser.email,
-                    ativo: findUser.ativo,
-                    grupo: findUser.Grupo.nome
-                },
-                process.env.JWT_SECRET,
-                { expiresIn: process.env.JWT_EXPIRATION }
-            )
-        }
+        const token = jwt.sign(
+            {
+                id: findUser.id,
+                name: findUser.nome,
+                email: findUser.email,
+                ativo: findUser.ativo,
+                grupo: findUser.Grupo.nome
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRATION }
+        )
 
-        res.status(200).json(token)
+
+        const payload = jwt.decode(token);
+
+        return sendResponse(res, 200, {
+            token: token,
+            payload: payload
+        })
     }
 
     static async logarGithub(req, res) {
@@ -124,7 +128,7 @@ export default class AuthController {
                 fotoPerfil: githubInfos.avatar_url
             }
 
-            findUser= await criarUsuario(user)
+            findUser = await criarUsuario(user)
         }
 
         const token = {
@@ -140,7 +144,7 @@ export default class AuthController {
                 { expiresIn: process.env.JWT_EXPIRATION }
             )
         }
-        
+
         res.status(200).json(token)
     }
 }
@@ -167,6 +171,6 @@ async function criarUsuario(user) {
         }
     })
 
-    return ({...usuario, Grupo: {nome: gruposEnum.Alunos}})
-    
+    return ({ ...usuario, Grupo: { nome: gruposEnum.Alunos } })
+
 }
