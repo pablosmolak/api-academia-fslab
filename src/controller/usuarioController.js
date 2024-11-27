@@ -18,7 +18,7 @@ export default class UsuarioController {
         })
 
         if (userExist !== null) {
-            erros.push({path:"email", message: messages.auth.emailAlreadyExists(userExist.email)})
+            erros.push({path:"email", message: messages.auth.emailAlreadyExists()})
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
