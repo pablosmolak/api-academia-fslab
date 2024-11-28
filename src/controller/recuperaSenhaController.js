@@ -7,10 +7,11 @@ import bcrypt from "bcryptjs";
 
 export default class RecuperaSenhaController {
     static async recuperaSenha(req, res) {
-        const { usuario, url } = req.body
+        const { email } = req.body
 
-        delete usuario.senha
-        delete usuario.tokenRecuperaSenha
+        console.log(email)
+
+        
 
         const token = jwt.sign({ usuario }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRATION_RECUPERA_SENHA,
