@@ -36,11 +36,11 @@ export default class RecuperaSenhaController {
         })
 
         await EmailService.sendEmail({
-            "subject": "Solicitação de recuperação de senha",
+            "subject": "Academia FSLab - Solicitação de recuperação de senha",
             "to": email,
             "template": "academia-recuperacaosenha",
             "data": {
-                "userName": "Pablo",
+                "userName": usuario.nome,
                 "resetLink": `${urlFront}?token=${token}&email=${email}`
             }
         });

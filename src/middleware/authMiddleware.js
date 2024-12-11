@@ -28,6 +28,10 @@ export async function AuthMiddleware(req, res, next) {
         if (!user) {
             return sendError(res, 498, messages.auth.invalidToken)
         }
+
+        if(!user.emailVerificado){
+            return sendError(res, 401, "Email não verificado!")
+        }
         
         if(!user.ativo){
             return sendError(res, 498, messages.auth.invalidToken)

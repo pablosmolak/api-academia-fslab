@@ -6,19 +6,25 @@ import minioFunctions from "../utils/minioFunctions.js";
 import { bucketsMinio, gruposEnum } from "../utils/enums.js";
 import fs from 'fs';
 import { usuarioSchema } from "../schema/usuarioSchema.js";
+import { EmailService } from "../services/emailService.js"
 
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {
-        const erros =[]
+        const erros = []
         let { nome, email, senha } = usuarioSchema.criarUsuario.parse(req.body)
 
+
+        console.log(email)
+
         let userExist = await prisma.usuario.findUnique({
-            where: { email: email }
+            where: { email }
         })
 
+        console.log(userExist)
+
         if (userExist !== null) {
-            erros.push({path:"email", message: messages.auth.emailAlreadyExists()})
+            erros.push({ path: "email", message: messages.auth.emailAlreadyExists() })
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
@@ -30,17 +36,32 @@ export default class UsuarioController {
             select: { id: true },
         });
 
+        const codicoVerificacao = Math.floor(100000 + Math.random() * 900000);
+
+        console.log(codicoVerificacao)
+
         const userCreated = await prisma.usuario.create({
             data: {
                 nome,
                 email,
                 senha: bcrypt.hashSync(senha, 10),
-                grupoId: grupoId.id
+                grupoId: grupoId.id,
+                codigoVerificacaoEmail: codicoVerificacao
             },
         });
 
-        // retornar o usuario criado sem o campo senha
         delete userCreated.senha;
+        delete userCreated.codigoVerificacaoEmail;
+
+        await EmailService.sendEmail({
+            "subject": "Academia FSLab - Confirme o seu E-mail",
+            "to": email,
+            "template": "academia-verificaemail",
+            "data": {
+                "userName": nome,
+                "verificationCode": `${codicoVerificacao}`
+            }
+        });
 
         return sendResponse(res, 201, userCreated);
     }
@@ -195,7 +216,7 @@ export default class UsuarioController {
             }
         })
 
-        if(userExist.fotoPerfil){
+        if (userExist.fotoPerfil) {
             await minioFunctions.remove(userExist.fotoPerfil, bucketsMinio.Usuarios)
                 .catch()
         }
