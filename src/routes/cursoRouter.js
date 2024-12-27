@@ -3,12 +3,14 @@ import express from "express";
 import { wrapException } from "../utils/wrapException.js";
 import { AuthMiddleware } from "../middleware/authMiddleware.js";
 import { uploadMulter } from "../middleware/multerMiddleware.js";
+import { EmailVerificadoMiddleware } from "../middleware/EmailVerificadoMiddleware.js";
 
 const router = express.Router();
 
 router
     .post("/cursos",
         AuthMiddleware,
+           EmailVerificadoMiddleware,
         wrapException(CursosController.criarCurso)
     )
 
@@ -22,6 +24,7 @@ router
 
     .delete("/cursos/:id",
         AuthMiddleware,
+        EmailVerificadoMiddleware,
         wrapException(CursosController.deletarCurso)
     )
 
@@ -34,6 +37,8 @@ router
     )
 
     .get("/cursos/:id/instrutores",
+        AuthMiddleware,
+        EmailVerificadoMiddleware,
         wrapException(CursosController.listarInstrutoresDoCurso)
     )
     .post("/cursos/:id/instrutores",

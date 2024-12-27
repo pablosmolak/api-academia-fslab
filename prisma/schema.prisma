@@ -22,18 +22,19 @@ model Grupo {
 
 // modelo de Usuários
 model Usuario {
-    id                     String   @id @default(uuid())
-    nome                   String
-    email                  String   @unique
-    senha                  String?
-    emailVerificado        Boolean  @default(false)
-    codigoVerificacaoEmail Int?
-    tokenRecuperaSenha     String?  @db.VarChar(1024)
-    fotoPerfil             String?
-    ativo                  Boolean  @default(true)
-    grupoId                String
-    created_at             DateTime @default(now())
-    updated_at             DateTime @updatedAt
+    id                         String    @id @default(uuid())
+    nome                       String
+    email                      String    @unique
+    senha                      String?
+    emailVerificado            Boolean   @default(false)
+    codigoVerificacaoEmail     Int?
+    expirationVerificacaoEmail DateTime?
+    tokenRecuperaSenha         String?   @db.VarChar(1024)
+    fotoPerfil                 String?
+    ativo                      Boolean   @default(true)
+    grupoId                    String
+    created_at                 DateTime  @default(now())
+    updated_at                 DateTime  @updatedAt
 
     // Relacionamentos
     inscricoes      Inscricao[]

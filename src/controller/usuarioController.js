@@ -36,9 +36,9 @@ export default class UsuarioController {
             select: { id: true },
         });
 
-        const codicoVerificacao = Math.floor(100000 + Math.random() * 900000);
+        const codigoVerificacao = Math.floor(100000 + Math.random() * 900000);
 
-        console.log(codicoVerificacao)
+        const expirationInMs = 30 * 60 * 1000; // 30 minutos em milissegundos
 
         const userCreated = await prisma.usuario.create({
             data: {
@@ -46,7 +46,8 @@ export default class UsuarioController {
                 email,
                 senha: bcrypt.hashSync(senha, 10),
                 grupoId: grupoId.id,
-                codigoVerificacaoEmail: codicoVerificacao
+                codigoVerificacaoEmail: codigoVerificacao,
+                expirationVerificacaoEmail: new Date(new Date().getTime() + expirationInMs)
             },
         });
 
@@ -59,7 +60,7 @@ export default class UsuarioController {
             "template": "academia-verificaemail",
             "data": {
                 "userName": nome,
-                "verificationCode": `${codicoVerificacao}`
+                "verificationCode": `${codigoVerificacao}`
             }
         });
 
