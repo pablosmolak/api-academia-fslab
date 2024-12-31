@@ -39,7 +39,9 @@ export default class AuthController {
 
         if (findUser === null) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
-        if (!(bcript.compare(senha, findUser.senha))) return sendError(res, 401, ["Usuário ou senha incorretos!"])
+        const senhaValida = await bcript.compare(senha, findUser.senha)
+
+        if (!senhaValida) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
         if (!findUser.ativo) return sendError(res, 401, ["Usuário ou senha incorretos!"])
 
@@ -49,12 +51,12 @@ export default class AuthController {
                 name: findUser.nome,
                 email: findUser.email,
                 ativo: findUser.ativo,
-                grupo: findUser.Grupo.nome
+                grupo: findUser.Grupo.nome,
+                emailVerificado: findUser.emailVerificado
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION }
         )
-
 
         const payload = jwt.decode(token);
 

@@ -14,8 +14,8 @@ await prisma.usuario.deleteMany()
 await prisma.grupo.deleteMany();
 
 await gruposSeed()
-await imagemSeed(100)
+await imagemSeed(20)
 await usuarioSeed(50)
 await categoriaSeed()
-await cursoSeed(100)
+await cursoSeed(20)
 instrutorSeed()

@@ -16,13 +16,13 @@ export default class VerificarEmailController {
         if (user.emailVerificado) {
             return sendError(res, 422, { path: "codigoVerificacaoEmail", message: "Email já verificado!" })
         }
-
-        if (user.expirationVerificacaoEmail < new Date()) {
+        
+        if (user.codigoVerificacaoEmail != codigoVerificacaoEmail) {
             return sendError(res, 422, { path: "codigoVerificacaoEmail", message: "Código de verificação inválido!" })
         }
 
-        if (user.codigoVerificacaoEmail !== codigoVerificacaoEmail) {
-            return sendError(res, 422, { path: "codigoVerificacaoEmail", message: "Código de verificação inválido!" })
+        if (user.expirationVerificacaoEmail < new Date()) {
+            return sendError(res, 422, { path: "codigoVerificacaoEmail", message: "Código de verificação expirado!" })
         }
 
         await prisma.usuario.update({
