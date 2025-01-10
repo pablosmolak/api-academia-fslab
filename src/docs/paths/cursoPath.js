@@ -17,10 +17,20 @@ export const CursoPath = {
                     }
                 },
                 {
+                    name: "publicado",
+                    in:"query",
+                    description:"filtro para trazer cursos publicados ou não publicados",
+                    required: true,
+                    schema:{
+                        type: String,
+                        enum: [true, false,"all"]
+                    }
+                },
+                {
                     name: "pagina",
                     in: "query",
                     description: "Número da página de resultados da pesquisa",
-                    required: false,
+                    required: true,
                     schema: {
                         type: "integer",
                         default: 1,
@@ -31,7 +41,7 @@ export const CursoPath = {
                     name: "limite",
                     in: "query",
                     description: "Quantidade máxima de resultados por página",
-                    required: false,
+                    required: true,
                     schema: {
                         type: "integer",
                         default: 10,

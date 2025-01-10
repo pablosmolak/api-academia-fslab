@@ -84,6 +84,7 @@ export async function verificarAdministradorPadrao() {
             data: {
                 nome: "Administrador",
                 senha: bcrypt.hashSync(senha, 10),
+                emailVerificado:true,
                 email: email,
                 grupoId: grupoId.id
             }

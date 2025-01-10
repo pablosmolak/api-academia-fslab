@@ -7,7 +7,7 @@ export default class ConteudoController {
     static async criarConteudo(req, res) {
         const erros = []
 
-        const { topicoId, tipo, conteudo, cargaHoraria } = conteudoCursoSchema.criarConteudo.parse(req.body)
+        const { topicoId, titulo, tipo, conteudo, cargaHoraria } = conteudoCursoSchema.criarConteudo.parse(req.body)
 
         const findTopico = await prisma.topico.findUnique({
             where: {
@@ -17,6 +17,17 @@ export default class ConteudoController {
 
         if (findTopico === null) {
             erros.push(messages.validationGeneric.notFound("topicoId"))
+        }
+
+        const conteudoExistente = await prisma.conteudoCurso.findFirst({
+            where: {
+                titulo,
+                topicoId,
+            },
+        });
+
+        if (conteudoExistente) {
+            erros.push('Já existe um conteúdo com este título neste tópico.')
         }
 
         //quando for add novos tipos de conteudo revalidar esse campo

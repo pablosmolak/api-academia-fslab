@@ -65,16 +65,18 @@ export default class CursosController {
     static async listarCursos(req, res) {
         let filtros = { where: {} }
 
-        const { filtro, pagina = 1, limite = 10 } = req.query
+        const { filtro, publicado = true, pagina = 1, limite = 10 } = req.query
 
         if (filtro) filtros.where = {
             OR: [
                 { nome: { contains: filtro } },
-               // { descricao: { contains: filtro } },
+                // { descricao: { contains: filtro } },
                 { categoria: { some: { nome: { contains: filtro } } } },
                 { instrutores: { some: { usuario: { nome: { contains: filtro } } } } }
             ]
         }
+
+        if (publicado == "true" || publicado == "false") filtros.where.publicado = publicado == "true" ? true : false
 
         const paginacao = await pagination("curso", pagina, limite, filtros)
 

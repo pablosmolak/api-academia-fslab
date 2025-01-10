@@ -49,10 +49,11 @@ model Usuario {
 model Inscricao {
     cursoId       String
     userId        String
-    status        String   @default("Em Andamento")
-    dataInscricao DateTime @default(now())
-    created_at    DateTime @default(now())
-    updated_at    DateTime @updatedAt
+    status        String    @default("Em Andamento")
+    dataInscricao DateTime  @default(now())
+    dataTermino   DateTime?
+    created_at    DateTime  @default(now())
+    updated_at    DateTime  @updatedAt
 
     // Relacionamento com o curso e usuário
     curso   Curso   @relation(fields: [cursoId], references: [id])
@@ -84,6 +85,7 @@ model ProgressoCurso {
 // modelo de Conteúdo do Curso
 model ConteudoCurso {
     id           String   @id @default(uuid())
+    titulo       String
     topicoId     String
     tipo         String // tipo de conteúdo (texto, vídeo, questão, etc.)
     conteudo     String // conteúdo em si (texto formatado, URL do vídeo, etc.)
@@ -125,6 +127,7 @@ model Curso {
     descricao  String   @db.Text
     capa       String?
     criador    String
+    publicado  Boolean  @default(false)
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 

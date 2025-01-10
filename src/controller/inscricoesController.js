@@ -1,17 +1,18 @@
 import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { inscricaoSchema } from "../schema/inscricaoSchema.js";
+import { pagination } from "../utils/pagination.js";
 
 export default class InscricoesController {
     static async criarInscricao(req, res) {
         const erros = []
 
-        const { cursoid } = inscricaoSchema.criarInscricao.parse(req.body)
+        const { cursoId } = inscricaoSchema.criarInscricao.parse(req.body)
 
         const userid = req.user.id
 
         const findCurso = await prisma.curso.findUnique({
-            where: { id: cursoid }
+            where: { id: cursoId }
         })
 
         if (findCurso === null) {
@@ -20,7 +21,7 @@ export default class InscricoesController {
             const findInscricaoCurso = await prisma.inscricao.findFirst({
                 where: {
                     userId: userid,
-                    cursoId: cursoid,
+                    cursoId: cursoId,
                 }
             })
 
@@ -37,7 +38,7 @@ export default class InscricoesController {
             inscricaoCriada = await prisma.inscricao.create({
                 data: {
                     curso: {
-                        connect: { id: cursoid }
+                        connect: { id: cursoId }
                     },
                     usuario: {
                         connect: { id: userid }
@@ -48,7 +49,7 @@ export default class InscricoesController {
             await prisma.progressoCurso.create({
                 data: {
                     userId: userid,
-                    cursoId: cursoid,
+                    cursoId: cursoId,
                     porcentagem: 0
                 }
             })
@@ -59,12 +60,14 @@ export default class InscricoesController {
     }
 
     static async listarInscricoes(req, res) {
-        const { cursoId, usuarioId } = req.query
+        const filtros = { where: {} }
 
-        const filtros = {}
+        const { cursoId, usuarioId, pagina = 1, limite = 10 } = req.query
 
         if (cursoId) filtros.where.cursoId = { contains: cursoId }
         if (usuarioId) filtros.where.userId = { contains: usuarioId }
+
+        const paginacao = await pagination('inscricao', pagina, limite, filtros)
 
         const inscricoes = await prisma.inscricao.findMany({
             ...filtros,
@@ -83,10 +86,37 @@ export default class InscricoesController {
                         descricao: true
                     }
                 }
+            },
+            skip: paginacao.skip,
+            take: paginacao.take
+        });
+
+        return sendResponse(res, 200, inscricoes,
+            { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take }
+        );
+    }
+
+    static async listarInscricoesDoUsuarioLogado(req, res) {
+
+        const usuario = req.user.id
+
+        const inscricoes = await prisma.inscricao.findMany({
+            where: {
+                userId: usuario
+            },
+            include: {
+                curso: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        descricao: true
+                    }
+                }
             }
         });
 
         return sendResponse(res, 200, inscricoes);
+
     }
 
     static async deletarInscricao(req, res) {

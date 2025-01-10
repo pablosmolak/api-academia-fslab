@@ -136,7 +136,8 @@ export default class ProgressoController {
                         }
                     },
                     data: {
-                        status: "Finalizado"
+                        status: "Finalizado",
+                        dataTermino: new date()
                     }
                 })
             })
