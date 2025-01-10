@@ -76,7 +76,7 @@ export default class CursosController {
             ]
         }
 
-        if (publicado == "true" || publicado == "false") filtros.where.publicado = publicado == "true" ? true : false
+        if (publicado == "true" || publicado == "false") filtros.where.publicado = (publicado == "true" ? true : false)
 
         const paginacao = await pagination("curso", pagina, limite, filtros)
 
