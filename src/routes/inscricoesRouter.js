@@ -27,6 +27,12 @@ router
         EmailVerificadoMiddleware,
         wrapException(InscricoesController.listarInscricoesDoUsuarioLogado)
     )
+    
+    .get("/inscricoes/usuario/curso/:cursoId",
+        AuthMiddleware,
+        EmailVerificadoMiddleware,
+        wrapException(InscricoesController.listarInscricoesDoUsuarioLogadoPorIdDeCurso)
+    )
 
     .delete("/inscricoes/:id",
         AuthMiddleware,

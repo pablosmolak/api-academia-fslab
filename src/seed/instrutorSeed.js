@@ -1,5 +1,6 @@
 import { prisma } from "../config/prismaClient.js";
 import faker from 'faker-br';
+import { gruposEnum } from "../utils/enums.js";
 
 export default async function instrutorSeed() {
 
@@ -7,6 +8,13 @@ export default async function instrutorSeed() {
         select: {
             id: true,
         },
+        where: {
+            Grupo: {
+                nome: {
+                    in: [gruposEnum.ADM, gruposEnum.Professores],
+                }
+            }
+        }
     })
     const cursos = await prisma.curso.findMany({
         select: {

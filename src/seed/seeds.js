@@ -9,6 +9,8 @@ import instrutorSeed from "./instrutorSeed.js";
 import topicoSeed from "./topicoSeed.js";
 import conteudoSeed from "./conteudoSeed.js";
 
+await prisma.progressoCurso.deleteMany()
+await prisma.inscricao.deleteMany(); 
 await prisma.conteudoCurso.deleteMany();
 await prisma.topico.deleteMany();
 await prisma.instrutores.deleteMany()
@@ -18,8 +20,8 @@ await prisma.usuario.deleteMany()
 await prisma.grupo.deleteMany();
 
 await gruposSeed()
-await imagemSeed(1)
-await usuarioSeed(1)
+await imagemSeed(5)
+await usuarioSeed(20)
 await categoriaSeed()
 await cursoSeed(20)
 await instrutorSeed()

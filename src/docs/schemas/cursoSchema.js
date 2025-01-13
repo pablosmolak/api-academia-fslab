@@ -49,9 +49,9 @@ export const CursoSchemas = {
                 type: 'string',
                 nullable: true,
                 description: "Descrição do curso",
-                example: "Este curso oferece uma introdução completa aos fundamentos da programação, abordando conceitos " + 
-                "essenciais como variáveis, estruturas de controle, funções e manipulação de dados. Ao final, você terá as habilidades " +
-                "para escrever códigos básicos e resolver problemas simples."
+                example: "Este curso oferece uma introdução completa aos fundamentos da programação, abordando conceitos " +
+                    "essenciais como variáveis, estruturas de controle, funções e manipulação de dados. Ao final, você terá as habilidades " +
+                    "para escrever códigos básicos e resolver problemas simples."
             },
             categoria: {
                 type: "array",
@@ -142,5 +142,88 @@ export const CursoSchemas = {
             "quantidadeAtividade"
         ],
         description: "Resposta com informações detalhadas de um curso"
+    },
+    CursoInstrutoresResponse: {
+        type: 'object',
+        properties: {
+            id: {
+                type: "string",
+                format: "uuid",
+                description: "ID único do Instrutor",
+                example: "2d40c652-dfa6-470b-8913-6002d8b2d76f"
+            },
+            nome: {
+                type: "string",
+                description: "Nome do instrutor",
+                example: "Dev de Oliveira"
+            },
+            email: {
+                type: "string",
+                format: "email",
+                description: "Email do instrutor",
+                example: "dev@gmail.com"
+            },
+            fotoPerfil: {
+                type: "string",
+                nullable: true,
+                description: "URL da foto de perfil do instrutor",
+                example: null
+            },
+        },
+        required: ['id', 'nome', 'email', 'fotoPerfil'],
+        description: "Resposta dos instrutores de um curso"
+    },
+    CursoInstrutoresRequestBody: {
+        type: 'object',
+        properties: {
+            usersID: {
+                type: "array",
+                items: {
+                    type: "string",
+                    format: "uuid",
+                    description: "ID único do Instrutor",
+                    example: "2d40c652-dfa6-470b-8913-6002d8b2d76f"
+                }
+            }
+        },
+        required: ['usersID'],
+        description: "Corpo da requisição para adicionar instrutores a um curso"
+    },
+    CursoInstrutoresResponseBody: {
+        type: "object",
+        properties: {
+            id: {
+                type: "string",
+                format: "uuid",
+                description: "ID único da relação entre instrutor e curso",
+                example: "4eaab49e-b0a8-46fe-a224-7edefb336981"
+            },
+            cursoId: {
+                type: "string",
+                format: "uuid",
+                description: "ID do curso associado",
+                example: "1450b645-b14f-4445-a607-48e04400647c"
+            },
+            userId: {
+                type: "string",
+                format: "uuid",
+                description: "ID do usuário (instrutor) associado",
+                example: "0eff7420-9757-4ac4-937a-6a9db7b45a20"
+            },
+            created_at: {
+                type: "string",
+                format: "date-time",
+                description: "Data de criação do curso",
+                example: "2024-07-26T12:34:56Z"
+            },
+            updated_at: {
+                type: "string",
+                format: "date-time",
+                description: "Data da última atualização do curso",
+                example: "2024-07-26T12:34:56Z"
+            },
+        },
+        required: ["id", "cursoId", "userId", "created_at", "updated_at"],
+        description: "Resposta da relação entre instrutor e curso"
     }
 }

@@ -8,6 +8,35 @@ export default class ProgressoController {
         sendResponse(res, 200, resp)
     }
 
+    static async listarProgressoDoUsuarioNoCurso(req, res) {
+        const userId = req.user.id
+
+        const { cursoId } = progressoSchema.listarProgresso.parse(req.params)
+
+        const findCurso = await prisma.curso.findUnique({
+            where: {
+                id: cursoId,
+            }
+        });
+
+        if (!findCurso) {
+           return sendError(res, 422, { path: "cursoId", message: messages.validationGeneric.notFound("id do curso") });
+        }
+
+        const progresso = await prisma.progressoCurso.findMany({
+            where: {
+                cursoId,
+                userId
+            }
+        })
+
+        if(progresso.length === 0){
+           return sendError(res, 404, "Nenhum progresso encontrado nesse curso para esse usuário!");
+        }
+
+       return sendResponse(res, 200, progresso)
+    }
+
     static async finalizarAtividade(req, res) {
 
         const { conteudoid } = progressoSchema.finalizarAtividade.parse(req.params)
@@ -29,8 +58,8 @@ export default class ProgressoController {
             }
         })
 
-        if(!conteudo){
-            return sendError(res,422, { path: "conteudoid", message: "Não existe conteúdo com o ID informado!" })
+        if (!conteudo) {
+            return sendError(res, 422, { path: "conteudoid", message: "Não existe conteúdo com o ID informado!" })
         }
 
         const cursoid = conteudo?.topico.curso.id
@@ -68,7 +97,7 @@ export default class ProgressoController {
 
         if (!atividadesConcluidas.includes(conteudoid)) {
             atividadesConcluidas.push(conteudoid);
-           
+
         } else {
             return sendError(res, 422, { path: "conteudoid", message: "O conteúdo informado já estava concluído!" })
         }
@@ -112,7 +141,7 @@ export default class ProgressoController {
             },
         })
 
-        if (!atividadeAtual){ 
+        if (!atividadeAtual) {
             let certificado
             await prisma.$transaction(async (prisma) => {
 
@@ -136,7 +165,7 @@ export default class ProgressoController {
                     }
                 })
             })
-        
+
             return sendResponse(res, 201, [{ ...progressoUpdated, certificado: certificado }])
         }
 

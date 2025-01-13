@@ -1,7 +1,7 @@
 import faker from 'faker-br';
 import minioConfig from "../config/minioConfig.js";
 import { prisma } from "../config/prismaClient.js";
-import { bucketsMinio } from "../utils/enums.js";
+import { bucketsMinio, gruposEnum } from "../utils/enums.js";
 export default async function cursoSeed(qtd = 0) {
     const cursosTecnologia = [
         "Desenvolvimento Web",
@@ -50,6 +50,13 @@ export default async function cursoSeed(qtd = 0) {
         select: {
             id: true,
         },
+        where: {
+            Grupo: {
+                nome: {
+                    in: [gruposEnum.ADM,gruposEnum.Professores], 
+                }
+            }
+        }
     });
 
     const categorias = await prisma.categoria.findMany({
@@ -73,9 +80,10 @@ export default async function cursoSeed(qtd = 0) {
 
         const novoCurso = await prisma.curso.create({
             data: {
-                nome:  faker.random.arrayElement(cursosTecnologia),
+                nome: faker.random.arrayElement(cursosTecnologia),
                 descricao: faker.lorem.paragraphs(2),
                 capa: imagens.length > 0 ? faker.random.arrayElement(imagens) : null,
+                publicado: true,
                 criador: faker.random.arrayElement(usuarios).id,
                 categoria: { // Usando o campo de relacionamento
                     connect: categoriasSelecionadas.map((categoria) => ({ id: categoria.id })),

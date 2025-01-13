@@ -107,5 +107,26 @@ export const InscricaoPath = {
                 ...gerarRespostasDeErro([401, 403, 498, 500])
             }
         }
+    },
+    "/inscricoes/usuario/curso/{cursoId}": {
+        get: {
+            tags: ["Inscrições"],
+            security: [{ jwtAuth: [] }],
+            summary: "Listar Inscrições do usuário logado por id de curso",
+            description: "Recupera uma inscrições do usuário logado por curso.",
+            parameters: [
+                {
+                    name: "cursoId",
+                    in: "path",
+                    description: "ID do curso.",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            responses: {
+                ...gerarRespostasCorretas(200, "#/components/schemas/Inscricao"),
+                ...gerarRespostasDeErro([401, 403, 498, 500])
+            }
+        }
     }
 }

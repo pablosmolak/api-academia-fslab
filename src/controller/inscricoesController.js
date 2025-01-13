@@ -12,11 +12,24 @@ export default class InscricoesController {
         const userid = req.user.id
 
         const findCurso = await prisma.curso.findUnique({
-            where: { id: cursoId }
+            where: {
+                id: cursoId,
+                publicado: true
+            },
+            include: {
+                topicos: {
+                    include: {
+                        conteudos: {
+                            orderBy: { ordem: 'asc' }
+                        }
+                    },
+                    orderBy: { ordem: 'asc' }
+                },
+            }
         })
 
         if (findCurso === null) {
-            erros.push(messages.validationGeneric.invalid("cursoid"))
+            erros.push('Nenhum curso publicado encontrado com esse ID')
         } else {
             const findInscricaoCurso = await prisma.inscricao.findFirst({
                 where: {
@@ -31,6 +44,10 @@ export default class InscricoesController {
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
+
+
+        const topicoAtual = findCurso.topicos?.find(topico => topico.ordem === 1)
+        const atividadeAtual = topicoAtual.conteudos?.find(conteudo => conteudo.ordem === 1)?.id
 
         let inscricaoCriada
         await prisma.$transaction(async (prisma) => {
@@ -50,7 +67,8 @@ export default class InscricoesController {
                 data: {
                     userId: userid,
                     cursoId: cursoId,
-                    porcentagem: 0
+                    porcentagem: 0,
+                    atividadeAtual: atividadeAtual
                 }
             })
 
@@ -103,6 +121,41 @@ export default class InscricoesController {
         const inscricoes = await prisma.inscricao.findMany({
             where: {
                 userId: usuario
+            },
+            include: {
+                curso: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        descricao: true
+                    }
+                }
+            }
+        });
+
+        return sendResponse(res, 200, inscricoes);
+
+    }
+
+    static async listarInscricoesDoUsuarioLogadoPorIdDeCurso(req, res) {
+
+        const usuario = req.user.id
+        const { cursoId } = inscricaoSchema.listarInscricaoPorCurso.parse(req.params)
+
+        const findCurso = await prisma.curso.findUnique({
+            where: {
+                id: cursoId,
+            }
+        });
+
+        if (!findCurso) {
+            return sendError(res, 422, { path: "cursoId", message: messages.validationGeneric.notFound("id do curso") });
+        }
+
+        const inscricoes = await prisma.inscricao.findMany({
+            where: {
+                userId: usuario,
+                cursoId: cursoId
             },
             include: {
                 curso: {
