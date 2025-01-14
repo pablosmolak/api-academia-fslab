@@ -56,18 +56,16 @@ export default async function conteudoSeed(qtdConteudoTopicos) {
     const tiposConteudos = Object.values(tiposConteudosEnum);
 
     const conteudoUrlYoutube = [
-        "https://www.youtube.com/watch?v=OBeSEl-pBYY",
-        "https://www.youtube.com/watch?v=2HCp9qgXiTY",
-        "https://www.youtube.com/watch?v=gCVZYNvA67c",
-        "https://www.youtube.com/watch?v=avCKPWHu5vo",
-        "https://www.youtube.com/watch?v=nWkJKfPbCfQ",
-        "https://www.youtube.com/watch?v=iLw1-w4SpuI",
-        "https://www.youtube.com/watch?v=DiGqjYkRQ6o",
-        "https://www.youtube.com/watch?v=b7fKfZAzxTY",
-        "https://www.youtube.com/watch?v=JX4aOpnAS4I",
-        "https://www.youtube.com/watch?v=qVu0teQWvNI",
-        "https://www.youtube.com/watch?v=eHgtJh7cp1Y",
-        "https://www.youtube.com/watch?v=4PC4S9rJlk0"
+        "https://youtu.be/Ptbk2af68e8?si=u5wOyHTa4VGOmQP7",
+        "https://youtu.be/1-w1RfGIov4?si=XyBMcRPgHEiLefNG",
+        "https://youtu.be/BXqUH86F-kA?si=g6od2kt_gqBD_9UM",
+        "https://youtu.be/uzEhd3Lugik?si=rgF-6GutghPiI82c",
+        "https://youtu.be/rUTKomc2gG8?si=dR6Kwx-ee2NsUwO4",
+        "https://youtu.be/FdePtO5JSd0?si=C96wxWcx4Pam88sg",
+        "https://youtu.be/OmmJBfcMJA8?si=MKv9tYBEXTRkTMM3",
+        "https://youtu.be/Vbabsye7mWo?si=BX3EJPlDVXpdKyDh",
+        "https://youtu.be/mc3TKp2XzhI?si=F01ofPrp7JZc5xaA",
+        "https://youtu.be/i6Oi-YtXnAU?si=ZV6uY0FRyQSkeo1_"
     ]
 
     const topicos = await prisma.topico.findMany({
@@ -82,7 +80,7 @@ export default async function conteudoSeed(qtdConteudoTopicos) {
             const tipo = faker.random.arrayElement(tiposConteudos)
 
             let conteudo
-            if(tipo === tiposConteudosEnum.UrlYoutube){
+            if (tipo === tiposConteudosEnum.UrlYoutube) {
                 conteudo = faker.random.arrayElement(conteudoUrlYoutube)
             }
 
