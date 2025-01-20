@@ -9,6 +9,7 @@ import instrutorSeed from "./instrutorSeed.js";
 import topicoSeed from "./topicoSeed.js";
 import conteudoSeed from "./conteudoSeed.js";
 
+await prisma.certificado.deleteMany()
 await prisma.progressoCurso.deleteMany()
 await prisma.inscricao.deleteMany(); 
 await prisma.conteudoCurso.deleteMany();

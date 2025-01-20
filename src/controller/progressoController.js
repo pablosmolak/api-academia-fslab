@@ -143,16 +143,16 @@ export default class ProgressoController {
 
         if (!atividadeAtual) {
             let certificado
-            await prisma.$transaction(async (prisma) => {
+            await prisma.$transaction(async (newPrisma) => {
 
-                certificado = await prisma.certificado.create({
+                certificado = await newPrisma.certificado.create({
                     data: {
                         userId: req.user.id,
                         cursoId: cursoid
                     }
                 })
 
-                await prisma.inscricao.update({
+                await newPrisma.inscricao.update({
                     where: {
                         userId_cursoId: {
                             userId: req.user.id,
@@ -161,7 +161,7 @@ export default class ProgressoController {
                     },
                     data: {
                         status: "Finalizado",
-                        dataTermino: new date()
+                        dataTermino: new Date()
                     }
                 })
             })
