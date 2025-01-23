@@ -37,7 +37,8 @@ export async function AuthMiddleware(req, res, next) {
             id: user.id,
             email: user.email,
             grupo: user.Grupo.nome,
-            emailVerificado: user.emailVerificado
+            emailVerificado: user.emailVerificado,
+            tokenPayload: decodificado
         }
 
         return next()

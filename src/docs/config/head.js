@@ -18,6 +18,7 @@ import { CertificadoSchemas } from "../schemas/certificadoSchema.js";
 import { CertificadoPath } from "../paths/certificadoPath.js";
 import { VerificarEmailSchemas } from "../schemas/verificarEmailSchema.js";
 import { VerificarEmailPath } from "../paths/verificarEmailPath.js";
+import { AuthSchemas } from "../schemas/authSchema.js";
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -63,7 +64,8 @@ const swaggerOptions = {
         ...InscricaoSchemas,
         ...ProgressoSchemas,
         ...CertificadoSchemas,
-        ...VerificarEmailSchemas
+        ...VerificarEmailSchemas,
+        ...AuthSchemas
       },
     },
     tags: [

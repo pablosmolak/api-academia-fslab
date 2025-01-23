@@ -1,16 +1,17 @@
 import express from "express";
 import { wrapException } from "../utils/wrapException.js";
 import AuthController from "../controller/authController.js";
+import { AuthMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router
-    .post("/login", 
+    .post("/login",
         wrapException(AuthController.logar)
     )
-    .post("/login/github",
-        wrapException(AuthController.logarGithub
-        )
+    .get("/login/check",
+        AuthMiddleware,
+        wrapException(AuthController.checkInfoLogin)
     )
 
 export default router;

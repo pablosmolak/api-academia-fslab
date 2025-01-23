@@ -80,12 +80,19 @@ export default class UsuarioController {
         let userExists = await prisma.usuario.findMany({
             ...filtros,
             skip: paginacao.skip,
-            take: paginacao.take
+            take: paginacao.take,
+            select:{
+                id: true,
+                nome: true,
+                email: true,
+                emailVerificado: true,
+                fotoPerfil: true,
+                ativo: true,
+                grupoId: true,
+                created_at: true,
+                updated_at: true
+            }
         })
-
-        for (let user of userExists) {
-            delete user.senha
-        }
 
         return sendResponse(res, 200, userExists,
             { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take })
@@ -99,6 +106,17 @@ export default class UsuarioController {
         const findUser = await prisma.usuario.findUnique({
             where: {
                 id: id
+            },
+            select:{
+                id: true,
+                nome: true,
+                email: true,
+                emailVerificado: true,
+                fotoPerfil: true,
+                ativo: true,
+                grupoId: true,
+                created_at: true,
+                updated_at: true
             }
         })
 

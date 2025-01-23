@@ -29,7 +29,8 @@ export default class VerificarEmailController {
             where: { id: req.user.id },
             data: {
                 emailVerificado: true,
-                codigoVerificacaoEmail: null
+                codigoVerificacaoEmail: null,
+                expirationVerificacaoEmail: null
             }
         });
 

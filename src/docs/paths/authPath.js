@@ -1,4 +1,4 @@
-import { gerarRespostasDeErro } from "../communs.js";
+import { gerarRespostasCorretas, gerarRespostasDeErro } from "../communs.js";
 
 export const AuthPath = {
     "/login": {
@@ -30,23 +30,19 @@ export const AuthPath = {
                 }
             },
             responses: {
-                200: {
-                    description: "Autenticação bem-sucedida. Retorna um token JWT para acesso a recursos protegidos.",
-                    content: {
-                        "application/json": {
-                            schema: {
-                                type: "object",
-                                properties: {
-                                    token: {
-                                        type: "string",
-                                        description: "Token JWT para autenticação",
-                                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZGU3ODBlMWRmZWZiMWUyN2ViMmQ5MSIsIm5vbWUiOiJEZXYgT2xpdmVpcmEiLCJlbWFpbCI6ImRldkBnbWFpbC5jb20iLCJhdGl2byI6dHJ1ZSwiaWF0IjoxNzA5NTk4OTExLCJleHAiOjE3MTA4OTQ5MTF9.KvhEcRDZ37XZsv9J9FcqEGFlDYvC_imuT32PulE3sbA"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
+                ...gerarRespostasCorretas(200, "#/components/schemas/Login"),
+                ...gerarRespostasDeErro([400, 422, 500])
+            }
+        }
+    },
+    "/login/check": {
+        get: {
+            tags: ["Login"],
+            summary: "Retorna o payload do token do usuario.",
+            description: "Retorna o payload atualizado do token do usuario logado.",
+            security: [{ jwtAuth: [] }],
+            responses: {
+                ...gerarRespostasCorretas(200, "#/components/schemas/Check"),
                 ...gerarRespostasDeErro([400, 422, 500])
             }
         }
