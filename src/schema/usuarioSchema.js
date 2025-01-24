@@ -7,4 +7,9 @@ export class usuarioSchema{
         email: myZ.email(),
         senha : myZ.senha()
     })
+    static alterarUsuario = z.object({
+        nome: z.string().min(3).max(200).optional(),
+        email: myZ.email().optional(),
+        senha : myZ.senha().optional()
+    })
 }

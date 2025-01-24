@@ -1,0 +1,37 @@
+<mjml>
+  <mj-head>
+    <mj-preview>Recupere sua senha</mj-preview>
+    <mj-style inline="inline">.button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      }</mj-style>
+  </mj-head>
+  <mj-body>
+    <mj-section background-color="#f4f4f4" padding="20px">
+      <mj-column>
+        <mj-image width="250px" src="https://api-levantamento.app.fslab.dev/imagens/public.png" alt="Logo"></mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ffffff" padding="20px">
+      <mj-column>
+        <mj-text font-size="20px" font-family="Arial, sans-serif" color="#333333">Olá, <%= userName %>!</mj-text>
+        <mj-text font-size="16px" font-family="Arial, sans-serif" color="#555555" line-height="1.5">Recebemos uma solicitação para redefinir sua senha. Clique no botão abaixo para continuar:</mj-text>
+        <mj-button href="<%= resetLink %>" background-color="#4CAF50" color="#FFFFFF" padding="10px 25px" border-radius="5px" font-size="16px">Redefinir Senha</mj-button>
+        <mj-text font-size="14px" font-family="Arial, sans-serif" color="#999999" line-height="1.5">Caso você não tenha solicitado a recuperação de senha, ignore este e-mail.</mj-text>
+        <mj-text font-size="14px" font-family="Arial, sans-serif" color="#999999" line-height="1.5">Atenciosamente, <br />
+          Academia FSLab</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#f4f4f4" padding="20px">
+      <mj-column>
+        <mj-text font-size="12px" font-family="Arial, sans-serif" color="#999999" line-height="1.5" align="center">© 2024 Academia FSLab. Todos os direitos reservados<br />
+    </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

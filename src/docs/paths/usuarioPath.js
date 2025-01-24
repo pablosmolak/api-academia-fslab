@@ -5,7 +5,6 @@ export const UsuarioPath = {
     "/usuarios": {
         get: {
             tags: ["Usuários"],
-            security: [{ jwtAuth: [] }],
             summary: "Obter Lista de Usuários",
             description: "Recupera uma lista de todos os usuários cadastrados, com possibilidade de filtragem por nome e e-mail.",
             parameters: [
@@ -72,14 +71,13 @@ export const UsuarioPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Usuario"),
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([400, 422, 500])
             }
         },
     },
     "/usuarios/{id}": {
         get: {
             tags: ["Usuários"],
-            security: [{ jwtAuth: [] }],
             summary: "Obter Detalhes do Usuário",
             description: "Recupera as informações de um usuário específico, identificado pelo ID fornecido.",
             parameters: [
@@ -126,7 +124,7 @@ export const UsuarioPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Usuario"),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500]),
             }
         },
         delete: {
@@ -195,7 +193,6 @@ export const UsuarioPath = {
     "/usuarios/{id}/image": {
         get: {
             tags: ["Usuários"],
-            security: [{ jwtAuth: [] }],
             summary: "Obter Foto do Usuário",
             description: "Retorna a foto de perfil do usuário com o ID fornecido. Se o usuário não tiver uma foto cadastrada, será retornada uma resposta de erro.",
             parameters: [
@@ -221,7 +218,7 @@ export const UsuarioPath = {
                         }
                     }
                 },
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
             }
         }
     }

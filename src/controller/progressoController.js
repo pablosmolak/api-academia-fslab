@@ -1,11 +1,40 @@
 import { prisma } from "../config/prismaClient.js";
-import { sendError, sendResponse } from "../utils/mensagens.js";
+import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { progressoSchema } from "../schema/progressoCursoSchema.js";
 
 export default class ProgressoController {
     static async listarProgresso(req, res) {
         const resp = await prisma.progressoCurso.findMany()
         sendResponse(res, 200, resp)
+    }
+
+    static async listarProgressoDoUsuarioNoCurso(req, res) {
+        const userId = req.user.id
+
+        const { cursoId } = progressoSchema.listarProgresso.parse(req.params)
+
+        const findCurso = await prisma.curso.findUnique({
+            where: {
+                id: cursoId,
+            }
+        });
+
+        if (!findCurso) {
+           return sendError(res, 422, { path: "cursoId", message: messages.validationGeneric.notFound("id do curso") });
+        }
+
+        const progresso = await prisma.progressoCurso.findMany({
+            where: {
+                cursoId,
+                userId
+            }
+        })
+
+        if(progresso.length === 0){
+           return sendError(res, 404, "Nenhum progresso encontrado nesse curso para esse usuário!");
+        }
+
+       return sendResponse(res, 200, progresso)
     }
 
     static async finalizarAtividade(req, res) {
@@ -29,6 +58,10 @@ export default class ProgressoController {
             }
         })
 
+        if (!conteudo) {
+            return sendError(res, 422, { path: "conteudoid", message: "Não existe conteúdo com o ID informado!" })
+        }
+
         const cursoid = conteudo?.topico.curso.id
 
         const inscricao = await prisma.inscricao.findUnique({
@@ -41,7 +74,7 @@ export default class ProgressoController {
         })
 
         if (inscricao === null) {
-            return sendError(res, 422, ["Usuário não inscrito no curso"])
+            return sendError(res, 422, { path: "conteudoid", message: "Usuário não inscrito no curso" })
         }
 
         const progresso = await prisma.progressoCurso.findUnique({
@@ -59,15 +92,14 @@ export default class ProgressoController {
 
         let atividadesConcluidas = [];
         if (progresso && progresso.atividadesConcluidas) {
-            atividadesConcluidas = JSON.parse(progresso.atividadesConcluidas)
+            atividadesConcluidas = progresso.atividadesConcluidas
         }
-        console.log('Atividades concluídas inicialmente:', atividadesConcluidas)
 
         if (!atividadesConcluidas.includes(conteudoid)) {
             atividadesConcluidas.push(conteudoid);
-            console.log(`Atividade ${conteudoid} adicionada às atividades concluídas.`);
+
         } else {
-            console.log(`Atividade ${conteudoid} já estava nas atividades concluídas.`);
+            return sendError(res, 422, { path: "conteudoid", message: "O conteúdo informado já estava concluído!" })
         }
 
         const topicos = await prisma.topico.findMany({
@@ -82,7 +114,6 @@ export default class ProgressoController {
 
         let atividadeAtual = null;
 
-        // Determina a próxima atividade não concluída
         for (const topico of topicos) {
             for (const conteudo of topico.conteudos) {
                 if (!atividadesConcluidas.includes(conteudo.id)) {
@@ -96,10 +127,6 @@ export default class ProgressoController {
         const totalAtividades = topicos.reduce((acc, topico) => acc + topico.conteudos.length, 0);
         const porcentagemConclusao = (atividadesConcluidas.length / totalAtividades) * 100;
 
-        console.log(`Total de atividades no curso: ${totalAtividades}`);
-        console.log(`Total de atividades concluídas: ${atividadesConcluidas.length}`);
-        console.log(`Porcentagem de conclusão atualizada: ${porcentagemConclusao.toFixed(2)}%`);
-
         const progressoUpdated = await prisma.progressoCurso.update({
             where: {
                 userId_cursoId: {
@@ -108,27 +135,24 @@ export default class ProgressoController {
                 },
             },
             data: {
-                atividadesConcluidas: JSON.stringify(atividadesConcluidas),
+                atividadesConcluidas: atividadesConcluidas,
                 atividadeAtual: atividadeAtual,
                 porcentagem: porcentagemConclusao,
             },
         })
 
-        if (atividadeAtual) {
-            console.log(`A próxima atividade atual definida é: ${atividadeAtual}`);
-        } else {
-
+        if (!atividadeAtual) {
             let certificado
-            await prisma.$transaction(async (prisma) => {
+            await prisma.$transaction(async (newPrisma) => {
 
-                certificado = await prisma.certificado.create({
+                certificado = await newPrisma.certificado.create({
                     data: {
                         userId: req.user.id,
                         cursoId: cursoid
                     }
                 })
 
-                await prisma.inscricao.update({
+                await newPrisma.inscricao.update({
                     where: {
                         userId_cursoId: {
                             userId: req.user.id,
@@ -136,11 +160,12 @@ export default class ProgressoController {
                         }
                     },
                     data: {
-                        status: "Finalizado"
+                        status: "Finalizado",
+                        dataTermino: new Date()
                     }
                 })
             })
-        
+
             return sendResponse(res, 201, [{ ...progressoUpdated, certificado: certificado }])
         }
 

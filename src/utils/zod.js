@@ -35,7 +35,7 @@ export const myZ = {
         .regex(/^\d{8}$/, "CEP inválido"),
 
     email: () => z.string()
-        .regex(/^(?!.*\s)(?!.*\.{2})(?!.*@$)(?!^\.)(?!.*@\.$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 
+        .regex(/^(?!.*\s)(?!.*\.{2})(?!.*@$)(?!^\.)(?!.*@\.$)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
             "Email no formato inválido!"),
 
     senha: () => z.string()
@@ -106,27 +106,27 @@ export const traduzirMensagemZod = (issue) => {
     switch (issue.code) {
         case ZodIssueCode.invalid_type:
             if (issue.received === "undefined" || issue.received === "null") {
-                return `O campo ${issue.path.join(".")} é obrigatório`
+                return "Este campo é obrigatório";
             }
-            return `O campo ${issue.path.join(".")} recebeu um Tipo inválido, deveria ser ${traduzirNomeTipo(issue.expected)} mas recebeu ${traduzirNomeTipo(issue.received)}`
+            return `Tipo inválido, deveria ser ${traduzirNomeTipo(issue.expected)} mas recebeu ${traduzirNomeTipo(issue.received)}`;
         case ZodIssueCode.invalid_literal:
-            return `Literal inválido, deveria ser ${issue.expected}`
+            return `Literal inválido, deveria ser ${issue.expected}`;
         case ZodIssueCode.custom:
-            return `Erro Desconhecido: ${JSON.stringify(issue.params)}`
+            return `Erro Desconhecido: ${JSON.stringify(issue.params)}`;
         case ZodIssueCode.invalid_union:
-            return `Não é nenhuma das ${issue.unionErrors.length} possibilidades de forma válida`
+            return `Não é nenhuma das ${issue.unionErrors.length} possibilidades de forma válida`;
         case ZodIssueCode.invalid_union_discriminator:
-            return `Deveria ser um desses: ${issue.options?.join(", ")}`
+            return `Deveria ser um desses: ${issue.options?.join(", ")}`;
         case ZodIssueCode.invalid_enum_value:
-            return `O campo ${issue.path.join(".")} deve conter algum desses valores: ${issue.options?.join(", ")}`
+            return `Deve ser um desses: ${issue.options?.join(", ")}`;
         case ZodIssueCode.unrecognized_keys:
-            return `Não esperava estas chaves: ${issue.keys?.join(", ")}`
+            return `Não esperava estas chaves: ${issue.keys?.join(", ")}`;
         case ZodIssueCode.invalid_arguments:
-            return `Argumentos inválidos: ${issue.argumentsError.message}`
+            return `Argumentos inválidos: ${issue.argumentsError.message}`;
         case ZodIssueCode.invalid_return_type:
-            return `Tipo de retorno inválido ${issue.returnTypeError.message}`
+            return `Tipo de retorno inválido ${issue.returnTypeError.message}`;
         case ZodIssueCode.invalid_date:
-            return "Formato de data inválido."
+            return "Formato de data inválido.";
         case ZodIssueCode.invalid_string:
             if (issue.validation === "uuid") {
                 return `No campo ${issue.path.join(" na posição ")} contém um UUID em formato inválido!`

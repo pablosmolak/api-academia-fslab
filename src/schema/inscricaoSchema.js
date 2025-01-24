@@ -5,4 +5,8 @@ export class inscricaoSchema{
     static criarInscricao = z.object({
         cursoId : z.string().uuid()
     })
+
+    static listarInscricaoPorCurso = z.object({
+        cursoId : z.string().uuid()
+    })
 }
