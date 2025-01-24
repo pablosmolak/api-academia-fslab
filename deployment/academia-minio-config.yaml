@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-academia-config
+data:
+  MINIO_ROOT_USER: "minio"
+  MINIO_ROOT_PASSWORD: "minio123"
+  MINIO_ENDPOINT: "minio-academia-server"
+  MINIO_PORT: "9000"
+  MINIO_SSL: "false"
+  MINIO_ACCESS_KEY: "academia"
+  MINIO_SECRET_KEY: "zaq123edc"
+  MINIO_BUCKET: "imagens"
+   

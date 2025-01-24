@@ -2,6 +2,7 @@ variables:
   KUBECTL_CONFIG: $KUBECTL_CONFIG
   IMAGEM_DOCKER: registry.fslab.dev/pablosmolak/api-academia
   DATABASE_URL: "mysql://root:test1234@mysql-academia:3306/academiaFSlab"
+  ENV_CONFIG: $ENV_CONFIG
 
 stages:
   - build
@@ -13,7 +14,7 @@ buildar-docker:
   only:
     - development
   script:
-    - cp .env.example .env 
+    - cat $ENV_CONFIG > .env
     - >
       docker build 
       -t $IMAGEM_DOCKER
@@ -34,8 +35,19 @@ fazer-deploy:
     - kubectl config get-contexts
     - kubectl get node
     - kubectl get pods
+
+
+    #apaga e sobe novo deploy da api
     - kubectl delete deployment api-academia || true
-    - kubectl apply -f deployment.yaml
+    - kubectl apply -f deployment/deployment.yaml
+
+
+    #apaga e sobe novo deploy do minio
+    - kubectl delete config minio-academia || true
+    - kubectl apply -f deployment/minio-academia.yaml
+    - kubectl delete deployment minio-academia || true
+    - kubectl apply -f deployment/minio-academia.yaml
+
     - sleep 60
     - kubectl get pods
     - kubectl describe deploy/api-academia
