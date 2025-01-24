@@ -8,6 +8,8 @@ import cursos from "./cursoRouter.js";
 import inscricoes from "./inscricoesRouter.js";
 import progressos from "./progressoRouter.js";
 import certificados from "./certificadoRouter.js";
+import recuperarsenha from "./recuperaSenhaRouter.js";
+import verificaremail from "./verificarEmailRouter.js";
 
 const routes = (app) => {
 
@@ -28,7 +30,9 @@ const routes = (app) => {
         cursos,
         inscricoes,
         progressos,
-        certificados
+        certificados,
+        recuperarsenha,
+        verificaremail
     )
 }
 

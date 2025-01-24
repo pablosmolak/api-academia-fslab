@@ -16,6 +16,9 @@ import { ProgressoPath } from "../paths/progressoPath.js";
 import { ProgressoSchemas } from "../schemas/progressoSchema.js";
 import { CertificadoSchemas } from "../schemas/certificadoSchema.js";
 import { CertificadoPath } from "../paths/certificadoPath.js";
+import { VerificarEmailSchemas } from "../schemas/verificarEmailSchema.js";
+import { VerificarEmailPath } from "../paths/verificarEmailPath.js";
+import { AuthSchemas } from "../schemas/authSchema.js";
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -60,7 +63,9 @@ const swaggerOptions = {
         ...ConteudoCursoSchemas,
         ...InscricaoSchemas,
         ...ProgressoSchemas,
-        ...CertificadoSchemas
+        ...CertificadoSchemas,
+        ...VerificarEmailSchemas,
+        ...AuthSchemas
       },
     },
     tags: [
@@ -71,6 +76,10 @@ const swaggerOptions = {
       {
         name: "Recuperar Senha",
         description: "Processo de recuperação de senha do usuário"
+      },
+      {
+        name: "Verificação de Email",
+        description: "Processo de verificação do e-mail do usuário"
       },
       {
         name: "Usuários",
@@ -115,7 +124,8 @@ const swaggerOptions = {
       ...ConteudoPath,
       ...InscricaoPath,
       ...ProgressoPath,
-      ...CertificadoPath
+      ...CertificadoPath,
+      ...VerificarEmailPath
     },
   },
   apis: ["./src/routes/*.js"],

@@ -2,6 +2,7 @@ import { bucketsMinio } from "../utils/enums.js";
 import minioClient from "./minioConfig.js";
 import { prisma } from "./prismaClient.js";
 import bcrypt from "bcryptjs";
+import { gruposEnum } from "../utils/enums.js";
 
 export async function verificarMinio() {
     await minioClient.listBuckets(async (err, buckets) => {
@@ -34,13 +35,13 @@ export async function verificarGrupos() {
     if (grupos === 0) {
         const grupos = [
             {
-                nome: 'Administradores'
+                nome: gruposEnum.ADM
             },
             {
-                nome: 'Ministrantes'
+                nome: gruposEnum.Alunos
             },
             {
-                nome: 'Cursantes'
+                nome: gruposEnum.Professores
             }
         ]
 
@@ -83,6 +84,7 @@ export async function verificarAdministradorPadrao() {
             data: {
                 nome: "Administrador",
                 senha: bcrypt.hashSync(senha, 10),
+                emailVerificado:true,
                 email: email,
                 grupoId: grupoId.id
             }

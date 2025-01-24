@@ -1,36 +1,68 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
-import { validarEmail, validarSenha } from "../utils/validations.js";
 import { pagination } from "../utils/pagination.js";
 import minioFunctions from "../utils/minioFunctions.js";
-import { bucketsMinio } from "../utils/enums.js";
+import { bucketsMinio, gruposEnum } from "../utils/enums.js";
 import fs from 'fs';
 import { usuarioSchema } from "../schema/usuarioSchema.js";
+import { EmailService } from "../services/emailService.js"
+
 
 export default class UsuarioController {
     static async criarUsuario(req, res) {
-        let { nome, email, senha, fotoPerfil } = usuarioSchema.criarUsuario.parse(req.body)
+        const erros = []
+        let { nome, email, senha } = usuarioSchema.criarUsuario.parse(req.body)
+
+
+        console.log(email)
+
+        let userExist = await prisma.usuario.findUnique({
+            where: { email }
+        })
+
+        console.log(userExist)
+
+        if (userExist !== null) {
+            erros.push({ path: "email", message: messages.auth.emailAlreadyExists() })
+        }
+
+        if (erros.length > 0) return sendError(res, 422, erros)
 
         const grupoId = await prisma.grupo.findFirst({
             where: {
-                nome: { in: ["Cursantes"] },
+                nome: { in: [gruposEnum.Alunos] },
             },
             select: { id: true },
         });
+
+        const codigoVerificacao = Math.floor(100000 + Math.random() * 900000);
+
+        const expirationInMs = 30 * 60 * 1000; // 30 minutos em milissegundos
 
         const userCreated = await prisma.usuario.create({
             data: {
                 nome,
                 email,
                 senha: bcrypt.hashSync(senha, 10),
-                fotoPerfil,
-                grupoId: grupoId.id
+                grupoId: grupoId.id,
+                codigoVerificacaoEmail: codigoVerificacao,
+                expirationVerificacaoEmail: new Date(new Date().getTime() + expirationInMs)
             },
         });
 
-        // retornar o usuario criado sem o campo senha
         delete userCreated.senha;
+        delete userCreated.codigoVerificacaoEmail;
+
+        await EmailService.sendEmail({
+            "subject": "Academia FSLab - Confirme o seu E-mail",
+            "to": email,
+            "template": "academia-verificaemail",
+            "data": {
+                "userName": nome,
+                "verificationCode": `${codigoVerificacao}`
+            }
+        });
 
         return sendResponse(res, 201, userCreated);
     }
@@ -48,12 +80,19 @@ export default class UsuarioController {
         let userExists = await prisma.usuario.findMany({
             ...filtros,
             skip: paginacao.skip,
-            take: paginacao.take
+            take: paginacao.take,
+            select:{
+                id: true,
+                nome: true,
+                email: true,
+                emailVerificado: true,
+                fotoPerfil: true,
+                ativo: true,
+                grupoId: true,
+                created_at: true,
+                updated_at: true
+            }
         })
-
-        for (let user of userExists) {
-            delete user.senha
-        }
 
         return sendResponse(res, 200, userExists,
             { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take })
@@ -67,6 +106,17 @@ export default class UsuarioController {
         const findUser = await prisma.usuario.findUnique({
             where: {
                 id: id
+            },
+            select:{
+                id: true,
+                nome: true,
+                email: true,
+                emailVerificado: true,
+                fotoPerfil: true,
+                ativo: true,
+                grupoId: true,
+                created_at: true,
+                updated_at: true
             }
         })
 
@@ -86,28 +136,16 @@ export default class UsuarioController {
 
         const { id } = req.params
 
-        let { nome, email, senha, fotoPerfil } = req.body
+        let { nome, email, senha } = usuarioSchema.alterarUsuario.parse(req.body)
 
-        if (nome) {
-            if (nome.length < 3) {
-                erros.push(messages.customValidation.lengthMaior("Nome", 3))
-            } else if (nome.length > 200) {
-                erros.push(messages.customValidation.lengthMenor("Nome", 200))
-            }
-        }
-
-        if (email && validarEmail(email, erros)) {
+        if (email) {
             let userExist = await prisma.usuario.findUnique({
                 where: { email: email }
             })
 
             if (userExist !== null && userExist.id !== id) {
-                erros.push(messages.auth.emailAlreadyExists(user.email))
+                erros.push(messages.auth.emailAlreadyExists(email))
             }
-        }
-
-        if (senha) {
-            validarSenha(senha, erros)
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
@@ -121,8 +159,7 @@ export default class UsuarioController {
             data: {
                 nome,
                 email,
-                senha: senha,
-                fotoPerfil
+                senha: senha
             },
         })
 
@@ -189,7 +226,7 @@ export default class UsuarioController {
 
         const nomeImagem = await minioFunctions.upload(file, bucketsMinio.Usuarios)
 
-        const userUpdated = await prisma.usuario.update({
+        await prisma.usuario.update({
             where: {
                 id: userid
             },
@@ -198,8 +235,9 @@ export default class UsuarioController {
             }
         })
 
-        if (userUpdated) {
+        if (userExist.fotoPerfil) {
             await minioFunctions.remove(userExist.fotoPerfil, bucketsMinio.Usuarios)
+                .catch()
         }
 
         return sendResponse(res, 201, [])
