@@ -28,7 +28,7 @@ export async function AuthMiddleware(req, res, next) {
         if (!user) {
             return sendError(res, 498, messages.auth.invalidToken)
         }
-        
+
         if(!user.ativo){
             return sendError(res, 498, messages.auth.invalidToken)
         }
@@ -36,7 +36,9 @@ export async function AuthMiddleware(req, res, next) {
         req.user = {
             id: user.id,
             email: user.email,
-            grupo: user.Grupo.nome
+            grupo: user.Grupo.nome,
+            emailVerificado: user.emailVerificado,
+            tokenPayload: decodificado
         }
 
         return next()

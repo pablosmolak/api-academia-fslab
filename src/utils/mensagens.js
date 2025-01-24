@@ -123,7 +123,7 @@ export const messages = {
 
         timeoutError: "Tempo de espera excedido, Tente novamente mais tarde!",
         databaseConnectionError: "Erro de conexão com o banco de dados, Tente novamente mais tarde!",
-        emailAlreadyExists: (email) => `O endereço de e-mail ${email} já está em uso!`,
+        emailAlreadyExists: () => `O endereço de e-mail informado já está em uso!`,
 
         invalidCredentials: "Credenciais inválidas! Verifique seu usuário e senha!",
     },

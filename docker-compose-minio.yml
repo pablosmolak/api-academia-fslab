@@ -4,6 +4,7 @@ services:
   minio:
     image: quay.io/minio/minio
     container_name: minio1
+    restart: always
     ports:
       - "9000:9000"  # Porta do serviço MinIO
       - "9001:9001"  # Porta da console administrativa

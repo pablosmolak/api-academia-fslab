@@ -1,7 +1,7 @@
 import { gerarRespostasCorretas, gerarRespostasDeErro } from "../communs.js";
 
 export const RecuperaSenhaPath = {
-    "/recuperasenha": {
+    "/recuperarsenha": {
         post: {
             tags: ["Recuperar Senha"],
             summary: "Solicitar Recuperação de Senha",
@@ -17,9 +17,15 @@ export const RecuperaSenhaPath = {
                                     type: "string",
                                     description: "O endereço de e-mail registrado do usuário",
                                     example: "usuario@example.com"
+                                },
+                                urlFront: {
+                                    type: "string",
+                                    description: "A URL da página de recuperação de senha",
+                                    example: "https://academia.app.fslab.dev/alterasenha"
                                 }
+
                             },
-                            required: ["email"]
+                            required: ["email", "urlFront"]
                         }
                     }
                 }
@@ -35,7 +41,7 @@ export const RecuperaSenhaPath = {
                         }
                     }
                 }),
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([400, 422, 500])
             }
         }
     },
@@ -44,6 +50,26 @@ export const RecuperaSenhaPath = {
             tags: ["Recuperar Senha"],
             summary: "Redefinir Senha",
             description: "Permite que o usuário redefina sua senha usando um token de recuperação enviado por e-mail. O usuário deve fornecer o token e a nova senha desejada.",
+            parameters: [
+                {
+                    name: "token",
+                    in: "query",
+                    description: "Token de recuperação de senha enviado ao usuário.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                },
+                {
+                    name: "email",
+                    in: "query",
+                    description: "Email do usuário que pediu a recuperação de senha.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                }
+            ],
             requestBody: {
                 required: true,
                 content: {
@@ -51,12 +77,7 @@ export const RecuperaSenhaPath = {
                         schema: {
                             type: "object",
                             properties: {
-                                token: {
-                                    type: "string",
-                                    description: "Token de recuperação de senha",
-                                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                                },
-                                novaSenha: {
+                                senha: {
                                     type: "string",
                                     description: "Nova senha desejada",
                                     example: "NovaSenha@123"
@@ -78,7 +99,7 @@ export const RecuperaSenhaPath = {
                         }
                     }
                 }),
-                ...gerarRespostasDeErro([422, 500])
+                ...gerarRespostasDeErro([400, 422, 500])
             }
         }
     }

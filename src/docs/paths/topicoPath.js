@@ -17,7 +17,7 @@ export const TopicoPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Topico"),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
             }
         }
     },
@@ -65,7 +65,7 @@ export const TopicoPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Topico"),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
             }
         },
         delete: {

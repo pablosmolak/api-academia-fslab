@@ -1,7 +1,6 @@
 import { Client } from 'minio';
 
-// Inicializa o cliente MinIO
-const minioClient = new Client({
+const minioConfig = new Client({
     endPoint: process.env.MINIO_ENDPOINT,
     port: parseInt(process.env.MINIO_PORT),
     useSSL: process.env.MINIO_USE_SSL ==="true"? true : false,
@@ -9,4 +8,4 @@ const minioClient = new Client({
     secretKey: process.env.MINIO_SECRET_KEY
 });
 
-export default minioClient;
+export default minioConfig;

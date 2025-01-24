@@ -1,0 +1,72 @@
+<mjml>
+  <mj-head>
+    <mj-preview>Verificação de E-mail</mj-preview>
+    <mj-style inline="inline">
+      .verification-code {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333333;
+        text-align: center;
+        line-height: 30px; /* Espaçamento vertical */
+      }
+      .verification-line {
+        width: 30px;
+        height: 2px;
+        background-color: #333333;
+        margin: 5px 5px 0; /* Margem superior automática e espaço abaixo */
+      }
+    </mj-style>
+  </mj-head>
+  <mj-body>
+    <mj-section background-color="#f4f4f4" padding="20px">
+      <mj-column>
+        <mj-image width="250px" src="https://api-levantamento.app.fslab.dev/imagens/public.png" alt="Logo"></mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ffffff" padding="20px">
+      <mj-column>
+        <mj-text font-size="20px" font-family="Arial, sans-serif" color="#333333">Olá, <%= userName %>!</mj-text>
+        <mj-text font-size="16px" font-family="Arial, sans-serif" color="#555555" line-height="1.5">Recebemos uma solicitação de verificação de seu e-mail. Use o código abaixo para concluir o processo:</mj-text>
+        <mj-raw>
+          <table align="center" cellpadding="0" cellspacing="0" role="presentation" style="margin: 10px auto; border-spacing: 15px;">
+            <tr>
+              <td align="center" class="verification-code">
+                <%= verificationCode.charAt(0) %>
+                <div class="verification-line"></div>
+              </td>
+              <td align="center" class="verification-code">
+                <%= verificationCode.charAt(1) %>
+                <div class="verification-line"></div>
+              </td>
+              <td align="center" class="verification-code">
+                <%= verificationCode.charAt(2) %>
+                <div class="verification-line"></div>
+              </td>
+              <td align="center" class="verification-code">
+                <%= verificationCode.charAt(3) %>
+                <div class="verification-line"></div>
+              </td>
+              <td align="center" class="verification-code">
+                <%= verificationCode.charAt(4) %>
+                <div class="verification-line"></div>
+              </td>
+              <td align="center" class="verification-code">
+                <%= verificationCode.charAt(5) %>
+                <div class="verification-line"></div>
+              </td>
+            </tr>
+          </table>
+        </mj-raw>
+        <mj-text font-size="14px" font-family="Arial, sans-serif" color="#999999" line-height="1.5">Caso você não tenha solicitado essa verificação, ignore este e-mail.</mj-text>
+        <mj-text font-size="14px" font-family="Arial, sans-serif" color="#999999" line-height="1.5">Atenciosamente, <br />
+          Academia FSLab</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#f4f4f4" padding="20px">
+      <mj-column>
+        <mj-text font-size="12px" font-family="Arial, sans-serif" color="#999999" line-height="1.5" align="center">© 2024 Academia FSLab. Todos os direitos reservados<br />
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

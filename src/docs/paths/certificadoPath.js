@@ -35,6 +35,27 @@ export const CertificadoPath = {
             }
         }
     },
+    "/certificados/usuario/curso/{cursoId}": {
+        get: {
+            tags: ["Certificados"],
+            security: [{ jwtAuth: [] }],
+            summary: "Listar Certificados do usuário logado no curso",
+            description: "Recupera o certificado emitido para o usuário logado em um curso específico.",
+            parameters: [
+                {
+                    name: "cursoId",
+                    in: "path",
+                    description: "ID do curso cujos certificado devem ser recuperado",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            responses: {
+                ...gerarRespostasCorretas(200, "#/components/schemas/Certificado"),
+                ...gerarRespostasDeErro([401, 403, 498, 500])
+            }
+        }
+    },
     "/certificados/validar/{validador}": {
         get: {
             tags: ["Certificados"],

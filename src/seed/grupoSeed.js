@@ -1,16 +1,17 @@
 import { prisma } from "../config/prismaClient.js";
+import { gruposEnum } from "../utils/enums.js";
 
 export default async function gruposSeed() {
 
     const grupos = [
         {
-            nome: 'Administradores'
+            nome: gruposEnum.ADM
         },
         {
-            nome: 'Ministrantes'
+            nome: gruposEnum.Alunos
         },
         {
-            nome: 'Cursantes'
+            nome: gruposEnum.Professores
         }
     ]
 
