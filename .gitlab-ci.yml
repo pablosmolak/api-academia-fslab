@@ -18,7 +18,7 @@ buildar-docker:
     - >
       docker build 
       -t $IMAGEM_DOCKER
-      -f DockerFile
+      -f Dockerfile
       .
     - docker push $IMAGEM_DOCKER
 
