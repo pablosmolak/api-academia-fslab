@@ -1,7 +1,6 @@
 variables:
   KUBECTL_CONFIG: $KUBECTL_CONFIG
   IMAGEM_DOCKER: registry.fslab.dev/pablosmolak/api-academia
-  DATABASE_URL: "mysql://root:test1234@mysql-academia:3306/academiaFSlab"
   ENV_CONFIG: $ENV_CONFIG
 
 stages:
