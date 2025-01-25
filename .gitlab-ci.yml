@@ -43,10 +43,10 @@ fazer-deploy:
 
 
     #apaga e sobe novo deploy do minio
-    - kubectl delete config academia-minio || true
-    - kubectl apply -f deployment/academia-minio.yaml
-    - kubectl delete deployment academia-minio || true
-    - kubectl apply -f deployment/academia-minio.yaml
+    - kubectl delete ConfigMap minio-academia-config || true
+    - kubectl apply -f deployment/minio-academia-config.yaml
+    - kubectl delete deployment minio-academia || true
+    - kubectl apply -f deployment/minio-academia.yaml
 
     - sleep 60
     - kubectl get pods
