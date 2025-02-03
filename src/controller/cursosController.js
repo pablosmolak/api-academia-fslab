@@ -306,6 +306,12 @@ export default class CursosController {
             const horasTotais = Math.floor(Totalminutos / 60);
             const minutosRestantes = Math.round(Totalminutos % 60);
 
+            if (minutosRestantes === 0) {
+                return `${horasTotais}h`;
+            } else if (horasTotais === 0) {
+                return `${minutosRestantes}m`;
+            }
+
             return `${horasTotais}h${minutosRestantes}m`;
         }
 
@@ -323,11 +329,19 @@ export default class CursosController {
             return qtdConteudo
         }
 
+        const quantidadeInscritos = await prisma.inscricao.count({
+            where: {
+                cursoId: cursoid
+            }
+        });
+
         let informacoesCurso = {
             id: curso.id,
             nomeCurso: curso.nome,
             descricao: curso.descricao,
-            topicos: curso.topicos.map(topico => topico.titulo),
+            inscritos: quantidadeInscritos,
+            ultimaAtualizacao:curso.updated_at,
+            topicos: curso.topicos,
             categorias: curso.categoria.map(categoria => categoria.nome),
             instrutores: curso.instrutores.map(instrutor => instrutor.usuario),
             cargaHoraria: cargaHoraria(),
