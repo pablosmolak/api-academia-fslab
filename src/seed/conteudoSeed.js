@@ -89,7 +89,7 @@ export default async function conteudoSeed(qtdConteudoTopicos) {
                 topicoId: topicos[indexTopicos]?.id,
                 tipo,
                 conteudo,
-                cargaHoraria: "00:15:00",
+                cargaHoraria: 900,
                 ordem: indexConteudos + 1
             });
         }

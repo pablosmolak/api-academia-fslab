@@ -1,12 +1,11 @@
+import fs from 'fs';
 import { prisma } from "../config/prismaClient.js";
+import { cursoSchema } from "../schema/cursoSchema.js";
+import { instrutorSchema } from "../schema/instrutorSchema.js";
 import { bucketsMinio, gruposEnum, tiposConteudosEnum } from "../utils/enums.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
-import { pagination } from "../utils/pagination.js";
-import { cursoSchema } from "../schema/cursoSchema.js";
-import fs from 'fs';
 import minioFunctions from "../utils/minioFunctions.js";
-import { instrutorSchema } from "../schema/instrutorSchema.js";
-
+import { pagination } from "../utils/pagination.js";
 
 export default class CursosController {
     static async criarCurso(req, res) {
@@ -101,6 +100,12 @@ export default class CursosController {
 
         for (let curso of cursos) {
             curso.instrutores = curso.instrutores.map(instrutor => instrutor.usuario)
+
+            const horas = String(Math.floor(curso.cargaHoraria / 3600)).padStart(2, "0");
+            const minutos = String(Math.floor((curso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+            const segundosRestantes = String(curso.cargaHoraria % 60).padStart(2, "0");
+
+            curso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
         }
 
         return sendResponse(res, 200, cursos,
@@ -174,11 +179,97 @@ export default class CursosController {
 
         for (let curso of cursos) {
             curso.instrutores = curso.instrutores.map(instrutor => instrutor.usuario)
+
+            const horas = String(Math.floor(curso.cargaHoraria / 3600)).padStart(2, "0");
+            const minutos = String(Math.floor((curso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+            const segundosRestantes = String(curso.cargaHoraria % 60).padStart(2, "0");
+
+            curso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
         }
 
         return sendResponse(res, 200, cursos,
             { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take }
         )
+    }
+
+    static async alterarStatusCurso(req, res) {
+        const erros = []
+
+        let filtros = { where: {} }
+
+        const { id } = req.params
+        const usuarioLogado = req.user
+
+        filtros.where.id = id
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const filtroInstrutorCriador = {
+                OR: [
+                    { criador: usuarioLogado.id },
+                    {
+                        instrutores: {
+                            some: {
+                                usuario: {
+                                    id: usuarioLogado.id
+                                }
+                            }
+                        }
+                    }
+                ],
+            };
+
+            filtros.where = {
+                AND: [
+                    filtros.where,
+                    filtroInstrutorCriador,
+                ]
+            };
+        }
+
+        const curso = await prisma.curso.findMany({
+            ...filtros,
+            include: {
+                topicos: {
+                    include: {
+                        conteudos: true
+                    }
+                }
+            }
+        })
+
+        if (curso.length === 0) {
+            return sendError(res, 403, { path: "id", message: "Sem permissão para alterar o status do curso" })
+        }
+
+        if (!curso[0].publicado) {
+
+            if (curso[0].topicos.length === 0) {
+                erros.push({ path: "topicos", message: "O curso não pode ser publicado sem tópicos!" })
+            }
+
+            const algumTopicoSemConteudo = curso[0].topicos.some(topico =>
+                !topico.conteudos || topico.conteudos.length === 0
+            );
+
+            if (algumTopicoSemConteudo) {
+                erros.push({
+                    path: "topicos",
+                    message: "O curso não pode ser publicado sem cada tópico do curso ter ao menos um conteúdo!"
+                });
+            }
+
+            if (erros.length > 0) return sendError(res, 422, erros)
+        }
+        await prisma.curso.update({
+            where: { id },
+            data: {
+                publicado: !curso[0].publicado
+            }
+        })
+
+        return sendResponse(res, 200, {
+            publicado: !curso[0].publicado
+        })
     }
 
     static async listarCursoPublicadoPorId(req, res) {
@@ -198,13 +289,33 @@ export default class CursosController {
                     },
                     orderBy: { ordem: 'asc' }
                 },
-                categoria: true
+                categoria: true,
+                instrutores: {
+                    include: {
+                        usuario: {
+                            select: {
+                                nome: true,
+                                email: true,
+                                fotoPerfil: true,
+                                id: true
+                            }
+                        }
+                    }
+                }
             },
         })
 
         if (findCurso === null) {
             return sendError(res, 404, { path: "id", message: "Nenhum curso publicado encontrado com esse ID" })
         }
+
+        findCurso.instrutores = findCurso.instrutores.map(instrutor => instrutor.usuario)
+
+        const horas = String(Math.floor(findCurso.cargaHoraria / 3600)).padStart(2, "0");
+        const minutos = String(Math.floor((findCurso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+        const segundosRestantes = String(findCurso.cargaHoraria % 60).padStart(2, "0");
+
+        findCurso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
 
         return sendResponse(res, 200, findCurso);
     }
@@ -230,8 +341,6 @@ export default class CursosController {
             ]
         }
 
-        console.log(filtros)
-
         const findCurso = await prisma.curso.findUnique({
             ...filtros,
             include: {
@@ -243,13 +352,33 @@ export default class CursosController {
                     },
                     orderBy: { ordem: 'asc' }
                 },
-                categoria: true
+                categoria: true,
+                instrutores: {
+                    include: {
+                        usuario: {
+                            select: {
+                                nome: true,
+                                email: true,
+                                fotoPerfil: true,
+                                id: true
+                            }
+                        }
+                    }
+                }
             },
         })
 
         if (findCurso === null) {
             return sendError(res, 404, { path: "id", message: "Nenhum curso encontrado com esse ID" })
         }
+
+        findCurso.instrutores = findCurso.instrutores.map(instrutor => instrutor.usuario)
+
+        const horas = String(Math.floor(findCurso.cargaHoraria / 3600)).padStart(2, "0");
+        const minutos = String(Math.floor((findCurso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+        const segundosRestantes = String(findCurso.cargaHoraria % 60).padStart(2, "0");
+
+        findCurso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
 
         return sendResponse(res, 200, findCurso);
     }
@@ -270,8 +399,11 @@ export default class CursosController {
                 },
                 topicos: {
                     include: {
-                        conteudos: true
-                    }
+                        conteudos: {
+                            orderBy: { ordem: 'asc' }
+                        }
+                    },
+                    orderBy: { ordem: 'asc' }
                 },
                 instrutores: {
                     include: {
@@ -292,19 +424,11 @@ export default class CursosController {
         }
 
         let cargaHoraria = () => {
-            let Totalminutos = 0
+            const cargaHoraria = curso.cargaHoraria
 
-            for (const topico of curso.topicos) {
-                for (const conteudo of topico.conteudos) {
-                    if (conteudo.cargaHoraria) {
-                        let [horas, minutos, segundos] = conteudo.cargaHoraria.split(":").map(Number)
-                        Totalminutos += ((horas * 60) + minutos + (segundos / 60));
-                    }
-                }
-            }
-
-            const horasTotais = Math.floor(Totalminutos / 60);
-            const minutosRestantes = Math.round(Totalminutos % 60);
+            const totalMinutos = Math.floor(cargaHoraria / 60);
+            const horasTotais = Math.floor(totalMinutos / 60);
+            const minutosRestantes = Math.round(totalMinutos % 60);
 
             if (minutosRestantes === 0) {
                 return `${horasTotais}h`;
@@ -340,7 +464,7 @@ export default class CursosController {
             nomeCurso: curso.nome,
             descricao: curso.descricao,
             inscritos: quantidadeInscritos,
-            ultimaAtualizacao:curso.updated_at,
+            ultimaAtualizacao: curso.updated_at,
             topicos: curso.topicos,
             categorias: curso.categoria.map(categoria => categoria.nome),
             instrutores: curso.instrutores.map(instrutor => instrutor.usuario),

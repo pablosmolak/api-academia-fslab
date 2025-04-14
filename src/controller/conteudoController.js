@@ -2,6 +2,7 @@ import { prisma } from "../config/prismaClient.js"
 import { tiposConteudosEnum } from "../utils/enums.js"
 import messages, { sendError, sendResponse } from "../utils/mensagens.js"
 import { conteudoCursoSchema } from "../schema/conteudoCursoSchema.js"
+import { timeToSeconds } from "../utils/utils.js"
 
 export default class ConteudoController {
     static async criarConteudo(req, res) {
@@ -12,6 +13,14 @@ export default class ConteudoController {
         const findTopico = await prisma.topico.findUnique({
             where: {
                 id: topicoId
+            },
+            include: {
+                curso: {
+                    select: {
+                        id: true,
+                        cargaHoraria: true
+                    }
+                }
             }
         })
 
@@ -45,16 +54,32 @@ export default class ConteudoController {
             }
         })
 
-        const createConteudo = await prisma.conteudoCurso.create({
-            data: {
-                topicoId: topicoId,
-                tipo: tipo,
-                cargaHoraria,
-                conteudo: conteudo,
-                ordem: (quantidadeConteudo + 1)
-            }
-        })
+        const cargaHorariaEmSegundos = await timeToSeconds(cargaHoraria);
 
+        const cargaHorariaCursoAtual = findTopico.curso.cargaHoraria ?? 0
+        const novaCargaTotalCurso = (cargaHorariaCursoAtual + cargaHorariaEmSegundos)
+
+        let createConteudo
+        await prisma.$transaction(async (prisma) => {
+
+            await prisma.curso.update({
+                where: { id: findTopico.cursoId },
+                data: {
+                    cargaHoraria: novaCargaTotalCurso
+                }
+            })
+
+            createConteudo = await prisma.conteudoCurso.create({
+                data: {
+                    titulo: titulo,
+                    topicoId: topicoId,
+                    tipo: tipo,
+                    cargaHoraria: cargaHorariaEmSegundos,
+                    conteudo: conteudo,
+                    ordem: (quantidadeConteudo + 1)
+                }
+            })
+        })
         return sendResponse(res, 201, createConteudo)
     }
 
@@ -87,8 +112,22 @@ export default class ConteudoController {
         const findConteudo = await prisma.conteudoCurso.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                topico: {
+                    include: {
+                        curso: {
+                            select: {
+                                id: true,
+                                cargaHoraria: true
+                            }
+                        }
+                    }
+                }
             }
         })
+
+        const novaCargaTotalCurso = (findConteudo.topico.curso.cargaHoraria - findConteudo.cargaHoraria)
 
         if (findConteudo === null) {
             erros.push(messages.validationGeneric.mascCamp("Conteúdo"))
@@ -97,6 +136,14 @@ export default class ConteudoController {
         if (erros.length > 0) return sendError(res, 422, erros)
 
         await prisma.$transaction(async (prisma) => {
+
+            await prisma.curso.update({
+                where: { id: findConteudo.topico.cursoId },
+                data: {
+                    cargaHoraria: novaCargaTotalCurso
+                }
+            })
+
             await prisma.conteudoCurso.delete({
                 where: {
                     id: id

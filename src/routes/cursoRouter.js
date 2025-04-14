@@ -24,6 +24,13 @@ router
     .get("/cursos/publicados/:id",
         wrapException(CursosController.listarCursoPublicadoPorId)
     )
+    
+    .patch("/cursos/alterarstatus/:id",
+        AuthMiddleware,
+        EmailVerificadoMiddleware,
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
+        wrapException(CursosController.alterarStatusCurso)
+    )
 
     
     .get("/cursos/todos",

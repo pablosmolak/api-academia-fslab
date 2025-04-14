@@ -19,7 +19,8 @@ export default class CertificadoController {
                     select: {
                         id: true,
                         nome: true,
-                        descricao: true
+                        descricao: true,
+                        cargaHoraria: true
                     }
                 }
             }
@@ -57,7 +58,8 @@ export default class CertificadoController {
                     select: {
                         id: true,
                         nome: true,
-                        descricao: true
+                        descricao: true,
+                        cargaHoraria: true
                     }
                 }
             }
@@ -98,7 +100,8 @@ export default class CertificadoController {
                     select: {
                         id: true,
                         nome: true,
-                        descricao: true
+                        descricao: true,
+                        cargaHoraria: true
                     }
                 }
             }
@@ -126,7 +129,8 @@ export default class CertificadoController {
                     select: {
                         id: true,
                         nome: true,
-                        descricao: true
+                        descricao: true,
+                        cargaHoraria: true
                     }
                 }
             }

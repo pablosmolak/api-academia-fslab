@@ -83,6 +83,7 @@ export default async function cursoSeed(qtd = 0) {
                 nome: faker.random.arrayElement(cursosTecnologia),
                 descricao: faker.lorem.paragraphs(2),
                 capa: imagens.length > 0 ? faker.random.arrayElement(imagens) : null,
+                cargaHoraria: 5000,
                 publicado: true,
                 criador: faker.random.arrayElement(usuarios).id,
                 categoria: { // Usando o campo de relacionamento
