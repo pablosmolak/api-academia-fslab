@@ -311,11 +311,20 @@ export default class CursosController {
 
         findCurso.instrutores = findCurso.instrutores.map(instrutor => instrutor.usuario)
 
-        const horas = String(Math.floor(findCurso.cargaHoraria / 3600)).padStart(2, "0");
-        const minutos = String(Math.floor((findCurso.cargaHoraria % 3600) / 60)).padStart(2, "0");
-        const segundosRestantes = String(findCurso.cargaHoraria % 60).padStart(2, "0");
+        const formatarDuracao = (segundos) => {
+            const horas = String(Math.floor(segundos / 3600)).padStart(2, "0");
+            const minutos = String(Math.floor((segundos % 3600) / 60)).padStart(2, "0");
+            const segundosRestantes = String(segundos % 60).padStart(2, "0");
+            return `${horas}:${minutos}:${segundosRestantes}`;
+        };
 
-        findCurso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
+        findCurso.cargaHoraria = formatarDuracao(findCurso.cargaHoraria)
+
+        findCurso.topicos.forEach(topico => {
+            topico.conteudos.forEach(conteudo => {
+                conteudo.cargaHoraria = formatarDuracao(conteudo.cargaHoraria)
+            })
+        })
 
         return sendResponse(res, 200, findCurso);
     }
