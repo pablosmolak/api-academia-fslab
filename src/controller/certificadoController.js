@@ -136,6 +136,19 @@ export default class CertificadoController {
             }
         })
 
+        if(!certificado){
+            return sendError(res,404,[{
+                 path: "id", 
+                 message: "Nenhum certificado encontrado com esse ID" 
+            }])
+        }
+
+        const horas = String(Math.floor(certificado.curso.cargaHoraria / 3600)).padStart(2, "0");
+        const minutos = String(Math.floor((certificado.curso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+        const segundosRestantes = String(certificado.curso.cargaHoraria % 60).padStart(2, "0");
+
+        certificado.curso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
+
         return sendResponse(res, 200, certificado);
     }
 }
