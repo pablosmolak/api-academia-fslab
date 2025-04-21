@@ -24,6 +24,14 @@ router
         uploadMulter,
         wrapException(UsuarioController.uploadFotoPerfil)
     )
+    
+    .delete(
+        "/usuarios/:id/image/delete", 
+        AuthMiddleware,
+        EmailVerificadoMiddleware,
+        permissaoMiddleware([gruposEnum.ADM], [permissaoEnum.ProprioUsuario]),
+        wrapException(UsuarioController.deletarFotoPerfil)
+    )
 
     .get(
         "/usuarios",
@@ -43,7 +51,6 @@ router
     .patch(
         "/usuarios/:id",
         AuthMiddleware,
-        EmailVerificadoMiddleware,
         permissaoMiddleware([gruposEnum.ADM], [permissaoEnum.ProprioUsuario]),
         wrapException(UsuarioController.alterarUsuario)
     )

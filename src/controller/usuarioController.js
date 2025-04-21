@@ -81,7 +81,7 @@ export default class UsuarioController {
             ...filtros,
             skip: paginacao.skip,
             take: paginacao.take,
-            select:{
+            select: {
                 id: true,
                 nome: true,
                 email: true,
@@ -107,7 +107,7 @@ export default class UsuarioController {
             where: {
                 id: id
             },
-            select:{
+            select: {
                 id: true,
                 nome: true,
                 email: true,
@@ -116,7 +116,13 @@ export default class UsuarioController {
                 ativo: true,
                 grupoId: true,
                 created_at: true,
-                updated_at: true
+                updated_at: true,
+                Grupo: {
+                    select: {
+                        id: true,
+                        nome: true
+                    }
+                }
             }
         })
 
@@ -138,17 +144,59 @@ export default class UsuarioController {
 
         let { nome, email, senha } = usuarioSchema.alterarUsuario.parse(req.body)
 
+        const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        if (userExist === null) {
+            erros.push({ path: "id", message: messages.auth.userNotFound(id) })
+        }
+
         if (email) {
-            let userExist = await prisma.usuario.findUnique({
+            let userExistByEmail = await prisma.usuario.findUnique({
                 where: { email: email }
             })
 
-            if (userExist !== null && userExist.id !== id) {
-                erros.push(messages.auth.emailAlreadyExists(email))
+            console.log(userExistByEmail)
+
+            if (userExistByEmail !== null && userExistByEmail.id !== id) {
+                erros.push({ path: "email", message: messages.auth.emailAlreadyExists(email) })
             }
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
+
+        if (email) {
+            if (userExist.email !== email) {
+                const codigoVerificacao = Math.floor(100000 + Math.random() * 900000);
+
+                const expirationInMs = 30 * 60 * 1000; // 30 minutos em milissegundos
+        
+                await prisma.usuario.update({
+                    where: {
+                        id: id,
+                    },
+                    data: {
+                        emailVerificado: false,
+                        codigoVerificacaoEmail: codigoVerificacao,
+                        expirationVerificacaoEmail: new Date(new Date().getTime() + expirationInMs)
+                    }
+                });
+        
+                await EmailService.sendEmail({
+                    "subject": "Academia FSLab - Confirme o seu E-mail",
+                    "to": email,
+                    "template": "academia-verificaemail",
+                    "data": {
+                        "userName": nome,
+                        "verificationCode": `${codigoVerificacao}`
+                    }
+                });
+            }
+
+        }
 
         if (senha) senha = bcrypt.hashSync(senha, 10)
 
@@ -238,6 +286,41 @@ export default class UsuarioController {
         if (userExist.fotoPerfil) {
             await minioFunctions.remove(userExist.fotoPerfil, bucketsMinio.Usuarios)
                 .catch()
+        }
+
+        return sendResponse(res, 201, [])
+    }
+
+    static async deletarFotoPerfil(req, res) {
+        const erros = []
+        const userid = req.params.id
+
+        const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: userid
+            }
+        })
+
+        if (userExist === null) {
+            erros.push({ path: "id", message: messages.auth.userNotFound(userid) })
+        }
+
+        if (erros.length > 0) {
+            return sendError(res, 422, erros)
+        }
+
+        if (userExist.fotoPerfil) {
+            await minioFunctions.remove(userExist.fotoPerfil, bucketsMinio.Usuarios)
+                .catch()
+
+            await prisma.usuario.update({
+                where: {
+                    id: userid
+                },
+                data: {
+                    fotoPerfil: null
+                }
+            })
         }
 
         return sendResponse(res, 201, [])

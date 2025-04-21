@@ -12,4 +12,4 @@ export class usuarioSchema{
         email: myZ.email().optional(),
         senha : myZ.senha().optional()
     })
-}
+}  
