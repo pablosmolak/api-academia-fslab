@@ -40,7 +40,7 @@ export const myZ = {
 
     senha: () => z.string()
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=:;,.<>?/~`|\\[\]{}]).{8,}$/,
-            "A senha deve conter no mínimo 8 caracteres, incluindo ao menos 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial."),
+            "Mínimo 8 caracteres, com 1 maiúscula, 1 minúscula, 1 número e 1 caractere especial."),
 
     cargaHoraria: () => z.string()
         .regex(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/,
