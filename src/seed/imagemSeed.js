@@ -33,8 +33,6 @@ export default async function imagemSeed(quantity) {
         }),
     }
 
-    console.log(urls)
-
     for (let bucket of buckets) {
         let count = 0
         await minioFunctions.removeAll(bucket)

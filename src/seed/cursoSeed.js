@@ -1,7 +1,4 @@
-import faker from 'faker-br';
-import minioConfig from "../config/minioConfig.js";
 import { prisma } from "../config/prismaClient.js";
-import { bucketsMinio, gruposEnum } from "../utils/enums.js";
 import dataSeed from "./data.js";
 
 export default async function cursoSeed() {
