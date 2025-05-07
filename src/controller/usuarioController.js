@@ -247,7 +247,7 @@ export default class UsuarioController {
     static async uploadFotoPerfil(req, res) {
         const erros = []
         const validImageTypes = [
-            'image/jpeg', 'image/jpg', 'image/png'
+            'image/jpeg', 'image/jpg', 'image/png','image/webp'
         ];
 
         const file = req.file
