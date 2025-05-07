@@ -34,11 +34,12 @@
     "prisma": "^5.13.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
-    "uuid": "^10.0.0",
     "validation-br": "^1.5.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "faker-br": "^0.4.1"
+    "faker-br": "^0.4.1",
+    "googleapis": "^148.0.0",
+    "uuid": "^11.1.0"
   }
 }
