@@ -173,7 +173,7 @@ export default class UsuarioController {
                 const codigoVerificacao = Math.floor(100000 + Math.random() * 900000);
 
                 const expirationInMs = 30 * 60 * 1000; // 30 minutos em milissegundos
-        
+
                 await prisma.usuario.update({
                     where: {
                         id: id,
@@ -184,7 +184,7 @@ export default class UsuarioController {
                         expirationVerificacaoEmail: new Date(new Date().getTime() + expirationInMs)
                     }
                 });
-        
+
                 await EmailService.sendEmail({
                     "subject": "Academia FSLab - Confirme o seu E-mail",
                     "to": email,
@@ -231,15 +231,40 @@ export default class UsuarioController {
             if (userExist === null) {
                 erros.push(messages.auth.userNotFound(id))
             }
+
+            if(userExist.email ===  process.env.LOGIN_ADMINISTRADOR_PADRAO){
+                erros.push("O usuário Administrador padrão não pode ser deletado!")
+            }
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
-        await prisma.usuario.delete({
-            where: {
-                id: id,
-            },
-        })
+        await prisma.$transaction(async (prisma) => {
+            await prisma.curso.updateMany({
+                where: { criador: userId },
+                data: { criador: null },
+            });
+
+            await prisma.certificado.deleteMany({
+                where: { userId },
+            });
+
+            await prisma.progressoCurso.deleteMany({
+                where: { userId },
+            });
+
+            await prisma.inscricao.deleteMany({
+                where: { userId },
+            });
+
+            await prisma.instrutores.deleteMany({
+                where: { userId },
+            });
+
+            await prisma.usuario.delete({
+                where: { id: userId },
+            });
+        });
 
         return sendResponse(res, 200, [])
     }
@@ -247,7 +272,7 @@ export default class UsuarioController {
     static async uploadFotoPerfil(req, res) {
         const erros = []
         const validImageTypes = [
-            'image/jpeg', 'image/jpg', 'image/png','image/webp'
+            'image/jpeg', 'image/jpg', 'image/png', 'image/webp'
         ];
 
         const file = req.file

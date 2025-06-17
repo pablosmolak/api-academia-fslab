@@ -9,7 +9,8 @@ import dataSeed from "./data.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default async function imagemSeed(quantity) {
+export default async function imagemSeed() {
+  
     const tempDir = path.join(__dirname, "temp_images");
 
     // Garante que o diretório temporário exista

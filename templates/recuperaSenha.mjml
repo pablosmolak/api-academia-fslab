@@ -14,7 +14,7 @@
   <mj-body>
     <mj-section background-color="#f4f4f4" padding="20px">
       <mj-column>
-        <mj-image width="250px" src="https://api-levantamento.app.fslab.dev/imagens/public.png" alt="Logo"></mj-image>
+        <mj-image width="250px" src="https://academia.app.fslab.dev/assets/logo_fslab.png" alt="Logo"></mj-image>
       </mj-column>
     </mj-section>
     <mj-section background-color="#ffffff" padding="20px">
@@ -29,7 +29,7 @@
     </mj-section>
     <mj-section background-color="#f4f4f4" padding="20px">
       <mj-column>
-        <mj-text font-size="12px" font-family="Arial, sans-serif" color="#999999" line-height="1.5" align="center">© 2024 Academia FSLab. Todos os direitos reservados<br />
+        <mj-text font-size="12px" font-family="Arial, sans-serif" color="#999999" line-height="1.5" align="center">© 2025 Academia FSLab. Todos os direitos reservados<br />
     </mj-text>
       </mj-column>
     </mj-section>

@@ -128,7 +128,7 @@ model Curso {
     nome         String
     descricao    String   @db.Text
     capa         String?
-    criador      String
+    criador      String?
     cargaHoraria Int      @default(0)
     publicado    Boolean  @default(false)
     created_at   DateTime @default(now())
@@ -141,7 +141,7 @@ model Curso {
     certificado     Certificado[]
     instrutores     Instrutores[]
     categoria       Categoria[]
-    usuario         Usuario          @relation(fields: [criador], references: [id])
+    usuario         Usuario?          @relation(fields: [criador], references: [id])
 }
 
 // Criar um modelo de categoria de cursos para organizar os cursos
