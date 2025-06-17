@@ -217,22 +217,22 @@ export default class UsuarioController {
     static async deletarUsuario(req, res) {
         const erros = []
 
-        const { id } = req.params
+        const { id: userId } = req.params
 
-        if (!id) {
+        if (!userId) {
             erros.push(messages.error.invalidID)
         } else {
             const userExist = await prisma.usuario.findUnique({
                 where: {
-                    id
+                    id: userId
                 }
             })
 
             if (userExist === null) {
-                erros.push(messages.auth.userNotFound(id))
+                erros.push(messages.auth.userNotFound(userId))
             }
 
-            if(userExist.email ===  process.env.LOGIN_ADMINISTRADOR_PADRAO){
+            if(userExist?.email ===  process.env.LOGIN_ADMINISTRADOR_PADRAO){
                 erros.push("O usuário Administrador padrão não pode ser deletado!")
             }
         }
