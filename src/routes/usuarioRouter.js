@@ -58,7 +58,6 @@ router
     .delete(
         "/usuarios/:id",
         AuthMiddleware,
-        EmailVerificadoMiddleware,
         permissaoMiddleware([gruposEnum.ADM], [permissaoEnum.ProprioUsuario]),
         wrapException(UsuarioController.deletarUsuario)
     )
