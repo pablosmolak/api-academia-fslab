@@ -24,7 +24,7 @@ router
     .get("/cursos/publicados/:id",
         wrapException(CursosController.listarCursoPublicadoPorId)
     )
-    
+
     .patch("/cursos/alterarstatus/:id",
         AuthMiddleware,
         EmailVerificadoMiddleware,
@@ -32,14 +32,14 @@ router
         wrapException(CursosController.alterarStatusCurso)
     )
 
-    
+
     .get("/cursos/todos",
         AuthMiddleware,
         EmailVerificadoMiddleware,
         permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(CursosController.listarTodosCursos)
     )
-    
+
     .get("/cursos/todos/:id",
         AuthMiddleware,
         EmailVerificadoMiddleware,
@@ -67,8 +67,17 @@ router
     .get("/cursos/:id/instrutores",
         AuthMiddleware,
         EmailVerificadoMiddleware,
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(CursosController.listarInstrutoresDoCurso)
     )
+
+    .delete("/cursos/:id/instrutores",
+        AuthMiddleware,
+        EmailVerificadoMiddleware,
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
+        wrapException(CursosController.removerInstrutores)
+    )
+
     .post("/cursos/:id/instrutores",
         AuthMiddleware,
         EmailVerificadoMiddleware,
@@ -83,6 +92,14 @@ router
         permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         uploadMulter,
         wrapException(CursosController.uploadCapa)
+    )
+
+    .delete(
+        "/cursos/:id/capa/delete",
+        AuthMiddleware,
+        EmailVerificadoMiddleware,
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
+        wrapException(CursosController.deletarCapa)
     )
 
     .get(

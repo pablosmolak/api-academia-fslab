@@ -74,7 +74,7 @@ export async function verificarAdministradorPadrao() {
     if (usuario === 0) {
         const grupoId = await prisma.grupo.findFirst({
             where: {
-                nome: { in: ["Administradores"] },
+                nome: { in: [gruposEnum.ADM] },
             },
             select: { id: true },
         });

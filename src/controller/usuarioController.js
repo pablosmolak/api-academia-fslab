@@ -14,14 +14,9 @@ export default class UsuarioController {
         const erros = []
         let { nome, email, senha } = usuarioSchema.criarUsuario.parse(req.body)
 
-
-        console.log(email)
-
         let userExist = await prisma.usuario.findUnique({
             where: { email }
         })
-
-        console.log(userExist)
 
         if (userExist !== null) {
             erros.push({ path: "email", message: messages.auth.emailAlreadyExists() })
@@ -101,7 +96,7 @@ export default class UsuarioController {
     static async listarUsuarioPorID(req, res) {
         const erros = []
 
-        const { id } = req.params
+        const { id } = usuarioSchema.listarUsuario.parse(req.params)
 
         const findUser = await prisma.usuario.findUnique({
             where: {
@@ -140,9 +135,9 @@ export default class UsuarioController {
     static async alterarUsuario(req, res) {
         const erros = []
 
-        const { id } = req.params
+        const { id } = usuarioSchema.listarUsuario.parse(req.params)
 
-        let { nome, email, senha } = usuarioSchema.alterarUsuario.parse(req.body)
+        let { nome, email, senha } = usuarioSchema.alterarUsuario.parse({ ...req.body, id })
 
         const userExist = await prisma.usuario.findUnique({
             where: {
@@ -158,8 +153,6 @@ export default class UsuarioController {
             let userExistByEmail = await prisma.usuario.findUnique({
                 where: { email: email }
             })
-
-            console.log(userExistByEmail)
 
             if (userExistByEmail !== null && userExistByEmail.id !== id) {
                 erros.push({ path: "email", message: messages.auth.emailAlreadyExists(email) })
@@ -217,24 +210,20 @@ export default class UsuarioController {
     static async deletarUsuario(req, res) {
         const erros = []
 
-        const { id: userId } = req.params
+        const { id: userId } = usuarioSchema.listarUsuario.parse(req.params)
 
-        if (!userId) {
-            erros.push(messages.error.invalidID)
-        } else {
-            const userExist = await prisma.usuario.findUnique({
-                where: {
-                    id: userId
-                }
-            })
-
-            if (userExist === null) {
-                erros.push(messages.auth.userNotFound(userId))
+        const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: userId
             }
+        })
 
-            if(userExist?.email ===  process.env.LOGIN_ADMINISTRADOR_PADRAO){
-                erros.push("O usuário Administrador padrão não pode ser deletado!")
-            }
+        if (userExist === null) {
+            erros.push(messages.auth.userNotFound(userId))
+        }
+
+        if (userExist?.email === process.env.LOGIN_ADMINISTRADOR_PADRAO) {
+            erros.push("O usuário Administrador padrão não pode ser deletado!")
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
@@ -276,7 +265,7 @@ export default class UsuarioController {
         ];
 
         const file = req.file
-        const userid = req.params.id
+        const { id: userid } = usuarioSchema.listarUsuario.parse(req.params)
 
         if (!validImageTypes.includes(file.mimetype)) {
             erros.push(`O arquivo enviado não é uma imagem válida, os tipos aceitos são: ${validImageTypes.join(", ")}!`)
@@ -318,7 +307,7 @@ export default class UsuarioController {
 
     static async deletarFotoPerfil(req, res) {
         const erros = []
-        const userid = req.params.id
+        const { id: userid } = usuarioSchema.listarUsuario.parse(req.params)
 
         const userExist = await prisma.usuario.findUnique({
             where: {
@@ -348,12 +337,12 @@ export default class UsuarioController {
             })
         }
 
-        return sendResponse(res, 201, [])
+        return sendResponse(res, 200, [])
     }
 
     static async visualizarImagem(req, res) {
         const erros = []
-        const userid = req.params.id
+        const { id: userid } = usuarioSchema.listarUsuario.parse(req.params)
 
         const userExist = await prisma.usuario.findUnique({
             where: {

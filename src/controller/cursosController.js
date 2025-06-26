@@ -197,12 +197,13 @@ export default class CursosController {
 
         let filtros = { where: {} }
 
-        const { id } = req.params
+        const { id } = cursoSchema.listarCurso.parse(req.params)
         const usuarioLogado = req.user
 
         filtros.where.id = id
 
         if (req.user.grupo === gruposEnum.Professores) {
+
             const filtroInstrutorCriador = {
                 OR: [
                     { criador: usuarioLogado.id },
@@ -306,7 +307,7 @@ export default class CursosController {
         })
 
         if (findCurso === null) {
-            return sendError(res, 404, { path: "id", message: "Nenhum curso publicado encontrado com esse ID" })
+            return sendError(res, 404, { path: "id", message: "Nenhum curso publicado encontrado com esse ID!" })
         }
 
         findCurso.instrutores = findCurso.instrutores.map(instrutor => instrutor.usuario)
@@ -378,7 +379,7 @@ export default class CursosController {
         })
 
         if (findCurso === null) {
-            return sendError(res, 404, { path: "id", message: "Nenhum curso encontrado com esse ID" })
+            return sendError(res, 404, { path: "id", message: "Nenhum curso encontrado com esse ID!" })
         }
 
         findCurso.instrutores = findCurso.instrutores.map(instrutor => instrutor.usuario)
@@ -439,13 +440,10 @@ export default class CursosController {
             const horasTotais = Math.floor(totalMinutos / 60);
             const minutosRestantes = Math.round(totalMinutos % 60);
 
-            if (minutosRestantes === 0) {
-                return `${horasTotais}h`;
-            } else if (horasTotais === 0) {
-                return `${minutosRestantes}m`;
-            }
-
-            return `${horasTotais}h${minutosRestantes}m`;
+            return [
+                horasTotais ? `${horasTotais}h` : '',
+                minutosRestantes ? `${minutosRestantes}m` : ''
+            ].filter(Boolean).join('');
         }
 
         let quantidadeConteudo = (tipo) => {
@@ -498,7 +496,7 @@ export default class CursosController {
         })
 
         if (cursoExist === null) {
-            return sendError(res, 404, { path: "id", message: messages.validationGeneric.notFound("id") })
+            return sendError(res, 422, { path: "id", message: messages.validationGeneric.notFound("id") })
         }
 
         if (req.user.grupo === gruposEnum.Professores) {
@@ -682,10 +680,66 @@ export default class CursosController {
         sendResponse(res, 201, instrutores)
     }
 
+    static async removerInstrutores(req, res) {
+        const erros = [];
+        const cursoID = req.params.id;
+        const { usersID } = instrutorSchema.addInstrutorAoCurso.parse(req.body);
+
+        // Verifica se o curso existe
+        const findCurso = await prisma.curso.findUnique({
+            where: {
+                id: cursoID,
+            },
+            include: {
+                instrutores: true
+            }
+        });
+
+        if (!findCurso) {
+            erros.push({ path: "cursoID", message: messages.validationGeneric.notFound("id do curso") });
+        }
+
+        for (const user of usersID) {
+            const findUser = await prisma.usuario.findUnique({
+                where: {
+                    id: user,
+                }
+            });
+
+            if (!findUser) {
+                erros.push({ path: "usersID", message: messages.validationGeneric.notFound(`ID do Usuário: ${user}`) });
+            }
+        }
+
+        if (erros.length > 0) return sendError(res, 422, erros);
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const userId = req.user.id;
+
+            const isInstrutor = findCurso.instrutores.some(instrutor => instrutor.userId === userId);
+            const isCriador = userId === findCurso.criador
+
+            if (!isCriador && !isInstrutor) {
+                return sendError(res, 401, { path: "id", message: "Usuário sem permissão para adicionar instrutures ao curso!" })
+            }
+        }
+
+        await prisma.$transaction(async (prisma) => {
+            await prisma.instrutores.deleteMany({
+                where: {
+                    cursoId: cursoID,
+                    userId: { in: usersID }
+                }
+            })
+        })
+
+        return sendResponse(res, 200, [])
+    }
+
     static async uploadCapa(req, res) {
         const erros = []
         const validImageTypes = [
-            'image/jpeg', 'image/jpg', 'image/png'
+            'image/jpeg', 'image/jpg', 'image/png', 'image/webp'
         ];
 
         const file = req.file
@@ -769,5 +823,54 @@ export default class CursosController {
             .catch(err => {
                 return sendError(res, 404, err.message)
             })
+    }
+
+    static async deletarCapa(req, res) {
+        const erros = []
+        const { id } = cursoSchema.listarCurso.parse(req.params)
+
+        const cursoExist = await prisma.curso.findUnique({
+            where: {
+                id
+            },
+            include: {
+                instrutores: true
+            }
+        })
+
+        if (cursoExist === null) {
+            erros.push({ path: "cursoid", message: messages.validationGeneric.notFound("id") })
+        }
+
+        if (erros.length > 0) {
+            return sendError(res, 422, erros)
+        }
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const userId = req.user.id;
+
+            const isInstrutor = cursoExist.instrutores.some(instrutor => instrutor.userId === userId);
+            const isCriador = userId === cursoExist.criador
+
+            if (!isCriador && !isInstrutor) {
+                return sendError(res, 401, { path: "id", message: "Usuário sem permissão para deletar capa do curso!" })
+            }
+        }
+
+        if (cursoExist.capa) {
+            await minioFunctions.remove(cursoExist.capa, bucketsMinio.Cursos)
+                .catch()
+
+            await prisma.curso.update({
+                where: {
+                    id
+                },
+                data: {
+                    capa: null
+                }
+            })
+        }
+
+        return sendResponse(res, 200, [])
     }
 }

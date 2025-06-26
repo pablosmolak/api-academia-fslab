@@ -2,6 +2,7 @@ import multer from 'multer'
 import { sendError } from '../utils/mensagens.js';
 
 export async function uploadMulter(req, res, next) {
+    console.log("Iniciando o upload do arquivo...");
     // Configuração do Multer
     const upload = multer({ dest: 'uploads/' }).single('file');
 

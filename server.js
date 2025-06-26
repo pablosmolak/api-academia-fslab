@@ -1,10 +1,10 @@
 import * as dotenv from 'dotenv';
-import { verifyConnection } from "./src/config/prismaClient.js";
-import app from "./src/app.js"
-import swaggerUI from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
-import swaggerOptions from './src/docs/config/head.js';
+import swaggerUI from 'swagger-ui-express';
+import app from "./src/app.js";
 import { verificarAdministradorPadrao, verificarGrupos, verificarMinio } from "./src/config/initialConfig.js";
+import { verifyConnection } from "./src/config/prismaClient.js";
+import swaggerOptions from './src/docs/config/head.js';
 import { sendError } from './src/utils/mensagens.js';
 
 dotenv.config();
@@ -19,7 +19,7 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
     if (err instanceof SyntaxError && err.status === 400) {
-        return sendError(res,400,'JSON malformado. Por favor, verifique a sintaxe.' )
+        return sendError(res, 400, 'JSON malformado. Por favor, verifique a sintaxe.')
     }
     next();
 });
