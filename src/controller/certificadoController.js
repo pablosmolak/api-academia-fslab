@@ -139,7 +139,7 @@ export default class CertificadoController {
         if(!certificado){
             return sendError(res,404,[{
                  path: "id", 
-                 message: "Nenhum certificado encontrado com esse ID" 
+                 message: "Nenhum certificado encontrado com esse validador" 
             }])
         }
 
