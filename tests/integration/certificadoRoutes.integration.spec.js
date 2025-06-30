@@ -49,12 +49,9 @@ describe('Testes de certificado', () => {
         });
 
         it('Deve listar certificados de um usuário específico', async () => {
-
             const res = await request(app)
                 .get(`/certificados/usuario/${userId}`)
                 .set('Authorization', `Bearer ${token}`);
-
-            console.log(res.body);
 
             expect(res.statusCode).toEqual(200);
         })

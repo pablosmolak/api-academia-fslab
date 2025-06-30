@@ -16,7 +16,7 @@ export default class VerificarEmailController {
         if (user.emailVerificado) {
             return sendError(res, 422, { path: "codigoVerificacaoEmail", message: "Email já verificado!" })
         }
-        
+
         if (user.codigoVerificacaoEmail != codigoVerificacaoEmail) {
             return sendError(res, 422, { path: "codigoVerificacaoEmail", message: "Código de verificação inválido!" })
         }
@@ -45,7 +45,7 @@ export default class VerificarEmailController {
         })
 
         if (user.emailVerificado) {
-           return sendError(res, 422, { path: "undefined", message: "Email já verificado!" })
+            return sendError(res, 422, ["Email já verificado!"])
         }
 
         const codigoVerificacao = Math.floor(100000 + Math.random() * 900000);
@@ -60,15 +60,15 @@ export default class VerificarEmailController {
             }
         });
 
-         await EmailService.sendEmail({
-                    "subject": "Academia FSLab - Confirme o seu E-mail",
-                    "to": user.email,
-                    "template": "academia-verificaemail",
-                    "data": {
-                        "userName": user.nome,
-                        "verificationCode": `${codigoVerificacao}`
-                    }
-                });
+        await EmailService.sendEmail({
+            "subject": "Academia FSLab - Confirme o seu E-mail",
+            "to": user.email,
+            "template": "academia-verificaemail",
+            "data": {
+                "userName": user.nome,
+                "verificationCode": `${codigoVerificacao}`
+            }
+        });
 
         return sendResponse(res, 200, []);
     }
