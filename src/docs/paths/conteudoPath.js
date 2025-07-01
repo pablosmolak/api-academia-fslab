@@ -17,7 +17,7 @@ export const ConteudoPath = {
             },
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Conteudo"),
-                ...gerarRespostasDeErro([400, 401,403, 422, 498, 500])
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
             }
         }
     },
@@ -38,7 +38,7 @@ export const ConteudoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Conteudo"),
-                ...gerarRespostasDeErro([401, 403,422, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 404, 422, 498, 500])
             }
         },
         patch: {
@@ -59,13 +59,13 @@ export const ConteudoPath = {
                 required: true,
                 content: {
                     "application/json": {
-                        schema: { $ref: "#/components/schemas/ConteudoRequestBody" }
+                        schema: { $ref: "#/components/schemas/ConteudoUpdateRequestBody" }
                     }
                 }
             },
             responses: {
                 ...gerarRespostasCorretas(200, ""),
-                ...gerarRespostasDeErro([400, 401, 403,422, 498, 500])
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
             }
         },
         delete: {
@@ -84,7 +84,7 @@ export const ConteudoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, ""),
-                ...gerarRespostasDeErro([401, 403,422, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         },
     },
@@ -105,7 +105,7 @@ export const ConteudoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Conteudo"),
-                ...gerarRespostasDeErro([401,403, 422, 498, 500])
+                ...gerarRespostasDeErro([401, 403, 404, 422, 498, 500])
             }
         }
     }

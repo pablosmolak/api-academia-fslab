@@ -119,10 +119,7 @@ describe('Testes de Curso', () => {
                 });
 
             expect(res.statusCode).toEqual(401);
-            expect(res.body.errors).toContainEqual({
-                path: "id",
-                message: "Usuário sem permissão para adicionar instrutures ao curso!"
-            });
+            expect(res.body.errors).toContainEqual("Usuário sem permissão para adicionar instrutures ao curso!");
         })
 
         it('Deve retornar erro ao adicionar instrutores ao curso com ID de usuário inválido', async () => {
@@ -464,10 +461,7 @@ describe('Testes de Curso', () => {
                 });
 
             expect(res.statusCode).toEqual(401);
-            expect(res.body.errors).toContainEqual({
-                message: "Usuário sem permissão para adicionar instrutures ao curso!",
-                path: "id"
-            });
+            expect(res.body.errors).toContainEqual("Usuário sem permissão para adicionar instrutures ao curso!");
         })
     });
 
@@ -517,10 +511,7 @@ describe('Testes de Curso', () => {
                 .attach('file', caminhoImagem);
 
             expect(res.statusCode).toBe(401);
-            expect(res.body.errors).toContainEqual({
-                path: "id",
-                message: "Usuário sem permissão para adicionar capa ao curso!"
-            });
+            expect(res.body.errors).toContainEqual("Usuário sem permissão para adicionar capa ao curso!");
         })
 
         it('Deve retornar erro ao fazer upload de uma imagem de usuário com tipo de arquivo inválido', async () => {
@@ -603,10 +594,7 @@ describe('Testes de Curso', () => {
                 .set('Authorization', `Bearer ${tokenProfessor}`);
 
             expect(res.statusCode).toEqual(401);
-            expect(res.body.errors).toContainEqual({
-                path: "id",
-                message: "Usuário sem permissão para deletar capa do curso!"
-            });
+            expect(res.body.errors).toContainEqual("Usuário sem permissão para deletar capa do curso!");
         });
     });
 
@@ -639,10 +627,7 @@ describe('Testes de Curso', () => {
                 .set('Authorization', `Bearer ${tokenProfessor}`);
 
             expect(res.statusCode).toEqual(401);
-            expect(res.body.errors).toContainEqual({
-                path: "id",
-                message: "Usuário sem permissão para deletar o curso!"
-            })
+            expect(res.body.errors).toContainEqual("Usuário sem permissão para deletar o curso!")
         });
 
         it('Deve retornar erro ao tentar deletar um curso com ID inválido', async () => {

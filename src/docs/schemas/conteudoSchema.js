@@ -60,8 +60,13 @@ export const ConteudoCursoSchemas = {
                 description: "ID do tópico ao qual o conteúdo pertence",
                 example: "789e4567-e89b-12d3-a456-426614174000"
             },
-            tipo: { 
-                type: 'string', 
+            titulo: {
+                type: 'string',
+                description: "Titulo do conteúdo",
+                example: "Conteúdo 1"
+            },
+            tipo: {
+                type: 'string',
                 description: "Tipo de conteúdo (Youtube URL)",
                 example: "Youtube URL"
             },
@@ -71,13 +76,45 @@ export const ConteudoCursoSchemas = {
                 description: "Carga horaria do conteudo",
                 example: "00:18:00"
             },
-            conteudo: { 
-                type: 'string', 
+            conteudo: {
+                type: 'string',
                 description: "Conteúdo em si (Youtube URL)",
                 example: "https://youtu.be/dQw4w9WgXcQ"
             },
         },
         required: ['topicoId', 'tipo', 'conteudo'],
-        description: "Corpo da requisição para criar ou atualizar um conteúdo"
+        description: "Corpo da requisição para criar um conteúdo"
+    },
+    ConteudoUpdateRequestBody: {
+        type: 'object',
+        properties: {
+            titulo: {
+                type: 'string',
+                description: "Titulo do conteúdo",
+                example: "Conteúdo 1"
+            },
+            tipo: {
+                type: 'string',
+                description: "Tipo de conteúdo (Youtube URL)",
+                example: "Youtube URL"
+            },
+            cargaHoraria: {
+                type: "string",
+                format: "time",
+                description: "Carga horaria do conteudo",
+                example: "00:18:00"
+            },
+            conteudo: {
+                type: 'string',
+                description: "Conteúdo em si (Youtube URL)",
+                example: "https://youtu.be/dQw4w9WgXcQ"
+            },
+             ordem: {
+                type: "integer",
+                description: "Ordem do conteúdo dentro do tópico",
+                example: 1
+            },
+        },
+        description: "Corpo da requisição para atualizar um conteúdo"
     }
 }

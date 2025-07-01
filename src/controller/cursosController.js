@@ -506,7 +506,7 @@ export default class CursosController {
             const isCriador = userId === cursoExist.criador
 
             if (!isCriador && !isInstrutor) {
-                return sendError(res, 401, { path: "id", message: "Usuário sem permissão para deletar o curso!" })
+                return sendError(res, 401, "Usuário sem permissão para deletar o curso!")
             }
         }
 
@@ -658,7 +658,7 @@ export default class CursosController {
             const isCriador = userId === findCurso.criador
 
             if (!isCriador && !isInstrutor) {
-                return sendError(res, 401, { path: "id", message: "Usuário sem permissão para adicionar instrutures ao curso!" })
+                return sendError(res, 401, "Usuário sem permissão para adicionar instrutures ao curso!")
             }
         }
 
@@ -720,7 +720,7 @@ export default class CursosController {
             const isCriador = userId === findCurso.criador
 
             if (!isCriador && !isInstrutor) {
-                return sendError(res, 401, { path: "id", message: "Usuário sem permissão para adicionar instrutures ao curso!" })
+                return sendError(res, 401, "Usuário sem permissão para adicionar instrutures ao curso!")
             }
         }
 
@@ -775,7 +775,7 @@ export default class CursosController {
 
             if (!isCriador && !isInstrutor) {
                 fs.unlinkSync(file.path);
-                return sendError(res, 401, { path: "id", message: "Usuário sem permissão para adicionar capa ao curso!" })
+                return sendError(res, 401, "Usuário sem permissão para adicionar capa ao curso!")
             }
         }
 
@@ -853,7 +853,7 @@ export default class CursosController {
             const isCriador = userId === cursoExist.criador
 
             if (!isCriador && !isInstrutor) {
-                return sendError(res, 401, { path: "id", message: "Usuário sem permissão para deletar capa do curso!" })
+                return sendError(res, 401, "Usuário sem permissão para deletar capa do curso!")
             }
         }
 
