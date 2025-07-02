@@ -144,6 +144,7 @@ export default class InscricoesController {
     static async listarInscricoesDoUsuarioLogadoPorIdDeCurso(req, res) {
 
         const usuario = req.user.id
+        
         const { cursoId } = inscricaoSchema.listarInscricaoPorCurso.parse(req.params)
 
         const findCurso = await prisma.curso.findUnique({

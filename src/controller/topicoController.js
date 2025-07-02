@@ -1,6 +1,6 @@
 import { prisma } from "../config/prismaClient.js"
-import messages, { sendError, sendResponse } from "../utils/mensagens.js"
 import { topicoSchema } from "../schema/topicoSchema.js"
+import messages, { sendError, sendResponse } from "../utils/mensagens.js"
 
 export default class TopicoController {
 
@@ -16,9 +16,25 @@ export default class TopicoController {
         })
 
         if (findCursos === null) {
-            erros.push(messages.validationGeneric.notFound("CursoId"))
+            erros.push({
+                path: 'cursoId',
+                message: messages.validationGeneric.notFound("CursoId")
+            })
         }
 
+        const conteudoExistente = await prisma.topico.findFirst({
+            where: {
+                titulo,
+                cursoId: cursoId
+            },
+        });
+
+        if (conteudoExistente) {
+            erros.push({
+                path: 'titulo',
+                message: 'Já existe um tópico com este título neste curso.'
+            });
+        }
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
@@ -42,34 +58,34 @@ export default class TopicoController {
     static async listarTopicoPorID(req, res) {
         const { id } = req.params
 
-        const findAula = await prisma.topico.findUnique({
+        const findTopico = await prisma.topico.findUnique({
             where: {
                 id: id
             }
         })
 
-        if (findAula === null) {
+        if (findTopico === null) {
             return sendError(res, 404, [messages.validationGeneric.notFound("ID")])
         }
 
-        return sendResponse(res, 200, findAula)
+        return sendResponse(res, 200, findTopico)
     }
 
     static async listarTopicoPorCurso(req, res) {
         const { cursoid } = req.params
 
-        const findAulas = await prisma.topico.findMany({
+        const findTopicos = await prisma.topico.findMany({
             where: {
                 cursoId: cursoid
             },
             orderBy: { ordem: 'asc' }
         })
 
-        if (findAulas.length === 0) {
+        if (findTopicos.length === 0) {
             return sendError(res, 404, [messages.validationGeneric.notFound("ID")])
         }
 
-        return sendResponse(res, 200, findAulas)
+        return sendResponse(res, 200, findTopicos)
     }
 
     static async deletarTopico(req, res) {
@@ -80,6 +96,13 @@ export default class TopicoController {
         const findTopico = await prisma.topico.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                curso: {
+                    select: {
+                        cargaHoraria: true
+                    }
+                }
             }
         })
 
@@ -88,6 +111,19 @@ export default class TopicoController {
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
+
+        const somaCargaHoraria = await prisma.conteudoCurso.aggregate({
+            _sum: {
+                cargaHoraria: true,
+            },
+            where: {
+                topicoId: id,
+            },
+        });
+
+        const totalCargaHoraria = somaCargaHoraria._sum.cargaHoraria ?? 0;
+
+        const novaCargaTotalCurso = (findTopico.curso.cargaHoraria - totalCargaHoraria);
 
         await prisma.$transaction(async (prisma) => {
 
@@ -100,6 +136,15 @@ export default class TopicoController {
             await prisma.topico.delete({
                 where: {
                     id: id
+                }
+            })
+
+            await prisma.curso.update({
+                where: {
+                    id: findTopico.cursoId
+                },
+                data: {
+                    cargaHoraria: novaCargaTotalCurso
                 }
             })
 
@@ -127,29 +172,45 @@ export default class TopicoController {
         const { id } = req.params
         const { titulo, ordem } = topicoSchema.alterarTopico.parse(req.body)
 
-        const findAula = await prisma.topico.findUnique({
+        const findTopico = await prisma.topico.findUnique({
             where: {
                 id: id
             }
         })
 
-        if (findAula === null) {
-            erros.push(messages.validationGeneric.notFound("id"))
+        if (findTopico === null) {
+            return sendError(res, 422, messages.validationGeneric.notFound("id"))
+        }
+
+        if (titulo) {
+            const conteudoExistente = await prisma.topico.findFirst({
+                where: {
+                    titulo,
+                    cursoId: findTopico.cursoId,
+                },
+            });
+
+            if (conteudoExistente && conteudoExistente.id !== findTopico.id) {
+                erros.push({
+                    path: 'titulo',
+                    message: 'Já existe um tópico com este título neste curso.'
+                });
+            }
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
-        const totalAulas = await prisma.topico.count({
+        const totalTopicos = await prisma.topico.count({
             where: {
-                cursoId: findAula.cursoId
+                cursoId: findTopico.cursoId
             }
         })
 
-        const ordemAtual = findAula.ordem;
+        const ordemAtual = findTopico.ordem;
         let novaOrdem
 
         if (ordem) {
-            novaOrdem = Math.max(1, Math.min(ordem, totalAulas))
+            novaOrdem = Math.max(1, Math.min(ordem, totalTopicos))
         } else {
             novaOrdem = ordemAtual
         }
@@ -159,7 +220,7 @@ export default class TopicoController {
                 if (novaOrdem > ordemAtual) {
                     await prisma.topico.updateMany({
                         where: {
-                            cursoId: findAula.cursoId,
+                            cursoId: findTopico.cursoId,
                             ordem: {
                                 gt: ordemAtual,
                                 lte: novaOrdem
@@ -174,7 +235,7 @@ export default class TopicoController {
                 } else if (novaOrdem < ordemAtual) {
                     await prisma.topico.updateMany({
                         where: {
-                            cursoId: findAula.cursoId,
+                            cursoId: findTopico.cursoId,
                             ordem: {
                                 gte: novaOrdem,
                                 lt: ordemAtual

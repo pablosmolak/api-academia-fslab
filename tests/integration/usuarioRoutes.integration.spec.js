@@ -24,40 +24,40 @@ beforeAll(async () => {
 
 
 describe('Testes de Usuários', () => {
-        describe('/POST em usuários', () => {
-            it('Deve criar um usuário', async () => {
-                const res = await request(app)
-                    .post('/usuarios')
-                    .set('Authorization', `Bearer ${token}`)
-                    .send({
-                        nome: "teste 1",
-                        email: "testeone@example.com",
-                        senha: "Teste@1234"
-                    });
-
-                usuarioTesteOneId = res.body.data[0].id;
-
-                expect(res.statusCode).toEqual(201);
-                expect(res.body.data[0]).toHaveProperty('email');
-            })
-
-            it('Deve retornar erro ao criar usuário com email já existente', async () => {
-                const res = await request(app)
-                    .post('/usuarios')
-                    .set('Authorization', `Bearer ${token}`)
-                    .send({
-                        nome: "teste 2",
-                        email: "dev@gmail.com",
-                        senha: "Teste@1234"
-                    });
-
-                expect(res.statusCode).toEqual(422);
-                expect(res.body.errors).toContainEqual({
-                    path: 'email',
-                    message: 'O endereço de e-mail informado já está em uso!'
+    describe('/POST em usuários', () => {
+        it('Deve criar um usuário', async () => {
+            const res = await request(app)
+                .post('/usuarios')
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    nome: "teste 1",
+                    email: "testeone@example.com",
+                    senha: "Teste@1234"
                 });
-            })
+
+            usuarioTesteOneId = res.body.data[0].id;
+
+            expect(res.statusCode).toEqual(201);
+            expect(res.body.data[0]).toHaveProperty('email');
         })
+
+        it('Deve retornar erro ao criar usuário com email já existente', async () => {
+            const res = await request(app)
+                .post('/usuarios')
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    nome: "teste 2",
+                    email: "dev@gmail.com",
+                    senha: "Teste@1234"
+                });
+
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.errors).toContainEqual({
+                path: 'email',
+                message: 'O endereço de e-mail informado já está em uso!'
+            });
+        })
+    })
 
     describe('/GET em usuários', () => {
 
@@ -159,6 +159,24 @@ describe('Testes de Usuários', () => {
             expect(res.statusCode).toBe(201); // ou o status que sua API retorna no sucesso
         });
 
+        it('Deve retornar erro ao tentar fazer upload de uma imagem de usuário sem validar o email', async () => {
+            const login = await request(app)
+                .post('/login')
+                .send({
+                    email: "testeonee@example.com",
+                    senha: "Teste@1234"
+                });
+
+            const tokenTesteOne = login.body.data[0].token;
+
+            const res = await request(app)
+                .post(`/usuarios/${usuarioTesteOneId}/image/upload`)
+                .set('Authorization', `Bearer ${tokenTesteOne}`)
+
+            expect(res.statusCode).toBe(401);
+            expect(res.body.errors).toContainEqual("Email não verificado!");
+        });
+
         it('Deve alterar a imagem de um usuário', async () => {
             const caminhoImagem = path.resolve(__dirname, '../images/perfil.jpg');
 
@@ -234,9 +252,18 @@ describe('Testes de Usuários', () => {
 
     describe('/DELETE em usuários', () => {
         it('Deve deletar um usuário', async () => {
+            const login = await request(app)
+                .post('/login')
+                .send({
+                    email: "testeonee@example.com",
+                    senha: "Teste@1234"
+                });
+
+            const tokenTesteOne = login.body.data[0].token;
+
             const res = await request(app)
                 .delete(`/usuarios/${usuarioTesteOneId}`)
-                .set('Authorization', `Bearer ${token}`);
+                .set('Authorization', `Bearer ${tokenTesteOne}`);
 
             expect(res.statusCode).toEqual(200);
         });
