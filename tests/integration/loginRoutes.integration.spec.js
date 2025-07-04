@@ -51,8 +51,8 @@ describe('Testes de Login', () => {
             const res = await request(app)
                 .post('/login')
                 .send({
-                    email: 'inexistente@gmail.com',
-                    senha: 'qualquerSenha123'
+                    email: "inexistente@gmail.com",
+                    senha: "q@ualquerSenha123"
                 });
 
             expect(res.statusCode).toEqual(401);
@@ -64,7 +64,7 @@ describe('Testes de Login', () => {
                 data: {
                     nome: 'Teste Senha Errada',
                     email: 'senhaerrada@gmail.com',
-                    senha: await bcrypt.hash('SenhaCorreta123', 10),
+                    senha: await bcrypt.hash('Senha@Correta123', 10),
                     ativo: true,
                     grupoId: grupo.id
                 }
@@ -74,7 +74,7 @@ describe('Testes de Login', () => {
                 .post('/login')
                 .send({
                     email: 'senhaerrada@gmail.com',
-                    senha: 'SenhaIncorreta123'
+                    senha: 'SenhaInco@rreta123'
                 });
 
             expect(res.statusCode).toEqual(401);
@@ -86,7 +86,7 @@ describe('Testes de Login', () => {
                 data: {
                     nome: 'Teste Inativo',
                     email: 'inativo@gmail.com',
-                    senha: await bcrypt.hash('SenhaValida123', 10),
+                    senha: await bcrypt.hash('Senha@Valida123', 10),
                     ativo: false,
                     grupoId: grupo.id
                 }
@@ -96,7 +96,7 @@ describe('Testes de Login', () => {
                 .post('/login')
                 .send({
                     email: 'inativo@gmail.com',
-                    senha: 'SenhaValida123'
+                    senha: 'Senha@Valida123'
                 });
 
             expect(res.statusCode).toEqual(401);
@@ -109,8 +109,16 @@ describe('Testes de Login', () => {
                 .send({});
 
             expect(res.statusCode).toEqual(422);
-            expect(res.body.errors).toContain("O campo E-mail é obrigatório!");
-            expect(res.body.errors).toContain("O campo Senha é obrigatório!");
+
+            expect(res.body.errors).toContainEqual({
+                path: 'email',
+                message: 'Este campo é obrigatório'
+            });
+
+            expect(res.body.errors).toContainEqual({
+                path: 'senha',
+                message: 'Este campo é obrigatório'
+            });
         });
     });
 });

@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">39.13% </span>
+                <span class="strong">73.91% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/23</span>
+                <span class='fraction'>17/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.63% </span>
+                <span class="strong">27.27% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/22</span>
+                <span class='fraction'>6/22</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40.9% </span>
+                <span class="strong">72.72% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/22</span>
+                <span class='fraction'>16/22</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -140,22 +140,22 @@
 <span class="cline-any cline-yes">179x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -193,23 +193,23 @@ export const wrapException = (fn) =&gt; {
             return await fn(req, res, next)
         }
         catch (err) {
-<span class="cstat-no" title="statement not covered" >            if (process.env.DEBUGLOG === "true") <span class="cstat-no" title="statement not covered" >console.error(err)</span></span>
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (process.env.DEBUGLOG === "true") console.error(err)
 &nbsp;
-<span class="cstat-no" title="statement not covered" >            if (err instanceof APIError) {</span>
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (err instanceof APIError) {
                 // Erro retornado da API de autenticação
 <span class="cstat-no" title="statement not covered" >                return sendError(res, err.code, err.errors || err.message);</span>
-            } else <span class="cstat-no" title="statement not covered" >if (err instanceof ZodError) {</span>
+            } else if (err instanceof ZodError) {
                 // Erro de validação do Zod
-                let errors = <span class="cstat-no" title="statement not covered" >[];</span>
-<span class="cstat-no" title="statement not covered" >                for (const issue of err.issues) {</span>
-<span class="cstat-no" title="statement not covered" >                    errors.push({</span>
+                let errors = [];
+                for (const issue of err.issues) {
+                    errors.push({
                         message: issue.message,
                         path: issue.path.join(".")
                     });
                 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >                return sendError(res, 422, errors);</span>
-            } else {
+                return sendError(res, 422, errors);
+            } else <span class="missing-if-branch" title="else path not taken" >E</span>{
                 // Erro desconhecido
 <span class="cstat-no" title="statement not covered" >                console.error(err);</span>
 <span class="cstat-no" title="statement not covered" >                return sendError(res, 500, [err.message || "" + err]);</span>
@@ -229,7 +229,7 @@ export const wrapException = (fn) =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-01T19:39:50.353Z
+                at 2025-07-04T01:56:06.129Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

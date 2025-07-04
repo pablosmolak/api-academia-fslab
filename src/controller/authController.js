@@ -1,25 +1,15 @@
 import bcript from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { prisma } from "../config/prismaClient.js"
+import { loginSchema } from "../schema/loginSchema.js"
 import messages, { sendError, sendResponse } from "../utils/mensagens.js"
-import { validarEmail } from "../utils/validations.js"
 
 
 export default class AuthController {
     static async logar(req, res) {
         const erros = []
 
-        const { email, senha } = req.body
-
-        if (!email) {
-            erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
-        } else {
-            validarEmail(email, erros)
-        }
-
-        if (!senha) {
-            erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
-        }
+        const { email, senha } = loginSchema.logar.parse(req.body)
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
@@ -70,8 +60,8 @@ export default class AuthController {
             where: {
                 id: user.id
             },
-            include:{
-                Grupo:{
+            include: {
+                Grupo: {
                     select: {
                         nome: true
                     }
@@ -88,7 +78,7 @@ export default class AuthController {
             "emailVerificado": findUser.emailVerificado,
         }
 
-        return sendResponse(res, 200, {payload})
+        return sendResponse(res, 200, { payload })
     }
 
 

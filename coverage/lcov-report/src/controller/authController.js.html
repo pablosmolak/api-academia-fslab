@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">94.73% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>24/24</span>
+                <span class='fraction'>18/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>7/8</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>20/20</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
@@ -147,17 +147,7 @@
 <a name='L82'></a><a href='#L82'>82</a>
 <a name='L83'></a><a href='#L83'>83</a>
 <a name='L84'></a><a href='#L84'>84</a>
-<a name='L85'></a><a href='#L85'>85</a>
-<a name='L86'></a><a href='#L86'>86</a>
-<a name='L87'></a><a href='#L87'>87</a>
-<a name='L88'></a><a href='#L88'>88</a>
-<a name='L89'></a><a href='#L89'>89</a>
-<a name='L90'></a><a href='#L90'>90</a>
-<a name='L91'></a><a href='#L91'>91</a>
-<a name='L92'></a><a href='#L92'>92</a>
-<a name='L93'></a><a href='#L93'>93</a>
-<a name='L94'></a><a href='#L94'>94</a>
-<a name='L95'></a><a href='#L95'>95</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L85'></a><a href='#L85'>85</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -169,18 +159,8 @@
 <span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">19x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -254,27 +234,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import bcript from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { prisma } from "../config/prismaClient.js"
+import { loginSchema } from "../schema/loginSchema.js"
 import messages, { sendError, sendResponse } from "../utils/mensagens.js"
-import { validarEmail } from "../utils/validations.js"
 &nbsp;
 &nbsp;
 export default class AuthController {
     static async logar(req, res) {
         const erros = []
 &nbsp;
-        const { email, senha } = req.body
+        const { email, senha } = loginSchema.logar.parse(req.body)
 &nbsp;
-        if (!email) {
-            erros.push(messages.validationGeneric.fieldIsRequired("E-mail"))
-        } else {
-            validarEmail(email, erros)
-        }
-&nbsp;
-        if (!senha) {
-            erros.push(messages.validationGeneric.fieldIsRequired("Senha"))
-        }
-&nbsp;
-        if (erros.length &gt; 0) return sendError(res, 422, erros)
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (erros.length &gt; 0) <span class="cstat-no" title="statement not covered" >return sendError(res, 422, erros)</span>
 &nbsp;
         const findUser = await prisma.usuario.findUnique({
             where: { email: email },
@@ -323,8 +293,8 @@ export default class AuthController {
             where: {
                 id: user.id
             },
-            include:{
-                Grupo:{
+            include: {
+                Grupo: {
                     select: {
                         nome: true
                     }
@@ -341,7 +311,7 @@ export default class AuthController {
             "emailVerificado": findUser.emailVerificado,
         }
 &nbsp;
-        return sendResponse(res, 200, {payload})
+        return sendResponse(res, 200, { payload })
     }
 &nbsp;
 &nbsp;
@@ -352,7 +322,7 @@ export default class AuthController {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-01T19:39:50.353Z
+                at 2025-07-04T01:56:06.129Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
