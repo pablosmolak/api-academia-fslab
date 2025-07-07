@@ -1,11 +1,11 @@
 import bcrypt from "bcryptjs/dist/bcrypt.js";
 import { verificarAdministradorPadrao, verificarGrupos, verificarMinio } from "./src/config/initialConfig.js";
-import { prisma } from "./src/config/prismaClient.js";
+import { prisma, verifyConnection } from "./src/config/prismaClient.js";
 import { gruposEnum } from "./src/utils/enums.js";
 
 beforeAll(async () => {
     try {
-        await prisma.$connect()
+        verifyConnection()
 
         await verificarGrupos()
         await verificarMinio()

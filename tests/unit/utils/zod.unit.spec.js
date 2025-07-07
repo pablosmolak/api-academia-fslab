@@ -1,7 +1,6 @@
 import { z, ZodIssueCode } from "zod";
 import { applyZodInitialConfig, myZ, traduzirMensagemZod } from "../../../src/utils/zod";
 
-// Configura tradução global de mensagens de erro do Zod
 beforeAll(() => {
     applyZodInitialConfig();
 });
