@@ -18,7 +18,7 @@ const routes = (app) => {
     }
 
     app.get("/", (req, res) => {
-        res.status(200).redirect("/docs")
+        res.redirect(301, "/docs");
     })
 
     app.use(

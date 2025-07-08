@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import messages, { sendError } from "./mensagens.js"
+import { sendError } from "./mensagens.js";
 
 export class APIError extends Error {
     constructor(errors, code = 400, options = undefined) {

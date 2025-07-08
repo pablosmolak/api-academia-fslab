@@ -12,7 +12,7 @@ jest.unstable_mockModule('../../../src/utils/mensagens.js', () => ({
 const { wrapException, APIError } = await import('../../../src/utils/wrapException.js');
 const { ZodError } = await import('zod');
 
-describe('wrapException', () => {
+describe('Testes do wrapException', () => {
     let req, res, next;
 
     beforeEach(() => {
@@ -20,10 +20,10 @@ describe('wrapException', () => {
         res = {};
         next = jest.fn();
         sendError.mockClear();
-        process.env.DEBUGLOG = "true";
+       
     });
 
-    it('deve chamar função normalmente sem erro', async () => {
+    it('Deve chamar função normalmente sem erro', async () => {
         const fn = jest.fn().mockResolvedValue('ok');
         const middleware = wrapException(fn);
 
@@ -33,7 +33,7 @@ describe('wrapException', () => {
         expect(sendError).not.toHaveBeenCalled();
     });
 
-    it('deve capturar APIError e chamar sendError com código e erros', async () => {
+    it('Deve capturar APIError e chamar sendError com código e erros', async () => {
         const apiError = new APIError([{ message: 'Erro API' }], 401);
         const fn = jest.fn().mockRejectedValue(apiError);
         const middleware = wrapException(fn);
@@ -43,7 +43,7 @@ describe('wrapException', () => {
         expect(sendError).toHaveBeenCalledWith(res, 401, apiError.errors);
     });
 
-    it('deve capturar ZodError e chamar sendError com erros formatados', async () => {
+    it('Deve capturar ZodError e chamar sendError com erros formatados', async () => {
         const zodError = new ZodError([
             { message: 'Erro 1', path: ['campo1'] },
             { message: 'Erro 2', path: ['campo2', 'subcampo'] },
@@ -59,7 +59,7 @@ describe('wrapException', () => {
         ]);
     });
 
-    it('deve capturar erro desconhecido e chamar sendError com código 500', async () => {
+    it('Deve capturar erro desconhecido e chamar sendError com código 500', async () => {
         const error = new Error('Erro desconhecido');
         const fn = jest.fn().mockRejectedValue(error);
         const middleware = wrapException(fn);
