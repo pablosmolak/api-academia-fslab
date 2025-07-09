@@ -31,9 +31,7 @@ export const RecuperaSenhaPath = {
                 }
             },
             responses: {
-                ...gerarRespostasCorretas(200, {
-                   
-                }),
+                ...gerarRespostasCorretas(200, "#/components/schemas/RecuperarRequestBody"),
                 ...gerarRespostasDeErro([400, 422, 500])
             }
         }
