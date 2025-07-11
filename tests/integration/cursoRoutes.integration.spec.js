@@ -461,7 +461,7 @@ describe('Testes de Curso', () => {
                 });
 
             expect(res.statusCode).toEqual(401);
-            expect(res.body.errors).toContainEqual("Usuário sem permissão para adicionar instrutures ao curso!");
+            expect(res.body.errors).toContainEqual("Usuário sem permissão para remover instrutures do curso!");
         })
     });
 

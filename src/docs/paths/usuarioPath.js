@@ -6,7 +6,10 @@ export const UsuarioPath = {
         get: {
             tags: ["Usuários"],
             summary: "Obter Lista de Usuários",
-            description: "Recupera uma lista de todos os usuários cadastrados, com possibilidade de filtragem por nome e e-mail.",
+            description: "Recupera uma lista de todos os usuários cadastrados, com possibilidade de filtragem por nome e e-mail.<br>" +
+                "O endpoint permite a listagem completa e aplicação de filtros conforme os parâmetros fornecidos.<br><br>" +
+                 "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>"+
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
                     name: "nome",
@@ -58,7 +61,8 @@ export const UsuarioPath = {
         post: {
             tags: ["Usuários"],
             summary: "Registrar Novo Usuário",
-            description: "Cria um novo usuário no sistema com os dados fornecidos.",
+            description: "Cria um novo usuário no sistema com base nos dados fornecidos pelo usuário.<br>" +
+                "O corpo da requisição deve conter as informações necessárias para o cadastro do usuário.",
             requestBody: {
                 required: true,
                 content: {
@@ -79,7 +83,9 @@ export const UsuarioPath = {
         get: {
             tags: ["Usuários"],
             summary: "Obter Detalhes do Usuário",
-            description: "Recupera as informações de um usuário específico, identificado pelo ID fornecido.",
+            description: "Recupera as informações de um usuário específico, identificado pelo ID fornecido.<br>" +
+                "O ID deve ser passado como parâmetro na URL da requisição.<br><br>" +
+                "<strong>Permissões necessárias:</strong> Administrador, Ministrante ou o próprio usuário (ao consultar suas próprias informações).",
             parameters: [
                 {
                     name: "id",
@@ -100,7 +106,9 @@ export const UsuarioPath = {
             tags: ["Usuários"],
             security: [{ jwtAuth: [] }],
             summary: "Atualizar Informações do Usuário",
-            description: "Atualiza os dados de um usuário existente, identificado pelo ID fornecido.",
+            description: "Atualiza os dados de um usuário existente, identificado pelo ID fornecido.<br>" +
+                "O corpo da requisição deve conter as informações que serão atualizadas.<br><br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao atualizar suas próprias informações).",
             parameters: [
                 {
                     name: "id",
@@ -131,7 +139,8 @@ export const UsuarioPath = {
             tags: ["Usuários"],
             security: [{ jwtAuth: [] }],
             summary: "Excluir Usuário",
-            description: "Remove um usuário do sistema, identificado pelo ID fornecido.",
+            description: "Remove um usuário do sistema, identificado pelo ID fornecido.<br><br>" +
+             "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao remover sua própria conta).",
             parameters: [
                 {
                     name: "id",
@@ -154,7 +163,9 @@ export const UsuarioPath = {
             tags: ["Usuários"],
             security: [{ jwtAuth: [] }],
             summary: "Adicionar/Atualizar Foto do Usuário",
-            description: "Adiciona ou atualiza a foto de perfil de um usuário existente no sistema. A imagem é obrigatória e não pode ser enviada vazia.",
+            description: "Adiciona ou atualiza a foto de perfil de um usuário existente no sistema. A imagem é obrigatória e não pode ser enviada vazia.<br><br>" +
+             "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>"+
+             "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao atualizar sua própria foto de perfil).",
             parameters: [
                 {
                     name: "id",
@@ -218,6 +229,28 @@ export const UsuarioPath = {
                         }
                     }
                 },
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
+            }
+        },
+        delete: {
+            tags: ["Usuários"],
+            summary: "Deletar foto do Usuário",
+            description: "Deleta a foto de perfil do usuário identificado pelo ID fornecido.<br><br>" +
+             "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>"+
+             "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao deletar sua própria foto de perfil).",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do usuário cuja foto será apagada.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                }
+            ],
+            responses: {
+                ...gerarRespostasCorretas(200,[]),
                 ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
             }
         }

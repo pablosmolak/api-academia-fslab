@@ -2,8 +2,7 @@ export const RecuperarSenhaSchema = {
     RecuperarRequestBody: {
         example: "Solicitação de alteração de senha enviada com sucesso!"
     },
-    alterarRequestBody: {
+    AlterarRequestBody: {
         example: "Senha atualizada com sucesso!"
-
     }
 }

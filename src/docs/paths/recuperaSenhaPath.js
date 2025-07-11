@@ -80,16 +80,7 @@ export const RecuperaSenhaPath = {
                 }
             },
             responses: {
-                ...gerarRespostasCorretas(200, {
-                    type: "object",
-                    properties: {
-                        message: {
-                            type: "string",
-                            description: "Mensagem de confirmação de alteração de senha",
-                            example: "Sua senha foi alterada com sucesso."
-                        }
-                    }
-                }),
+                ...gerarRespostasCorretas(200, "#/components/schemas/AlterarRequestBody"),
                 ...gerarRespostasDeErro([400, 422, 500])
             }
         }

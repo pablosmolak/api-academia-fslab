@@ -7,7 +7,6 @@ import { gruposEnum, permissaoEnum } from "../utils/enums.js";
 import { uploadMulter } from "../middleware/multerMiddleware.js";
 import { EmailVerificadoMiddleware } from "../middleware/EmailVerificadoMiddleware.js";
 
-
 const router = express.Router();
 
 router
@@ -17,16 +16,16 @@ router
     )
 
     .post(
-        "/usuarios/:id/image/upload", 
+        "/usuarios/:id/image/upload",
         AuthMiddleware,
         EmailVerificadoMiddleware,
         permissaoMiddleware([gruposEnum.ADM], [permissaoEnum.ProprioUsuario]),
         uploadMulter,
         wrapException(UsuarioController.uploadFotoPerfil)
     )
-    
+
     .delete(
-        "/usuarios/:id/image/delete", 
+        "/usuarios/:id/image/delete",
         AuthMiddleware,
         EmailVerificadoMiddleware,
         permissaoMiddleware([gruposEnum.ADM], [permissaoEnum.ProprioUsuario]),
@@ -35,11 +34,16 @@ router
 
     .get(
         "/usuarios",
+        AuthMiddleware,
+        EmailVerificadoMiddleware,
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(UsuarioController.listarUsuario)
     )
 
     .get(
         "/usuarios/:id",
+        AuthMiddleware,
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores], [permissaoEnum.ProprioUsuario]),
         wrapException(UsuarioController.listarUsuarioPorID)
     )
 

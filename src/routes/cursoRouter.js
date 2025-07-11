@@ -32,7 +32,6 @@ router
         wrapException(CursosController.alterarStatusCurso)
     )
 
-
     .get("/cursos/todos",
         AuthMiddleware,
         EmailVerificadoMiddleware,
@@ -67,7 +66,6 @@ router
     .get("/cursos/:id/instrutores",
         AuthMiddleware,
         EmailVerificadoMiddleware,
-        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(CursosController.listarInstrutoresDoCurso)
     )
 

@@ -720,7 +720,7 @@ export default class CursosController {
             const isCriador = userId === findCurso.criador
 
             if (!isCriador && !isInstrutor) {
-                return sendError(res, 401, "Usuário sem permissão para adicionar instrutures ao curso!")
+                return sendError(res, 401, "Usuário sem permissão para remover instrutures do curso!")
             }
         }
 

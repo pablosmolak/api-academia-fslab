@@ -8,6 +8,7 @@ export const CursoPath = {
             summary: "Criar Novo Curso",
             description: "Cria um novo curso com as informações fornecidas pelo usuário.<br>" +
                 "Essa rota permite adicionar cursos à plataforma, com base nas permissões atribuídas ao usuário.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
                 "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             requestBody: {
                 required: true,
@@ -17,6 +18,23 @@ export const CursoPath = {
                     }
                 }
             },
+            responses: {
+                ...gerarRespostasCorretas(201, "#/components/schemas/Curso"),
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
+            }
+        }
+    },
+    "/cursos/alterarstatus/{id}": {
+        patch: {
+            tags: ["Cursos"],
+            security: [{ jwtAuth: [] }],
+            summary: "Alterar o status de um Curso para Publicado ou Não Publicado",
+            description: "Altera o status de um curso existente entre os estados Publicado e Não Publicado.<br>" +
+                "Essa ação funciona como um alternador: se o curso estiver publicado, a requisição o definirá como não publicado; se estiver não publicado, passará para publicado.<br>" +
+                "Se o usuário for um Administrador, ele pode alterar o status de qualquer curso.<br>" +
+                "Se o usuário for um Ministrante (Professor), ele pode alterar o status apenas dos cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             responses: {
                 ...gerarRespostasCorretas(201, "#/components/schemas/Curso"),
                 ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
@@ -97,6 +115,7 @@ export const CursoPath = {
                 "Esta rota é mais indicada para visualizar os cursos que o usuário tem acesso para editar.<br>" +
                 "Se o usuário for um Administrador, ele terá acesso a todos os cursos disponíveis no sistema.<br>" +
                 "Se o usuário for um Ministrante (Professor), ele verá apenas os cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
                 "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
@@ -156,6 +175,7 @@ export const CursoPath = {
                 "Esta rota é mais indicada para visualizar os cursos que o usuário tem acesso para editar.<br>" +
                 "Se o usuário for um Administrador, ele terá acesso a todos os cursos disponíveis no sistema.<br>" +
                 "Se o usuário for um Ministrante (Professor), ele verá apenas os cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
                 "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
@@ -180,6 +200,7 @@ export const CursoPath = {
             description: "Remove um curso do sistema com base no ID fornecido.<br>" +
                 "Se o usuário for um Administrador, ele pode remover qualquer curso do sistema.<br>" +
                 "Se o usuário for um Ministrante (Professor), ele só pode remover cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
                 "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
@@ -226,7 +247,8 @@ export const CursoPath = {
             tags: ["Cursos"],
             security: [{ jwtAuth: [] }],
             summary: "Listar Cursos por ID do Usuário",
-            description: "Recupera todos os cursos nos quais um usuário específico está inscrito, identificado pelo ID do usuário.",
+            description: "Recupera todos os cursos nos quais um usuário específico está inscrito, identificado pelo ID do usuário.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.",
             parameters: [
                 {
                     name: "usuarioid",
@@ -250,6 +272,7 @@ export const CursoPath = {
             description: "Adiciona ou atualiza a capa de um curso existente no sistema. A imagem é obrigatória e não pode ser enviada vazia.<br>" +
                 "Se o usuário for um Administrador, ele pode adicionar ou atualizar a capa de qualquer curso.<br>" +
                 "Se o usuário for um Ministrante (Professor), ele só pode adicionar ou atualizar a capa dos cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
                 "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
@@ -318,14 +341,41 @@ export const CursoPath = {
             }
         }
     },
+    "/cursos/{id}/capa/delete": {
+        delete: {
+            tags: ["Cursos"],
+            summary: "Remover capa do Curso",
+            description: "Remove a capa de um curso existente no sistema.<br>" +
+                "Se o usuário for um Administrador, ele pode remover a capa de qualquer curso.<br>" +
+                "Se o usuário for um Ministrante (Professor), ele só pode remover a capa dos cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do curso cuja a capa será pagada.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                }
+            ],
+            responses: {
+                ...gerarRespostasCorretas(200, ''),
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
+            }
+        }
+    },
     "/cursos/{id}/instrutores": {
         post: {
             tags: ["Cursos"],
             security: [{ jwtAuth: [] }],
-            summary: "Adiciona instrutores ao Curso",
+            summary: "Adicionar instrutores ao Curso",
             description: "Adiciona instrutores a um curso.<br>" +
                 "Se o usuário for um Administrador, ele pode adicionar instrutores a qualquer curso.<br>" +
                 "Se o usuário for um Ministrante (Professor), ele pode adicionar instrutores apenas aos cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
                 "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
@@ -353,7 +403,7 @@ export const CursoPath = {
         },
         get: {
             tags: ["Cursos"],
-            summary: "Listar Todos instrutores de um curso",
+            summary: "Remover instrutores de um curso",
             security: [{ jwtAuth: [] }],
             description: "Recupera uma lista de todos os instrutores de um curso.",
             parameters: [
@@ -369,6 +419,39 @@ export const CursoPath = {
             ],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/CursoInstrutoresResponse"),
+                ...gerarRespostasDeErro([401, 403, 498, 500])
+            }
+        },
+        delete: {
+            tags: ["Cursos"],
+            summary: "Listar Todos instrutores de um curso",
+            security: [{ jwtAuth: [] }],
+            description: "Remove instrutores de um curso existente.<br>" +
+                "Se o usuário for um Administrador, ele pode remover instrutores de qualquer curso.<br>" +
+                "Se o usuário for um Ministrante (Professor), ele pode remover instrutores apenas dos cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do curso cujo os instrutores serão removidos.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: { $ref: "#/components/schemas/CursoInstrutoresRemoveBody" }
+                    }
+                }
+            },
+            responses: {
+                ...gerarRespostasCorretas(200, ""),
                 ...gerarRespostasDeErro([401, 403, 498, 500])
             }
         }
