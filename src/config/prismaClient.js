@@ -22,10 +22,10 @@ export async function verifyConnection() {
     try {
         // Tenta acessar o banco de dados
         await prisma.$connect();
-        console.log("Conectado ao banco de dados com sucesso!");
+        console.log("\n✅ Conectado ao banco de dados com sucesso!");
     } catch (error) {
         // Se houver um erro, ele será capturado aqui
-        console.error("Erro ao conectar ao banco de dados:", error);
+        console.error("\n❌ Erro ao conectar ao banco de dados:", error);
         process.exit(1); // Encerra o processo com código de erro
     }
 }

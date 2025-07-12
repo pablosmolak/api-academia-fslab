@@ -2,6 +2,7 @@ import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { inscricaoSchema } from "../schema/inscricaoSchema.js";
 import { pagination } from "../utils/pagination.js";
+import { gruposEnum } from "../utils/enums.js";
 
 export default class InscricoesController {
     static async criarInscricao(req, res) {
@@ -84,10 +85,42 @@ export default class InscricoesController {
     static async listarInscricoes(req, res) {
         const filtros = { where: {} }
 
-        const { cursoId, usuarioId, pagina = 1, limite = 10 } = req.query
+        const { cursoId, usuarioId, pagina = 1, limite = 10 } = inscricaoSchema.filtrosListarInscricoes.parse(req.query)
 
         if (cursoId) filtros.where.cursoId = { contains: cursoId }
         if (usuarioId) filtros.where.userId = { contains: usuarioId }
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const usuarioId = req.user.id;
+
+            const filtroInstrutorCriador = {
+                OR: [
+                    {
+                        curso: {
+                            criador: usuarioId
+                        }
+                    },
+                    {
+                        curso: {
+                            instrutores: {
+                                some: {
+                                    usuario: {
+                                        id: usuarioId
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+
+            filtros.where = {
+                AND: [
+                    filtros.where,
+                    filtroInstrutorCriador,
+                ],
+            };
+        }
 
         const paginacao = await pagination('inscricao', pagina, limite, filtros)
 
@@ -144,7 +177,7 @@ export default class InscricoesController {
     static async listarInscricoesDoUsuarioLogadoPorIdDeCurso(req, res) {
 
         const usuario = req.user.id
-        
+
         const { cursoId } = inscricaoSchema.listarInscricaoPorCurso.parse(req.params)
 
         const findCurso = await prisma.curso.findUnique({

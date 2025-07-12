@@ -1,11 +1,77 @@
 import { prisma } from "../config/prismaClient.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
 import { progressoSchema } from "../schema/progressoCursoSchema.js";
+import { gruposEnum } from "../utils/enums.js";
+import { pagination } from "../utils/pagination.js";
 
 export default class ProgressoController {
     static async listarProgresso(req, res) {
-        const resp = await prisma.progressoCurso.findMany()
-        sendResponse(res, 200, resp)
+        const filtros = { where: {} }
+
+        const { cursoId, usuarioId, pagina = 1, limite = 10 } = progressoSchema.filtrosListarProgresso.parse(req.query)
+
+        if (cursoId) filtros.where.cursoId = { contains: cursoId }
+        if (usuarioId) filtros.where.userId = { contains: usuarioId }
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const usuarioId = req.user.id;
+
+            const filtroInstrutorCriador = {
+                OR: [
+                    {
+                        curso: {
+                            criador: usuarioId
+                        }
+                    },
+                    {
+                        curso: {
+                            instrutores: {
+                                some: {
+                                    usuario: {
+                                        id: usuarioId
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+
+            filtros.where = {
+                AND: [
+                    filtros.where,
+                    filtroInstrutorCriador,
+                ],
+            };
+        }
+
+        const paginacao = await pagination('progressoCurso', pagina, limite, filtros)
+
+        const progressos = await prisma.progressoCurso.findMany({
+            ...filtros,
+            include: {
+                usuario: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        email: true
+                    }
+                },
+                curso: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        descricao: true
+                    }
+                }
+            },
+            skip: paginacao.skip,
+            take: paginacao.take
+        });
+
+        return sendResponse(res, 200, progressos,
+            { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take }
+        );
     }
 
     static async listarProgressoDoUsuarioNoCurso(req, res) {
@@ -20,7 +86,7 @@ export default class ProgressoController {
         });
 
         if (!findCurso) {
-           return sendError(res, 422, { path: "cursoId", message: messages.validationGeneric.notFound("id do curso") });
+            return sendError(res, 422, { path: "cursoId", message: messages.validationGeneric.notFound("id do curso") });
         }
 
         const progresso = await prisma.progressoCurso.findMany({
@@ -30,11 +96,11 @@ export default class ProgressoController {
             }
         })
 
-        if(progresso.length === 0){
-           return sendError(res, 404, "Nenhum progresso encontrado nesse curso para esse usuário!");
+        if (progresso.length === 0) {
+            return sendError(res, 404, "Nenhum progresso encontrado nesse curso para esse usuário!");
         }
 
-       return sendResponse(res, 200, progresso)
+        return sendResponse(res, 200, progresso)
     }
 
     static async finalizarAtividade(req, res) {

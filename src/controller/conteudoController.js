@@ -27,10 +27,21 @@ export default class ConteudoController {
         });
 
         if (findTopico === null) {
-            erros.push({
+            return sendError(res, 422, {
                 path: 'topicoId',
                 message: messages.validationGeneric.notFound("topicoId")
             });
+        }
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const userId = req.user.id;
+
+            const isInstrutor = findTopico.curso.instrutores.some(instrutor => instrutor.userId === userId);
+            const isCriador = userId === findTopico.curso.criador;
+
+            if (!isCriador && !isInstrutor) {
+                return sendError(res, 401, "Usuário sem permissão para criar um conteúdo para esse tópico do curso!");
+            }
         }
 
         const conteudoExistente = await prisma.conteudoCurso.findFirst({
@@ -58,17 +69,6 @@ export default class ConteudoController {
         }
 
         if (erros.length > 0) return sendError(res, 422, erros);
-
-        if (req.user.grupo === gruposEnum.Professores) {
-            const userId = req.user.id;
-
-            const isInstrutor = findTopico.curso.instrutores.some(instrutor => instrutor.userId === userId);
-            const isCriador = userId === findTopico.curso.criador;
-
-            if (!isCriador && !isInstrutor) {
-                return sendError(res, 401, "Usuário sem permissão para criar um conteúdo para esse tópico do curso!");
-            }
-        }
 
         const quantidadeConteudo = await prisma.conteudoCurso.count({
             where: {
@@ -181,6 +181,17 @@ export default class ConteudoController {
             return sendError(res, 404, messages.validationGeneric.notFound("id"));
         }
 
+        if (req.user.grupo === gruposEnum.Professores) {
+            const userId = req.user.id;
+
+            const isInstrutor = findConteudo.topico.curso.instrutores.some(instrutor => instrutor.userId === userId);
+            const isCriador = userId === findConteudo.topico.curso.criador;
+
+            if (!isCriador && !isInstrutor) {
+                return sendError(res, 401, "Usuário sem permissão para alterar um conteúdo para esse tópico do curso!");
+            }
+        }
+
         if (titulo) {
             const conteudoExistente = await prisma.conteudoCurso.findFirst({
                 where: {
@@ -210,17 +221,6 @@ export default class ConteudoController {
         }
 
         if (erros.length > 0) return sendError(res, 422, erros);
-
-        if (req.user.grupo === gruposEnum.Professores) {
-            const userId = req.user.id;
-
-            const isInstrutor = findConteudo.topico.curso.instrutores.some(instrutor => instrutor.userId === userId);
-            const isCriador = userId === findConteudo.topico.curso.criador;
-
-            if (!isCriador && !isInstrutor) {
-                return sendError(res, 401, "Usuário sem permissão para alterar um conteúdo para esse tópico do curso!");
-            }
-        }
 
         const cargaHorariaEmSegundos =
             cargaHoraria
@@ -337,7 +337,7 @@ export default class ConteudoController {
             const isCriador = userId === findConteudo.topico.curso.criador
 
             if (!isCriador && !isInstrutor) {
-                return sendError(res, 401, "Usuário sem permissão para criar um conteúdo para esse tópico do curso!")
+                return sendError(res, 401, "Usuário sem permissão para deletar um conteúdo para esse tópico do curso!")
             }
         }
 

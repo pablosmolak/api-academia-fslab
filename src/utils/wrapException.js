@@ -47,7 +47,7 @@ export const wrapException = (fn) => {
         } finally {
             if (process.env.DEBUGLOG === "true") {
                 const millis = parseInt(performance.now() - tempoInicio);
-                process.env.DEBUGLOG === "true" ? console.log("Tempo de execução: " + millis + "ms") : null;
+                process.env.DEBUGLOG === "true" ? console.log("⏱️  Tempo de execução: " + millis + "ms") : null;
             }
         }
     }

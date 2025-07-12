@@ -29,5 +29,5 @@ app.listen(port, async () => {
     await verificarGrupos()
     await verificarAdministradorPadrao()
     await verificarMinio()
-    console.log(`Servidor Rodando em http://localhost:${port}`)
+    console.log(`\n🌐 Servidor rodando em: http://localhost:${port}\n`);
 });

@@ -1,5 +1,6 @@
 import { prisma } from "../config/prismaClient.js"
 import { topicoSchema } from "../schema/topicoSchema.js"
+import { gruposEnum } from "../utils/enums.js"
 import messages, { sendError, sendResponse } from "../utils/mensagens.js"
 
 export default class TopicoController {
@@ -12,14 +13,28 @@ export default class TopicoController {
         const findCursos = await prisma.curso.findUnique({
             where: {
                 id: cursoId
+            },
+            include: {
+                instrutores: true
             }
         })
 
         if (findCursos === null) {
-            erros.push({
+            return sendError(res, 422, {
                 path: 'cursoId',
                 message: messages.validationGeneric.notFound("CursoId")
             })
+        }
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const userId = req.user.id;
+
+            const isInstrutor = findCursos.instrutores.some(instrutor => instrutor.userId === userId);
+            const isCriador = userId === findCursos.criador
+
+            if (!isCriador && !isInstrutor) {
+                return sendError(res, 401, "Usuário sem permissão para criar um topico para o curso!")
+            }
         }
 
         const conteudoExistente = await prisma.topico.findFirst({
@@ -100,7 +115,13 @@ export default class TopicoController {
             include: {
                 curso: {
                     select: {
-                        cargaHoraria: true
+                        cargaHoraria: true,
+                        criador: true,
+                        instrutores: {
+                            select: {
+                                userId: true
+                            }
+                        }
                     }
                 }
             }
@@ -111,6 +132,17 @@ export default class TopicoController {
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const userId = req.user.id;
+
+            const isInstrutor = findTopico.curso.instrutores.some(instrutor => instrutor.userId === userId);
+            const isCriador = userId === findTopico.curso.criador
+
+            if (!isCriador && !isInstrutor) {
+                return sendError(res, 401, "Usuário sem permissão para deletar o tópico!")
+            }
+        }
 
         const somaCargaHoraria = await prisma.conteudoCurso.aggregate({
             _sum: {
@@ -175,11 +207,29 @@ export default class TopicoController {
         const findTopico = await prisma.topico.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                curso: {
+                    include: {
+                        instrutores: true
+                    }
+                }
             }
         })
 
         if (findTopico === null) {
             return sendError(res, 422, messages.validationGeneric.notFound("id"))
+        }
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const userId = req.user.id;
+
+            const isInstrutor = findTopico.curso.instrutores.some(instrutor => instrutor.userId === userId);
+            const isCriador = userId === findTopico.curso.criador
+
+            if (!isCriador && !isInstrutor) {
+                return sendError(res, 401, "Usuário sem permissão para alterar o tópico!")
+            }
         }
 
         if (titulo) {

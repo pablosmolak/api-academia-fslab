@@ -6,10 +6,10 @@ const logRoutes = async (req, res, next) => {
         req.socket.remoteAddress ||
         null;
     
-        console.log(timestamp+" "+ip+" "+req.method+" "+req.protocol + "://" + req.get("host") + req.originalUrl);
+        console.log("📥 " +timestamp+" "+ip+" "+req.method+" "+req.protocol + "://" + req.get("host") + req.originalUrl);
         next();
     } catch(e) {
-        console.log("Erro ao fazer o log", e);
+        console.log("❌ Erro ao fazer o log", e);
     }
 };
 
