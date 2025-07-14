@@ -150,6 +150,10 @@ export default class UsuarioController {
         }
 
         if (email) {
+            if (userExist?.email === process.env.LOGIN_ADMINISTRADOR_PADRAO) {
+                erros.push("O usuário Administrador padrão não pode ter o email alterado!")
+            }
+
             let userExistByEmail = await prisma.usuario.findUnique({
                 where: { email: email }
             })
@@ -201,6 +205,52 @@ export default class UsuarioController {
                 nome,
                 email,
                 senha: senha
+            },
+        })
+
+        return sendResponse(res, 200, [])
+    }
+
+    static async alterarGrupoUsuario(req, res) {
+        const erros = []
+
+        const { id } = usuarioSchema.listarUsuario.parse(req.params)
+
+        let { grupoId } = usuarioSchema.alterarGrupoUsuario.parse({ ...req.body })
+
+        const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        if (userExist === null) {
+            erros.push({ path: "id", message: messages.auth.userNotFound(id) })
+        }
+
+        const grupoExist = await prisma.grupo.findUnique({
+            where: {
+                id: grupoId
+            }
+        })
+
+        if (grupoExist === null) {
+            erros.push({ path: "grupoId", message: messages.validationGeneric.notFound('id de grupo') })
+        }
+
+        if (userExist?.email === process.env.LOGIN_ADMINISTRADOR_PADRAO) {
+            erros.push("O usuário Administrador padrão não pode ter o grupo alterado!")
+        }
+
+        if (erros.length > 0) return sendError(res, 422, erros)
+
+
+        await prisma.usuario.update({
+            where: {
+                id: id,
+            },
+            data: {
+                grupoId: grupoId
             },
         })
 

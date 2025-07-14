@@ -24,6 +24,62 @@ export const CursoPath = {
             }
         }
     },
+    "/cursos/{id}": {
+        patch: {
+            tags: ["Cursos"],
+            security: [{ jwtAuth: [] }],
+            summary: "Atualizar Curso",
+            description: "Atualiza as informações de um curso existente com base nos dados fornecidos.<br>" +
+                "Se o usuário for um Administrador, ele pode atualizar qualquer curso.<br>" +
+                "Se o usuário for um Ministrante (Professor), ele só pode atualizar cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do curso a ser alterado.",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: { $ref: "#/components/schemas/CursoRequestBody" }
+                    }
+                }
+            },
+            responses: {
+                ...gerarRespostasCorretas(200, ""),
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500])
+            }
+        },
+        delete: {
+            tags: ["Cursos"],
+            security: [{ jwtAuth: [] }],
+            summary: "Excluir Curso",
+            description: "Remove um curso do sistema com base no ID fornecido.<br>" +
+                "Se o usuário for um Administrador, ele pode remover qualquer curso do sistema.<br>" +
+                "Se o usuário for um Ministrante (Professor), ele só pode remover cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do curso a ser excluído.",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            responses: {
+                ...gerarRespostasCorretas(200, "", true),
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
+            }
+        }
+    },
     "/cursos/alterarstatus/{id}": {
         patch: {
             tags: ["Cursos"],
@@ -191,31 +247,6 @@ export const CursoPath = {
                 ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         },
-    },
-    "/cursos/{id}": {
-        delete: {
-            tags: ["Cursos"],
-            security: [{ jwtAuth: [] }],
-            summary: "Excluir Curso",
-            description: "Remove um curso do sistema com base no ID fornecido.<br>" +
-                "Se o usuário for um Administrador, ele pode remover qualquer curso do sistema.<br>" +
-                "Se o usuário for um Ministrante (Professor), ele só pode remover cursos que criou ou nos quais é instrutor.<br><br>" +
-                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
-                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
-            parameters: [
-                {
-                    name: "id",
-                    in: "path",
-                    description: "ID do curso a ser excluído.",
-                    required: true,
-                    schema: { type: "string" }
-                }
-            ],
-            responses: {
-                ...gerarRespostasCorretas(200, "", true),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
-            }
-        }
     },
     "/cursos/publicados/informacoes/{cursoid}": {
         get: {
@@ -403,7 +434,7 @@ export const CursoPath = {
         },
         get: {
             tags: ["Cursos"],
-            summary: "Remover instrutores de um curso",
+            summary: "Listar Todos instrutores de um curso",
             security: [{ jwtAuth: [] }],
             description: "Recupera uma lista de todos os instrutores de um curso.",
             parameters: [
@@ -424,7 +455,7 @@ export const CursoPath = {
         },
         delete: {
             tags: ["Cursos"],
-            summary: "Listar Todos instrutores de um curso",
+            summary: "Remover instrutores de um curso",
             security: [{ jwtAuth: [] }],
             description: "Remove instrutores de um curso existente.<br>" +
                 "Se o usuário for um Administrador, ele pode remover instrutores de qualquer curso.<br>" +

@@ -58,6 +58,13 @@ router
         permissaoMiddleware([gruposEnum.ADM], [permissaoEnum.ProprioUsuario]),
         wrapException(UsuarioController.alterarUsuario)
     )
+    
+    .patch(
+        "/usuarios/:id/alterargrupo",
+        AuthMiddleware,
+        permissaoMiddleware([gruposEnum.ADM]),
+        wrapException(UsuarioController.alterarGrupoUsuario)
+    )
 
     .delete(
         "/usuarios/:id",

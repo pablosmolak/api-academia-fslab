@@ -7,12 +7,18 @@ export class usuarioSchema {
         email: myZ.email(),
         senha: myZ.senha()
     })
+
     static alterarUsuario = z.object({
         id: z.string().uuid(),
         nome: z.string().min(3).max(200).optional(),
         email: myZ.email().optional(),
         senha: myZ.senha().optional()
     })
+
+    static alterarGrupoUsuario = z.object({
+        grupoId: z.string().uuid(),
+    })
+
     static listarUsuario = z.object({
         id: z.string().uuid()
     })

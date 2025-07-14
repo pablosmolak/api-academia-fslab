@@ -62,6 +62,97 @@ export default class CursosController {
         return sendResponse(res, 201, cursoCriado);
     }
 
+    static async alterarCurso(req, res) {
+        const erros = []
+
+        const { id } = cursoSchema.listarCurso.parse(req.params)
+
+        let { nome, descricao, categoria = [] } = cursoSchema.alterarCurso.parse(req.body)
+
+        const findCurso = await prisma.curso.findUnique({
+            where: {
+                id: id
+            },
+            include: {
+                categoria: true,
+                instrutores: true
+            }
+        })
+
+        if (findCurso === null) {
+            return sendError(res, 422, messages.validationGeneric.notFound("id"))
+        }
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const userId = req.user.id;
+
+            const isInstrutor = findCurso.instrutores.some(instrutor => instrutor.userId === userId);
+            const isCriador = userId === findCurso.criador
+
+            if (!isCriador && !isInstrutor) {
+                return sendError(res, 401, "Usuário sem permissão para alterar o curso!")
+            }
+        }
+
+        if (nome) {
+            const cursoExist = await prisma.curso.findFirst({
+                where: {
+                    nome
+                },
+            });
+
+            if (cursoExist && cursoExist.id !== findCurso.id) {
+                erros.push({
+                    path: 'nome',
+                    message: 'Já existe um curso com este nome.'
+                });
+            }
+        }
+
+        if (categoria && categoria.length > 0) {
+            const findCategoria = await prisma.categoria.findMany({
+                where: {
+                    id: {
+                        in: categoria
+                    }
+                },
+                select: { id: true }
+            })
+
+            const categoriasEncontradas = findCategoria.map(item => item.id);
+
+            const categoriasNaoEncontradas = categoria.filter(id => !categoriasEncontradas.includes(id));
+
+            if (categoriasNaoEncontradas.length > 0) {
+                erros.push({ path: "categoria", message: `Nenhuma categoria encontrada com os IDS: ${categoriasNaoEncontradas.join(', ')}` });
+            }
+        }
+
+        if (erros.length > 0) return sendError(res, 422, erros)
+
+        const categoriasAtuais = findCurso.categoria.map((c) => c.id);
+        const novasCategorias = categoria; // do req.body
+
+        const categoriasParaDesconectar = categoriasAtuais.filter(id => !novasCategorias.includes(id));
+        const categoriasParaConectar = novasCategorias.filter(id => !categoriasAtuais.includes(id));
+
+        await prisma.curso.update({
+            where: {
+                id: id
+            },
+            data: {
+                nome,
+                descricao,
+                categoria: {
+                    disconnect: categoriasParaDesconectar.map(id => ({ id })),
+                    connect: categoriasParaConectar.map(id => ({ id }))
+                },
+            },
+        })
+
+        return sendResponse(res, 200, []);
+    }
+
     static async listarCursosPublicados(req, res) {
         let filtros = { where: { publicado: true } }
 

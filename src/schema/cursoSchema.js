@@ -7,6 +7,12 @@ export class cursoSchema{
         descricao: z.string().min(200).max(5000),
         categoria : z.array(z.string().uuid()).optional()
     })
+   
+    static alterarCurso = z.object({
+        nome: z.string().min(3).max(200).optional(),
+        descricao: z.string().min(200).max(5000).optional(),
+        categoria : z.array(z.string().uuid()).optional()
+    })
 
     static listarCurso = z.object({
         id: z.string().uuid()

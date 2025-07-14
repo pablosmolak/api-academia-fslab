@@ -5,10 +5,11 @@ export const UsuarioPath = {
     "/usuarios": {
         get: {
             tags: ["Usuários"],
+            security: [{ jwtAuth: [] }],
             summary: "Obter Lista de Usuários",
             description: "Recupera uma lista de todos os usuários cadastrados, com possibilidade de filtragem por nome e e-mail.<br>" +
                 "O endpoint permite a listagem completa e aplicação de filtros conforme os parâmetros fornecidos.<br><br>" +
-                 "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>"+
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
                 "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
@@ -82,6 +83,7 @@ export const UsuarioPath = {
     "/usuarios/{id}": {
         get: {
             tags: ["Usuários"],
+            security: [{ jwtAuth: [] }],
             summary: "Obter Detalhes do Usuário",
             description: "Recupera as informações de um usuário específico, identificado pelo ID fornecido.<br>" +
                 "O ID deve ser passado como parâmetro na URL da requisição.<br><br>" +
@@ -140,7 +142,7 @@ export const UsuarioPath = {
             security: [{ jwtAuth: [] }],
             summary: "Excluir Usuário",
             description: "Remove um usuário do sistema, identificado pelo ID fornecido.<br><br>" +
-             "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao remover sua própria conta).",
+                "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao remover sua própria conta).",
             parameters: [
                 {
                     name: "id",
@@ -158,14 +160,50 @@ export const UsuarioPath = {
             }
         }
     },
+    "/usuarios/{id}/alterargrupo": {
+        patch: {
+            tags: ["Usuários"],
+            security: [{ jwtAuth: [] }],
+            summary: "Alterar Grupo do Usuário",
+            description: "Altera o grupo de um usuário existente, identificado pelo ID fornecido.<br>" +
+                "O corpo da requisição deve conter o novo grupo a ser atribuído ao usuário.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador.",
+            parameters: [
+                {
+                    name: "id",
+                    in: "path",
+                    description: "ID do usuário a ser atualizado.",
+                    required: true,
+                    schema: {
+                        type: "string"
+                    }
+                }
+            ],
+            requestBody: {
+                required: true,
+                content: {
+                    "application/json": {
+                        schema: {
+                            $ref: "#/components/schemas/UsuarioAlterarGrupoRequestBody"
+                        }
+                    }
+                }
+            },
+            responses: {
+                ...gerarRespostasCorretas(200, ""),
+                ...gerarRespostasDeErro([400, 401, 403, 422, 498, 500]),
+            }
+        }
+    },
     "/usuarios/{id}/image/upload": {
         post: {
             tags: ["Usuários"],
             security: [{ jwtAuth: [] }],
             summary: "Adicionar/Atualizar Foto do Usuário",
             description: "Adiciona ou atualiza a foto de perfil de um usuário existente no sistema. A imagem é obrigatória e não pode ser enviada vazia.<br><br>" +
-             "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>"+
-             "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao atualizar sua própria foto de perfil).",
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao atualizar sua própria foto de perfil).",
             parameters: [
                 {
                     name: "id",
@@ -236,8 +274,8 @@ export const UsuarioPath = {
             tags: ["Usuários"],
             summary: "Deletar foto do Usuário",
             description: "Deleta a foto de perfil do usuário identificado pelo ID fornecido.<br><br>" +
-             "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>"+
-             "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao deletar sua própria foto de perfil).",
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou o próprio usuário (ao deletar sua própria foto de perfil).",
             parameters: [
                 {
                     name: "id",
@@ -250,7 +288,7 @@ export const UsuarioPath = {
                 }
             ],
             responses: {
-                ...gerarRespostasCorretas(200,[]),
+                ...gerarRespostasCorretas(200, []),
                 ...gerarRespostasDeErro([401, 403, 422, 498, 500]),
             }
         }

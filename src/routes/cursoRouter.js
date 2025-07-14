@@ -31,6 +31,13 @@ router
         permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(CursosController.alterarStatusCurso)
     )
+    
+    .patch("/cursos/:id",
+        AuthMiddleware,
+        EmailVerificadoMiddleware,
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
+        wrapException(CursosController.alterarCurso)
+    )
 
     .get("/cursos/todos",
         AuthMiddleware,
