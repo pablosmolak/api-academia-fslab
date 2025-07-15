@@ -1,9 +1,9 @@
 import request from 'supertest';
 import app from '../../src/app.js';
 import { prisma } from '../../src/config/prismaClient.js';
-import { tiposConteudosEnum } from '../../src/utils/enums.js';
 
 let token;
+let tokenProfessor;
 let curso;
 let userId;
 let topicoId;
@@ -19,6 +19,15 @@ beforeAll(async () => {
 
     token = res.body.data[0].token;
     userId = res.body.data[0].payload.id
+
+    const resProfessor = await request(app)
+        .post('/login')
+        .send({
+            email: "professor@gmail.com",
+            senha: "Dev@1234"
+        });
+
+    tokenProfessor = resProfessor.body.data[0].token;
 
     curso = await prisma.curso.create({
         data: {
@@ -90,6 +99,19 @@ describe('Testes de tópico', () => {
                 path: "titulo"
             });
         });
+        
+        it('Deve retornar erro de usuário sem permissão para criar tópico', async () => {
+            const res = await request(app)
+                .post(`/topicos`)
+                .set('Authorization', `Bearer ${tokenProfessor}`)
+                .send({
+                    titulo: 'Tópico 1',
+                    cursoId: curso.id
+                })
+
+            expect(res.statusCode).toEqual(401);
+            expect(res.body.errors).toContainEqual('Usuário sem permissão para criar um topico para o curso!');
+        });
     });
 
     describe('/GET em tópicos', () => {
@@ -148,7 +170,7 @@ describe('Testes de tópico', () => {
 
             expect(res.statusCode).toEqual(200);
         });
-        
+
         it('Deve alterar um tópico para uma ordem menor', async () => {
             const res = await request(app)
                 .patch(`/topicos/${topicoId}`)
@@ -160,7 +182,7 @@ describe('Testes de tópico', () => {
 
             expect(res.statusCode).toEqual(200);
         });
-        
+
         it('Deve alterar um tópico para uma ordem maior', async () => {
             const res = await request(app)
                 .patch(`/topicos/${topicoId}`)
@@ -187,6 +209,18 @@ describe('Testes de tópico', () => {
                 message: 'Já existe um tópico com este título neste curso.'
             });
         });
+       
+        it('Deve retonar erro ao tentar alterar um tópico com um usuário com permissão', async () => {
+            const res = await request(app)
+                .patch(`/topicos/${topicoId}`)
+                .set('Authorization', `Bearer ${tokenProfessor}`)
+                .send({
+                    titulo: 'Topico'
+                });
+
+            expect(res.statusCode).toEqual(401);
+            expect(res.body.errors).toContainEqual('Usuário sem permissão para alterar o tópico!');
+        });
 
     })
 
@@ -198,6 +232,15 @@ describe('Testes de tópico', () => {
 
             expect(res.statusCode).toEqual(422);
             expect(res.body.errors).toContainEqual("Topico não encontrado!");
+        });
+        
+        it('Deve retornar erro se usuário sem permissão para deletar o tópico', async () => {
+            const res = await request(app)
+                .delete(`/topicos/${topicoId}`)
+                .set('Authorization', `Bearer ${tokenProfessor}`);
+
+            expect(res.statusCode).toEqual(401);
+            expect(res.body.errors).toContainEqual("Usuário sem permissão para deletar o tópico!");
         });
 
         it('Deve deletar um tópico', async () => {

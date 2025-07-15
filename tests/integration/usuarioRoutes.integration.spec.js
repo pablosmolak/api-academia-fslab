@@ -2,6 +2,8 @@ import path from 'path';
 import request from 'supertest';
 import { fileURLToPath } from 'url';
 import app from '../../src/app.js';
+import { prisma } from '../../src/config/prismaClient.js';
+import { gruposEnum } from '../../src/utils/enums.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,6 +11,7 @@ const __dirname = path.dirname(__filename);
 let token;
 let usuarioTesteOneId;
 let usuarioAdministradorPadraoId;
+let grupoId
 
 beforeAll(async () => {
     const res = await request(app)
@@ -19,6 +22,13 @@ beforeAll(async () => {
         });
 
     token = res.body.data[0].token;
+
+    grupoId = (await prisma.grupo.findFirst({
+        where: {
+            nome: { in: [gruposEnum.Professores] },
+        },
+        select: { id: true },
+    }))?.id
 });
 
 
@@ -60,7 +70,6 @@ describe('Testes de Usuários', () => {
     })
 
     describe('/GET em usuários', () => {
-
         it('Deve buscar uma lista de usuários', async () => {
             const res = await request(app)
                 .get('/usuarios')
@@ -100,7 +109,6 @@ describe('Testes de Usuários', () => {
 
     describe('/PATCH em usuários', () => {
         it('Deve atualizar um usuário', async () => {
-
             const res = await request(app)
                 .patch(`/usuarios/${usuarioTesteOneId}`)
                 .set('Authorization', `Bearer ${token}`)
@@ -129,6 +137,19 @@ describe('Testes de Usuários', () => {
             });
         });
 
+        it('Deve retornar erro ao tentar atualizar o email do usuário administrador padrão', async () => {
+            const res = await request(app)
+                .patch(`/usuarios/${usuarioAdministradorPadraoId}`)
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    nome: "teste atualizado",
+                    email: "dev1@gmail.com",
+                });
+
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.errors).toContainEqual('O usuário Administrador padrão não pode ter o email alterado!');
+        });
+
         it('Deve retornar erro ao atualizar usuário com ID inválido', async () => {
             const res = await request(app)
                 .patch('/usuarios/5a602dc4-f642-45d6-a082-8b285b182bb9')
@@ -146,8 +167,62 @@ describe('Testes de Usuários', () => {
         });
     });
 
-    describe('/POST em imagem de usuário', () => {
+    describe('/PATCH em grupo de usuário', () => {
+        it('Deve alterar o grupo do usuário', async () => {
+            const res = await request(app)
+                .patch(`/usuarios/${usuarioTesteOneId}/alterargrupo`)
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    grupoId: grupoId
+                });
 
+            expect(res.statusCode).toEqual(200);
+        });
+
+        it('Deve retornar erro ao tentar atualizar o grupo de um usuário com o id de usuário inválido', async () => {
+            const res = await request(app)
+                .patch(`/usuarios/5a602dc4-f642-45d6-a082-8b285b182bb9/alterargrupo`)
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    grupoId: grupoId
+                });
+
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.errors).toContainEqual({
+                message: 'Usuário com ID 5a602dc4-f642-45d6-a082-8b285b182bb9 não encontrado!',
+                path: 'id'
+            });
+        });
+
+        it('Deve retornar erro ao tentar atualizar o grupo de um usuário com o id de grupo inválido', async () => {
+            const res = await request(app)
+                .patch(`/usuarios/${usuarioTesteOneId}/alterargrupo`)
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    grupoId: '5a602dc4-f642-45d6-a082-8b285b182bb9'
+                });
+
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.errors).toContainEqual({
+                message: 'Nenhum registro encontrado com este id de grupo!',
+                path: 'grupoId'
+            });
+        });
+
+        it('Deve retornar erro ao tentar atualizar o grupo de um usuário administrador padrão', async () => {
+            const res = await request(app)
+                .patch(`/usuarios/${usuarioAdministradorPadraoId}/alterargrupo`)
+                .set('Authorization', `Bearer ${token}`)
+                .send({
+                    grupoId: grupoId
+                });
+
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.errors).toContainEqual('O usuário Administrador padrão não pode ter o grupo alterado!');
+        });
+    })
+
+    describe('/POST em imagem de usuário', () => {
         it('Deve fazer upload de uma imagem de usuário', async () => {
             const caminhoImagem = path.resolve(__dirname, '../images/perfil.jpg');
 

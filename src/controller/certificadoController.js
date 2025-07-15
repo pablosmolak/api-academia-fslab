@@ -161,7 +161,7 @@ export default class CertificadoController {
         })
 
         if (!certificado) {
-            return sendError(res, 404, 'Nenhum certificado encontrado para esse curso!');
+            return sendError(res, 404, { path: "cursoId", message: 'Nenhum certificado encontrado para esse curso!' });
         }
 
         const horas = String(Math.floor(certificado.curso.cargaHoraria / 3600)).padStart(2, "0");

@@ -150,13 +150,13 @@ export default class UsuarioController {
         }
 
         if (email) {
-            if (userExist?.email === process.env.LOGIN_ADMINISTRADOR_PADRAO) {
-                erros.push("O usuário Administrador padrão não pode ter o email alterado!")
-            }
-
             let userExistByEmail = await prisma.usuario.findUnique({
                 where: { email: email }
             })
+
+            if (userExist?.email === process.env.LOGIN_ADMINISTRADOR_PADRAO && userExist.email !== email) {
+                erros.push("O usuário Administrador padrão não pode ter o email alterado!")
+            }
 
             if (userExistByEmail !== null && userExistByEmail.id !== id) {
                 erros.push({ path: "email", message: messages.auth.emailAlreadyExists(email) })
@@ -216,7 +216,7 @@ export default class UsuarioController {
 
         const { id } = usuarioSchema.listarUsuario.parse(req.params)
 
-        let { grupoId } = usuarioSchema.alterarGrupoUsuario.parse({ ...req.body })
+        let { grupoId } = usuarioSchema.alterarGrupoUsuario.parse(req.body)
 
         const userExist = await prisma.usuario.findUnique({
             where: {

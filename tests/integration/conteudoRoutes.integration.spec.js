@@ -306,7 +306,7 @@ describe('Teste de conteúdos', () => {
                 .set('Authorization', `Bearer ${tokenProfessor}`);
 
             expect(res.statusCode).toEqual(401);
-            expect(res.body.errors).toContainEqual("Usuário sem permissão para criar um conteúdo para esse tópico do curso!");
+            expect(res.body.errors).toContainEqual("Usuário sem permissão para deletar um conteúdo para esse tópico do curso!");
         });
 
         it('Deve deletar um conteúdo', async () => {

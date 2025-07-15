@@ -11,7 +11,9 @@ const __dirname = path.dirname(__filename);
 let tokenAdmin;
 let tokenProfessor;
 let categoriaId;
+let categoriaId2;
 let cursoId;
+let cursoIdAlterar;
 let topicoId;
 let instrutorId;
 
@@ -38,6 +40,24 @@ beforeAll(async () => {
     categoriaId = (await prisma.categoria.create({
         data: {
             nome: 'Categoria Teste'
+        }
+    }))?.id
+    
+    categoriaId2 = (await prisma.categoria.create({
+        data: {
+            nome: 'Categoria Teste 2'
+        }
+    }))?.id
+
+    cursoIdAlterar = (await prisma.curso.create({
+        data: {
+            nome: 'Curso Teste Alterar',
+            descricao: `Este teste tem como objetivo validar o correto funcionamento das funcionalidades relacionadas aos cursos na aplicação. 
+                    Ele garante que seja possível criar, listar, atualizar e excluir cursos, além de verificar se os campos obrigatórios, como nome, 
+                    descrição e categoria, estão sendo devidamente validados pelo sistema. Também são testados os cenários de erro, como envio de dados 
+                    inválidos ou requisições com campos faltantes, assegurando que as respostas da API estejam em conformidade com as regras de negócio 
+                    estabelecidas.`,
+            criador: instrutorId
         }
     }))?.id
 });
@@ -107,6 +127,64 @@ describe('Testes de Curso', () => {
             });
         })
     });
+
+    describe('\PATCH em cursos', () => {
+        it('Deve alterar informacões de um curso', async () => {
+            const res = await request(app)
+                .patch(`/cursos/${cursoId}`)
+                .set('Authorization', `Bearer ${tokenAdmin}`)
+                .send({
+                    nome: 'Curso legal',
+                    categoria:[categoriaId2]
+                });
+
+            expect(res.statusCode).toEqual(200);
+        })
+
+        it('Deve retornar erro de id de curso inválido', async () => {
+            const res = await request(app)
+                .patch(`/cursos/5a602dc4-f642-45d6-a082-8b285b182bb9`)
+                .set('Authorization', `Bearer ${tokenAdmin}`)
+                .send({
+                    nome: 'Curso legal'
+                });
+
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.errors).toContainEqual('Nenhum registro encontrado com este id!')
+        })
+
+        it('Deve retornar erro de usuário sem permissão para alterar o curso', async () => {
+            const res = await request(app)
+                .patch(`/cursos/${cursoId}`)
+                .set('Authorization', `Bearer ${tokenProfessor}`)
+                .send({
+                    nome: 'Curso legal'
+                });
+
+            expect(res.statusCode).toEqual(401);
+            expect(res.body.errors).toContainEqual('Usuário sem permissão para alterar o curso!')
+        })
+
+        it('Deve retornar erros ao tentar alterar um curso com dados inválidos', async () => {
+            const res = await request(app)
+                .patch(`/cursos/${cursoIdAlterar}`)
+                .set('Authorization', `Bearer ${tokenProfessor}`)
+                .send({
+                    nome: 'Curso legal',
+                    categoria: ['5a602dc4-f642-45d6-a082-8b285b182bb9']
+                });
+
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.errors).toContainEqual({
+                path: 'nome',
+                message: 'Já existe um curso com este nome.'
+            });
+            expect(res.body.errors).toContainEqual({
+                path: 'categoria',
+                message: 'Nenhuma categoria encontrada com os IDS: 5a602dc4-f642-45d6-a082-8b285b182bb9'
+            });
+        })
+    })
 
     describe('/POST em instrutores do curso', () => {
 
@@ -310,6 +388,9 @@ describe('Testes de Curso', () => {
         it('Deve listar todos os cursos publicados', async () => {
             const res = await request(app)
                 .get('/cursos/publicados')
+                .query({
+                    filtro:'teste'
+                })
                 .set('Authorization', `Bearer ${tokenAdmin}`);
 
             expect(res.statusCode).toEqual(200);

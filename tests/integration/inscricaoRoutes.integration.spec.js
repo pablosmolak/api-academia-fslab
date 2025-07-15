@@ -4,6 +4,7 @@ import { prisma } from '../../src/config/prismaClient.js';
 import { tiposConteudosEnum } from '../../src/utils/enums.js';
 
 let token;
+let tokenProfessor;
 let curso;
 let curso2;
 let topico;
@@ -20,6 +21,15 @@ beforeAll(async () => {
 
     token = res.body.data[0].token;
     userId = res.body.data[0].payload.id
+
+     const resProfessor = await request(app)
+        .post('/login')
+        .send({
+            email: "professor@gmail.com",
+            senha: "Dev@1234"
+        });
+
+    tokenProfessor = resProfessor.body.data[0].token;
 
     curso = await prisma.curso.create({
         data: {
@@ -95,7 +105,7 @@ describe('Testes de inscricões', () => {
             expect(res.body.errors).toContainEqual("Não é possivel se inscrever em um curso sem tópicos");
         });
 
-        it('Deve se increver em um curso', async () => {
+        it('Deve se inscrever em um curso', async () => {
             const res = await request(app)
                 .post(`/inscricoes`)
                 .set('Authorization', `Bearer ${token}`)
@@ -120,7 +130,7 @@ describe('Testes de inscricões', () => {
     });
 
     describe('/GET em inscricões', () => {
-        it('Deve retornar inscricões', async () => {
+        it('Deve retornar todas inscricões com base nos filtros', async () => {
             const res = await request(app)
                 .get(`/inscricoes`)
                 .query({
@@ -128,6 +138,14 @@ describe('Testes de inscricões', () => {
                     usuarioId: userId
                 })
                 .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toEqual(200);
+        });
+       
+        it('Deve retornar todas que o usuario tem acesso', async () => {
+            const res = await request(app)
+                .get(`/inscricoes`)
+                .set('Authorization', `Bearer ${tokenProfessor}`);
 
             expect(res.statusCode).toEqual(200);
         });

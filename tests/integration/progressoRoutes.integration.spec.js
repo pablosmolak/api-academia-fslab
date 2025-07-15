@@ -4,6 +4,7 @@ import { prisma } from '../../src/config/prismaClient.js';
 import { tiposConteudosEnum } from '../../src/utils/enums.js';
 
 let token;
+let tokenProfessor;
 let curso;
 let topico;
 let userId;
@@ -20,6 +21,15 @@ beforeAll(async () => {
 
     token = res.body.data[0].token;
     userId = res.body.data[0].payload.id
+
+     const resProfessor = await request(app)
+        .post('/login')
+        .send({
+            email: "professor@gmail.com",
+            senha: "Dev@1234"
+        });
+
+    tokenProfessor = resProfessor.body.data[0].token;
 
     curso = await prisma.curso.create({
         data: {
@@ -68,10 +78,26 @@ beforeAll(async () => {
 
 describe('Testes de progresso', () => {
     describe('/GET em progressos', () => {
-        it('Deve retornar todos os progressos', async () => {
+        it('Deve retornar todos os progressos com base nos filtros', async () => {
             const res = await request(app)
                 .get(`/progressos`)
+                .query({
+                    cursoId: curso.id,
+                    usuarioId: userId
+                })
                 .set('Authorization', `Bearer ${token}`);
+
+            expect(res.statusCode).toEqual(200);
+        });
+        
+        it('Deve retornar todos os progressos que o usuario tem acesso', async () => {
+            const res = await request(app)
+                .get(`/progressos`)
+                .query({
+                    cursoId: curso.id,
+                    usuarioId: userId
+                })
+                .set('Authorization', `Bearer ${tokenProfessor}`);
 
             expect(res.statusCode).toEqual(200);
         });
