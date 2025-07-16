@@ -9,6 +9,7 @@ stages:
   - build
   - deploy
 
+
 testar-jest:
   stage: test
   image: node:20
@@ -22,20 +23,22 @@ testar-jest:
     MYSQL_DATABASE: academiaFSlabTest
     MYSQL_USER: test_user
     MYSQL_PASSWORD: test1234
-    DB_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
+    DATABASE_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
   before_script:
     - apt-get update && apt-get install -y default-mysql-client
     - echo "⏳ Aguardando MySQL subir..."
     - |
-      for i in {1..30}; do
+      for i in {1..60}; do
         mysqladmin ping -hmysql -utest_user -ptest1234 --silent && break
         echo "Ainda não disponível, tentando de novo..."
-        sleep 2
+        sleep 5
       done
+    - mysql -hmysql -utest_user -ptest1234 -e "SHOW DATABASES;"
     - npx prisma migrate deploy
   script:
     - npm ci
     - npm run test
+
 
 
 
