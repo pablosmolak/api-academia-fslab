@@ -33,11 +33,17 @@ testar-jest:
         echo "Ainda não disponível, tentando de novo..."
         sleep 5
       done
-    - mysql -hmysql -utest_user -ptest1234 -e "SHOW DATABASES;"
+    - echo "Listando processos do MySQL no container de serviço:"
+    - docker ps -a || echo "Não há containers Docker disponíveis no runner"
+    - echo "Tentando conectar ao MySQL e mostrar bases:"
+    - mysql -hmysql -utest_user -ptest1234 -e "SHOW DATABASES;" || echo "Falha ao conectar ao MySQL"
+    - echo "Verificando logs do serviço MySQL (se possível):"
+    - docker logs $(docker ps -q -f ancestor=mysql:8) || echo "Não há logs do container MySQL disponíveis"
     - npx prisma migrate deploy
   script:
     - npm ci
     - npm run test
+
 
 
 
