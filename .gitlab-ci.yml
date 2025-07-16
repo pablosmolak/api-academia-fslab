@@ -2,10 +2,22 @@ variables:
   KUBECTL_CONFIG: $KUBECTL_CONFIG
   IMAGEM_DOCKER: registry.fslab.dev/pablosmolak/api-academia
   ENV_CONFIG: $ENV_CONFIG
+  ENV_CONFIG_TEST: $ENV_CONFIG_TEST
 
 stages:
+  - test
   - build
   - deploy
+
+testar-jest:
+  stage: test
+  image: node:20
+  only:
+    - 39-criar-rotas-para-manipular-instrutores-do-curso
+  script:
+    - echo "$ENV_CONFIG_TEST" > .env
+    - npm ci
+    - npm run test
 
 buildar-docker:
   stage: build
