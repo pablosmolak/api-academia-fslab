@@ -16,6 +16,7 @@ testar-jest:
     - 39-criar-rotas-para-manipular-instrutores-do-curso
   script:
     - cat "$ENV_CONFIG_TEST" > .env.test
+    - cat .env.test
     - npm ci
     - npm run test
 
