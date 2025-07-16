@@ -22,7 +22,7 @@ testar-jest:
     MYSQL_DATABASE: academiaFSlabTest
     MYSQL_USER: test_user
     MYSQL_PASSWORD: test1234
-    DATABASE_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
+    DB_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
   before_script:
     - apt-get update && apt-get install -y default-mysql-client
     - echo "⏳ Aguardando MySQL subir..."
