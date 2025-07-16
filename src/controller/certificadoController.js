@@ -1,12 +1,55 @@
 import { prisma } from "../config/prismaClient.js";
 import { certificadoSchema } from "../schema/certificadoSchema.js";
+import { gruposEnum } from "../utils/enums.js";
 import messages, { sendError, sendResponse } from "../utils/mensagens.js";
+import { pagination } from "../utils/pagination.js";
 
 export default class CertificadoController {
 
     static async listarCertificados(req, res) {
+        const filtros = { where: {} }
+
+        const { cursoId, usuarioId, pagina = 1, limite = 10 } = certificadoSchema.filtrosListarCertificado.parse(req.query)
+
+        if (cursoId) filtros.where.cursoId = { contains: cursoId }
+        if (usuarioId) filtros.where.userId = { contains: usuarioId }
+
+        if (req.user.grupo === gruposEnum.Professores) {
+            const usuarioId = req.user.id;
+
+            const filtroInstrutorCriador = {
+                OR: [
+                    {
+                        curso: {
+                            criador: usuarioId
+                        }
+                    },
+                    {
+                        curso: {
+                            instrutores: {
+                                some: {
+                                    usuario: {
+                                        id: usuarioId
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+
+            filtros.where = {
+                AND: [
+                    filtros.where,
+                    filtroInstrutorCriador,
+                ],
+            };
+        }
+
+        const paginacao = await pagination('certificado', pagina, limite, filtros)
 
         const certificados = await prisma.certificado.findMany({
+            ...filtros,
             include: {
                 usuario: {
                     select: {
@@ -19,29 +62,32 @@ export default class CertificadoController {
                     select: {
                         id: true,
                         nome: true,
-                        descricao: true
+                        descricao: true,
+                        cargaHoraria: true
                     }
                 }
-            }
+            },
+            skip: paginacao.skip,
+            take: paginacao.take
         });
 
-        return sendResponse(res, 200, certificados);
-    }
+        for (let certificado of certificados) {
+            const horas = String(Math.floor(certificado.curso.cargaHoraria / 3600)).padStart(2, "0");
+            const minutos = String(Math.floor((certificado.curso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+            const segundosRestantes = String(certificado.curso.cargaHoraria % 60).padStart(2, "0");
 
-    static async listarCertificadosDoUsuario(req, res) {
-        const { userId } = certificadoSchema.buscarCertificadoPorUsuario.parse(req.params)
-
-        const findUser = await prisma.usuario.findUnique({
-            where: {
-                id: userId
-            }
-        })
-
-        if (!findUser) {
-            return sendError(res, 422, { path: "userId", message: messages.validationGeneric.notFound("id do usuário") });
+            certificado.curso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
         }
 
-        const certificado = await prisma.certificado.findMany({
+        return sendResponse(res, 200, certificados,
+            { pagina: paginacao.paginaAtual, totalPaginas: paginacao.totalPaginas, limite: paginacao.take }
+        );
+    }
+
+    static async listarCertificadosDoUsuarioLogado(req, res) {
+        const userId = req.user.id;
+
+        const certificados = await prisma.certificado.findMany({
             where: {
                 userId
             },
@@ -57,13 +103,22 @@ export default class CertificadoController {
                     select: {
                         id: true,
                         nome: true,
-                        descricao: true
+                        descricao: true,
+                        cargaHoraria: true
                     }
                 }
             }
         })
 
-        return sendResponse(res, 200, certificado)
+        for (let certificado of certificados) {
+            const horas = String(Math.floor(certificado.curso.cargaHoraria / 3600)).padStart(2, "0");
+            const minutos = String(Math.floor((certificado.curso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+            const segundosRestantes = String(certificado.curso.cargaHoraria % 60).padStart(2, "0");
+
+            certificado.curso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
+        }
+
+        return sendResponse(res, 200, certificados)
     }
 
     static async listarCertificadosDoCursoDoUsuarioLogado(req, res) {
@@ -81,7 +136,7 @@ export default class CertificadoController {
             return sendError(res, 422, { path: "cursoId", message: messages.validationGeneric.notFound("id do curso") });
         }
 
-        const certificado = await prisma.certificado.findMany({
+        const certificado = await prisma.certificado.findFirst({
             where: {
                 cursoId,
                 userId
@@ -98,11 +153,22 @@ export default class CertificadoController {
                     select: {
                         id: true,
                         nome: true,
-                        descricao: true
+                        descricao: true,
+                        cargaHoraria: true
                     }
                 }
             }
         })
+
+        if (!certificado) {
+            return sendError(res, 404, { path: "cursoId", message: 'Nenhum certificado encontrado para esse curso!' });
+        }
+
+        const horas = String(Math.floor(certificado.curso.cargaHoraria / 3600)).padStart(2, "0");
+        const minutos = String(Math.floor((certificado.curso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+        const segundosRestantes = String(certificado.curso.cargaHoraria % 60).padStart(2, "0");
+
+        certificado.curso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
 
         return sendResponse(res, 200, certificado)
     }
@@ -126,11 +192,25 @@ export default class CertificadoController {
                     select: {
                         id: true,
                         nome: true,
-                        descricao: true
+                        descricao: true,
+                        cargaHoraria: true
                     }
                 }
             }
         })
+
+        if (!certificado) {
+            return sendError(res, 404, [{
+                path: "id",
+                message: "Nenhum certificado encontrado com esse validador"
+            }])
+        }
+
+        const horas = String(Math.floor(certificado.curso.cargaHoraria / 3600)).padStart(2, "0");
+        const minutos = String(Math.floor((certificado.curso.cargaHoraria % 3600) / 60)).padStart(2, "0");
+        const segundosRestantes = String(certificado.curso.cargaHoraria % 60).padStart(2, "0");
+
+        certificado.curso.cargaHoraria = `${horas}:${minutos}:${segundosRestantes}`
 
         return sendResponse(res, 200, certificado);
     }

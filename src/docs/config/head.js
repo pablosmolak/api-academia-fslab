@@ -19,6 +19,9 @@ import { CertificadoPath } from "../paths/certificadoPath.js";
 import { VerificarEmailSchemas } from "../schemas/verificarEmailSchema.js";
 import { VerificarEmailPath } from "../paths/verificarEmailPath.js";
 import { AuthSchemas } from "../schemas/authSchema.js";
+import { RecuperarSenhaSchema } from "../schemas/recuperarSenhaSchema.js";
+import { GrupoPath } from "../paths/grupoPath.js";
+import { GrupoSchemas } from "../schemas/gruposSchema.js";
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -57,6 +60,7 @@ const swaggerOptions = {
       },
       schemas: {
         ...UsuarioSchemas,
+        ...GrupoSchemas,
         ...CategoriaSchemas,
         ...CursoSchemas,
         ...TopicoSchemas,
@@ -65,7 +69,8 @@ const swaggerOptions = {
         ...ProgressoSchemas,
         ...CertificadoSchemas,
         ...VerificarEmailSchemas,
-        ...AuthSchemas
+        ...AuthSchemas,
+        ...RecuperarSenhaSchema
       },
     },
     tags: [
@@ -84,6 +89,10 @@ const swaggerOptions = {
       {
         name: "Usuários",
         description: "Gerenciamento de usuários do sistema"
+      },
+      {
+        name: "Grupos",
+        description: "Gerenciamento de grupos do sistema"
       },
       {
         name: "Categorias",
@@ -117,6 +126,7 @@ const swaggerOptions = {
     paths: {
       ...AuthPath,
       ...UsuarioPath,
+      ...GrupoPath,
       ...CategoriaPath,
       ...CursoPath,
       ...TopicoPath,

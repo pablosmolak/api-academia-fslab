@@ -102,9 +102,6 @@ Runs the app in the development mode.<br/>
 
 <div style="display: flex;">
 
-| [<img width="150px"  src="https://avatars.githubusercontent.com/u/102405026?v=4"><br><sub>Alexandre Nogueira</sub>](https://github.com/Alxdelira) |
-| :---------------------------------------------------------------------------------------------------------------------------------------: |
-
 | [<img width="150px" style="border-radius: 50%"  src="https://avatars.githubusercontent.com/u/83317702?v=4"><br><sub>Pablo Smolak</sub>](https://github.com/pablosmolak) |
 | :---------------------------------------------------------------------------------------------------------------------------------------: |
 

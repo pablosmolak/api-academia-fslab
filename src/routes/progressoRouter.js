@@ -14,7 +14,7 @@ router
         "/progressos",
         AuthMiddleware,
         EmailVerificadoMiddleware,
-        permissaoMiddleware([gruposEnum.ADM]),
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(ProgressoController.listarProgresso)
     )
 

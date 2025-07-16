@@ -16,5 +16,4 @@ router
         wrapException(VerificarEmailController.enviarCodigoVerificarEmail)
     )
     
-
 export default router;

@@ -3,7 +3,7 @@ export const VerificarEmailSchemas = {
         type: 'object',
         properties: {
             codigoVerificacaoEmail: { 
-                type: 'integer',
+                type: 'string',
                 description: "Código de verificação do e-mail, com exatamente 6 dígitos",
                 example: 123456
             }

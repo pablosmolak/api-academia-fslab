@@ -10,6 +10,7 @@ import progressos from "./progressoRouter.js";
 import certificados from "./certificadoRouter.js";
 import recuperarsenha from "./recuperaSenhaRouter.js";
 import verificaremail from "./verificarEmailRouter.js";
+import grupos from "./grupoRouter.js";
 
 const routes = (app) => {
 
@@ -18,21 +19,22 @@ const routes = (app) => {
     }
 
     app.get("/", (req, res) => {
-        res.status(200).redirect("/docs")
+        res.redirect(301, "/docs");
     })
 
     app.use(
         auth,
+        recuperarsenha,
+        verificaremail,
+        usuarios,
+        grupos,
         categorias,
         topicos,
-        usuarios,
         conteudos,
         cursos,
         inscricoes,
         progressos,
-        certificados,
-        recuperarsenha,
-        verificaremail
+        certificados
     )
 }
 

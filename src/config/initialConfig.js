@@ -7,7 +7,7 @@ import { gruposEnum } from "../utils/enums.js";
 export async function verificarMinio() {
     await minioClient.listBuckets(async (err, buckets) => {
         if (err) {
-            console.error("Configure corretamente as credenciais do MinIO no arquivo ENV!")
+            console.error("❌ Configure corretamente as credenciais do MinIO no arquivo ENV!")
             process.exit(1);
         }
 
@@ -17,12 +17,12 @@ export async function verificarMinio() {
             if (!bucketsExistentes.includes(bucket)) {
                 await minioClient.makeBucket(bucket, 'us-east-1', (err) => {
                     if (err) {
-                        console.error(`Erro: ${err.message}, ao criar o bucket ${bucket}!`)
+                        console.error(`❌ Erro: ${err.message}, ao criar o bucket ${bucket}!`)
                         console.error(err)
                         process.exit(1);
                     }
 
-                    console.log(`Bucket ${bucket} criado com sucesso!`)
+                    console.log(`✅ Bucket ${bucket} criado com sucesso!`)
                 })
             }
         })
@@ -51,7 +51,7 @@ export async function verificarGrupos() {
                 data: grupo,
             });
 
-            console.log('Grupo criado: ', grupoCreate.nome);
+            console.log('✅ Grupo criado: ', grupoCreate.nome);
         }
     }
 }
@@ -61,7 +61,7 @@ export async function verificarAdministradorPadrao() {
     const senha = process.env.SENHA_ADMINISTRADOR_PADRAO
 
     if (!email || !senha) {
-        console.error("Configure corretamente as credenciais do usuário administrador padrão no arquivo ENV!")
+        console.error("❌ Configure corretamente as credenciais do usuário administrador padrão no arquivo ENV!")
         process.exit(1);
     }
 
@@ -74,7 +74,7 @@ export async function verificarAdministradorPadrao() {
     if (usuario === 0) {
         const grupoId = await prisma.grupo.findFirst({
             where: {
-                nome: { in: ["Administradores"] },
+                nome: { in: [gruposEnum.ADM] },
             },
             select: { id: true },
         });
@@ -90,6 +90,6 @@ export async function verificarAdministradorPadrao() {
             }
         })
 
-        console.log("Usuário administrador criado com sucesso!")
+        console.log("✅ Usuário administrador criado com sucesso!")
     }
 }

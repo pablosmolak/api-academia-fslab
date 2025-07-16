@@ -66,9 +66,11 @@ export default class RecuperaSenhaController {
 
         if (token !== usuario.tokenRecuperaSenha) return sendError(res, 498, messages.auth.invalidToken)
 
-        jwt.verify(token, process.env.JWT_SECRET, async (err) => {
-            if (err) return sendError(res, 498, messages.auth.invalidToken)
-        })
+        try {
+            await jwt.verify(token, process.env.JWT_SECRET)
+        } catch (err) {
+            return sendError(res, 498, messages.auth.invalidToken)
+        }
 
         await prisma.usuario.update({
             where: { id: usuario.id },

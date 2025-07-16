@@ -6,22 +6,24 @@ import minioConfig from "../config/minioConfig.js"
 export default class minioFunctions {
 
     static async upload(file, bucket) {
-        const extencaoDoArquivo = path.extname(file.originalname);
-        const novoNomeArquivo = uuid();
-        const objectName = `${novoNomeArquivo}${extencaoDoArquivo}`;
 
-        await minioConfig.fPutObject(bucket, objectName, file.path);
+        let nomeArquivo = file.originalname
 
-        /*const tags = {
-            'tag1': 'value1',
-            'tag2': 'value2',
-        };*/
+        const nomeSemExtensao = nomeArquivo.split('.').slice(0, -1).join('.');
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-        //await minioConfig.setObjectTagging(bucket, objectName, tags);
+        if (!uuidRegex.test(nomeSemExtensao)) {
+            const novoNomeArquivo = uuid();
+            const extencaoDoArquivo = path.extname(file.originalname);
+
+            nomeArquivo = `${novoNomeArquivo}${extencaoDoArquivo}`
+        }
+
+        await minioConfig.fPutObject(bucket, nomeArquivo, file.path);
 
         fs.unlinkSync(file.path);
 
-        return objectName
+        return nomeArquivo
     }
 
     static async find(objectName, bucketName) {

@@ -6,7 +6,11 @@ export const InscricaoPath = {
             tags: ["Inscrições"],
             security: [{ jwtAuth: [] }],
             summary: "Listar Todas as Inscrições",
-            description: "Recupera uma lista de todas as inscrições no sistema.",
+            description: "Recupera uma lista de todas as inscrições registradas no sistema.<br>" +
+                "Se o usuário for um Administrador, ele pode visualizar todas as inscrições.<br>" +
+                "Se o usuário for um Ministrante (Professor), ele só pode visualizar inscrições dos cursos que criou ou nos quais é instrutor.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
                     name: "cursoId",
@@ -59,7 +63,8 @@ export const InscricaoPath = {
             tags: ["Inscrições"],
             security: [{ jwtAuth: [] }],
             summary: "Criar Nova Inscrição",
-            description: "Cria uma nova inscrição com as informações fornecidas.",
+            description: "Cria uma nova inscrição com as informações fornecidas.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.",
             requestBody: {
                 required: true,
                 content: {
@@ -74,33 +79,13 @@ export const InscricaoPath = {
             }
         }
     },
-    "/inscricoes/{id}": {
-        delete: {
-            tags: ["Inscrições"],
-            security: [{ jwtAuth: [] }],
-            summary: "Excluir Inscrição",
-            description: "Remove uma inscrição do sistema, identificada pelo ID fornecido.",
-            parameters: [
-                {
-                    name: "id",
-                    in: "path",
-                    description: "ID da inscrição a ser excluída.",
-                    required: true,
-                    schema: { type: "string" }
-                }
-            ],
-            responses: {
-                ...gerarRespostasCorretas(200, ""),
-                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
-            }
-        }
-    },
     "/inscricoes/usuario": {
         get: {
             tags: ["Inscrições"],
             security: [{ jwtAuth: [] }],
             summary: "Listar Todas as Inscrições do usuário logado",
-            description: "Recupera uma lista de todas as inscrições do usuário logado.",
+            description: "Recupera uma lista de todas as inscrições do usuário logado.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.",
             parameters: [],
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Inscricao"),
@@ -113,7 +98,8 @@ export const InscricaoPath = {
             tags: ["Inscrições"],
             security: [{ jwtAuth: [] }],
             summary: "Listar Inscrições do usuário logado por id de curso",
-            description: "Recupera uma inscrições do usuário logado por curso.",
+            description: "Recupera uma inscrição do usuário logado em um curso específico.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.",
             parameters: [
                 {
                     name: "cursoId",
@@ -126,6 +112,26 @@ export const InscricaoPath = {
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Inscricao"),
                 ...gerarRespostasDeErro([401, 403, 498, 500])
+            }
+        },
+        delete: {
+            tags: ["Inscrições"],
+            security: [{ jwtAuth: [] }],
+            summary: "Excluir Inscrição",
+            description: "Remove uma inscrição do usuário logado no sistema com base no ID do curso fornecido.<br><br>" +
+             "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.",
+            parameters: [
+                {
+                    name: "cursoId",
+                    in: "path",
+                    description: "ID do curso da inscrição a ser excluída.",
+                    required: true,
+                    schema: { type: "string" }
+                }
+            ],
+            responses: {
+                ...gerarRespostasCorretas(200, ""),
+                ...gerarRespostasDeErro([401, 403, 422, 498, 500])
             }
         }
     }
