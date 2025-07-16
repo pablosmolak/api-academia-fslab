@@ -26,6 +26,8 @@ export async function verifyConnection() {
     } catch (error) {
         // Se houver um erro, ele será capturado aqui
         console.error("\n❌ Erro ao conectar ao banco de dados:", error);
+        console.log(error)
+        console.log(process.env.DB_URL)
         process.exit(1); // Encerra o processo com código de erro
     }
 }
