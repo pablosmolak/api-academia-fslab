@@ -18,27 +18,22 @@ testar-jest:
       command:
         - --default-authentication-plugin=mysql_native_password
   variables:
-    # 👇 Essas variáveis vão ser passadas para o container MySQL automaticamente
     MYSQL_ROOT_PASSWORD: test1234
     MYSQL_DATABASE: academiaFSlabTest
     MYSQL_USER: test_user
     MYSQL_PASSWORD: test1234
-    # 👇 E são usadas pelo seu app
-    DB_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
-  only:
-    - 39-criar-rotas-para-manipular-instrutores-do-curso
+    DATABASE_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
   before_script:
-    # Espera o banco ficar disponível
+    - apt-get update && apt-get install -y default-mysql-client
     - echo "⏳ Aguardando MySQL subir..."
-    - for i in {1..30}; do
-        mysqladmin ping -hmysql -utest_user -ptest1234 --silent && break;
-        sleep 2;
+    - |
+      for i in {1..30}; do
+        mysqladmin ping -hmysql -utest_user -ptest1234 --silent && break
+        echo "Ainda não disponível, tentando de novo..."
+        sleep 2
       done
-    # Aplica as migrações (Prisma)
     - npx prisma migrate deploy
   script:
-    - cat "$ENV_CONFIG_TEST" > .env.test
-    - cat .env.test
     - npm ci
     - npm run test
 
