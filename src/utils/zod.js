@@ -40,15 +40,11 @@ export const myZ = {
 
     senha: () => z.string()
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=:;,.<>?/~`|\\[\]{}]).{8,}$/,
-            "A senha deve conter no mínimo 8 caracteres, incluindo ao menos 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial."),
+            "Mínimo 8 caracteres, com 1 maiúscula, 1 minúscula, 1 número e 1 caractere especial."),
 
     cargaHoraria: () => z.string()
         .regex(/^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/,
             "Formato inválido de carga horária, o formato correto é: 'HH:MM:SS'"),
-
-
-    estado: () => z.string()
-        .regex(/^[A-Z]{2}$/, "A sigla deve conter apenas letras maiúsculas"),
 
     /** Se passar uma string vazia, vira um valor nulo
      * Mas também pode mandar nulo se quiser
@@ -63,12 +59,6 @@ export const myZ = {
         if (str === "") return null
         else return str
     }, schema.nullable())
-}
-
-export const commonZodSchemas = {
-    getPorSigla: () => z.object({
-        sigla: myZ.estado()
-    }),
 }
 
 function traduzirNomeTipo(tipo) {

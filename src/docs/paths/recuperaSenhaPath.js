@@ -31,16 +31,7 @@ export const RecuperaSenhaPath = {
                 }
             },
             responses: {
-                ...gerarRespostasCorretas(200, {
-                    type: "object",
-                    properties: {
-                        message: {
-                            type: "string",
-                            description: "Mensagem de confirmação de solicitação de recuperação de senha",
-                            example: "Um e-mail com instruções foi enviado para o endereço fornecido."
-                        }
-                    }
-                }),
+                ...gerarRespostasCorretas(200, "#/components/schemas/RecuperarRequestBody"),
                 ...gerarRespostasDeErro([400, 422, 500])
             }
         }
@@ -89,16 +80,7 @@ export const RecuperaSenhaPath = {
                 }
             },
             responses: {
-                ...gerarRespostasCorretas(200, {
-                    type: "object",
-                    properties: {
-                        message: {
-                            type: "string",
-                            description: "Mensagem de confirmação de alteração de senha",
-                            example: "Sua senha foi alterada com sucesso."
-                        }
-                    }
-                }),
+                ...gerarRespostasCorretas(200, "#/components/schemas/AlterarRequestBody"),
                 ...gerarRespostasDeErro([400, 422, 500])
             }
         }

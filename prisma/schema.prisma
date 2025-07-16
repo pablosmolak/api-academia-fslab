@@ -47,40 +47,42 @@ model Usuario {
 
 // modelo de Inscrições em Cursos
 model Inscricao {
-    cursoId       String
-    userId        String
-    status        String    @default("Em Andamento")
-    dataInscricao DateTime  @default(now())
-    dataTermino   DateTime?
-    created_at    DateTime  @default(now())
-    updated_at    DateTime  @updatedAt
+  cursoId       String
+  userId        String
+  status        String    @default("Em Andamento")
+  dataInscricao DateTime  @default(now())
+  dataTermino   DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
 
-    // Relacionamento com o curso e usuário
-    curso   Curso   @relation(fields: [cursoId], references: [id])
-    usuario Usuario @relation(fields: [userId], references: [id])
+  curso     Curso          @relation(fields: [cursoId], references: [id])
+  usuario   Usuario        @relation(fields: [userId], references: [id])
+  progresso ProgressoCurso?
 
-    @@id([userId, cursoId])
-    @@map("inscricoes")
+  @@id([userId, cursoId])
+  @@map("inscricoes")
 }
+
 
 // modelo de Progresso do Curso
 model ProgressoCurso {
-    userId               String
-    cursoId              String
-    porcentagem          Float
-    atividadeAtual       String?
-    atividadesConcluidas Json?
-    created_at           DateTime @default(now())
-    updated_at           DateTime @updatedAt
+  userId               String
+  cursoId              String
+  porcentagem          Float
+  atividadeAtual       String?
+  atividadesConcluidas Json?
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
 
-    // Relacionamento com o curso e usuário
-    curso    Curso          @relation(fields: [cursoId], references: [id])
-    usuario  Usuario        @relation(fields: [userId], references: [id])
-    conteudo ConteudoCurso? @relation(fields: [atividadeAtual], references: [id])
+  curso     Curso          @relation(fields: [cursoId], references: [id])
+  usuario   Usuario        @relation(fields: [userId], references: [id])
+  conteudo  ConteudoCurso? @relation(fields: [atividadeAtual], references: [id])
+  inscricao Inscricao      @relation(fields: [userId, cursoId], references: [userId, cursoId])
 
-    @@id([userId, cursoId])
-    @@map("progresso_cursos")
+  @@id([userId, cursoId])
+  @@map("progresso_cursos")
 }
+
 
 // modelo de Conteúdo do Curso
 model ConteudoCurso {
@@ -89,7 +91,7 @@ model ConteudoCurso {
     topicoId     String
     tipo         String // tipo de conteúdo (texto, vídeo, questão, etc.)
     conteudo     String // conteúdo em si (texto formatado, URL do vídeo, etc.)
-    cargaHoraria String
+    cargaHoraria Int      @default(0)
     ordem        Int
     created_at   DateTime @default(now())
     updated_at   DateTime @updatedAt
@@ -122,14 +124,15 @@ model Topico {
 
 // modelo de Cursos
 model Curso {
-    id         String   @id @default(uuid())
-    nome       String
-    descricao  String   @db.Text
-    capa       String?
-    criador    String
-    publicado  Boolean  @default(false)
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    id           String   @id @default(uuid())
+    nome         String
+    descricao    String   @db.Text
+    capa         String?
+    criador      String?
+    cargaHoraria Int      @default(0)
+    publicado    Boolean  @default(false)
+    created_at   DateTime @default(now())
+    updated_at   DateTime @updatedAt
 
     // Relacionamentos
     inscricoes      Inscricao[]
@@ -138,7 +141,7 @@ model Curso {
     certificado     Certificado[]
     instrutores     Instrutores[]
     categoria       Categoria[]
-    usuario         Usuario          @relation(fields: [criador], references: [id])
+    usuario         Usuario?          @relation(fields: [criador], references: [id])
 }
 
 // Criar um modelo de categoria de cursos para organizar os cursos

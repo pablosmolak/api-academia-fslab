@@ -15,7 +15,7 @@ export default class CategoriaController {
         })
 
         if (findCategoria !== null) {
-            erros.push(messages.validationGeneric.fieldIsRepeated("Nome"))
+            erros.push({ path: "nome", message: messages.validationGeneric.fieldIsRepeated("Nome") })
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
@@ -45,7 +45,7 @@ export default class CategoriaController {
         })
 
         if (categoriaExist === null) {
-            return sendError(res, 422, messages.validationGeneric.notFound("id"))
+            return sendError(res, 404, messages.validationGeneric.notFound("id"))
         }
 
         return sendResponse(res, 200, categoriaExist)
@@ -55,20 +55,20 @@ export default class CategoriaController {
         const erros = []
 
         const { id } = req.params
+
         let { nome } = req.body
 
         categoriaSchema.alterarCategoria.parse({ id, nome })
 
-        const categoriaExist = await prisma.usuario.findUnique({
+        const categoriaExist = await prisma.categoria.findUnique({
             where: {
                 id
             }
         })
 
-        if (categoriaExist !== null) {
+        if (categoriaExist === null) {
             erros.push(messages.validationGeneric.notFound("id"))
         }
-
 
         if (nome) {
             const findCategoria = await prisma.categoria.findFirst({

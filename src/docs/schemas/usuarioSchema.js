@@ -82,5 +82,17 @@ export const UsuarioSchemas = {
 		},
 		required: ["nome", "email", "senha"],
 		description: "Corpo da requisição para criação ou atualização de um usuário"
+	},
+	UsuarioAlterarGrupoRequestBody: {
+		type: "object",
+		properties: {
+			grupoId: {
+				type: "string",
+				description: "ID do grupo",
+				example: "9b1f5673-33de-4e2b-8e7d-a78c79792689"
+			}
+		},
+		required: ["grupoId"],
+		description: "Corpo da requisição para atualização do grupo de um usuário"
 	}
 }

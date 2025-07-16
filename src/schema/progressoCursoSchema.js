@@ -6,6 +6,13 @@ export class progressoSchema {
     })
 
     static listarProgresso = z.object({
-        cursoId : z.string().uuid()
+        cursoId: z.string().uuid()
+    })
+
+    static filtrosListarProgresso = z.object({
+        cursoId: z.string().uuid().optional(),
+        usuarioId: z.string().uuid().optional(),
+        pagina: z.string().optional(),
+        limite: z.string().optional()
     })
 } 

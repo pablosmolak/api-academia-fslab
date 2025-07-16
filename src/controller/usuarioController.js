@@ -14,14 +14,9 @@ export default class UsuarioController {
         const erros = []
         let { nome, email, senha } = usuarioSchema.criarUsuario.parse(req.body)
 
-
-        console.log(email)
-
         let userExist = await prisma.usuario.findUnique({
             where: { email }
         })
-
-        console.log(userExist)
 
         if (userExist !== null) {
             erros.push({ path: "email", message: messages.auth.emailAlreadyExists() })
@@ -81,7 +76,7 @@ export default class UsuarioController {
             ...filtros,
             skip: paginacao.skip,
             take: paginacao.take,
-            select:{
+            select: {
                 id: true,
                 nome: true,
                 email: true,
@@ -101,13 +96,13 @@ export default class UsuarioController {
     static async listarUsuarioPorID(req, res) {
         const erros = []
 
-        const { id } = req.params
+        const { id } = usuarioSchema.listarUsuario.parse(req.params)
 
         const findUser = await prisma.usuario.findUnique({
             where: {
                 id: id
             },
-            select:{
+            select: {
                 id: true,
                 nome: true,
                 email: true,
@@ -116,7 +111,13 @@ export default class UsuarioController {
                 ativo: true,
                 grupoId: true,
                 created_at: true,
-                updated_at: true
+                updated_at: true,
+                Grupo: {
+                    select: {
+                        id: true,
+                        nome: true
+                    }
+                }
             }
         })
 
@@ -134,21 +135,65 @@ export default class UsuarioController {
     static async alterarUsuario(req, res) {
         const erros = []
 
-        const { id } = req.params
+        const { id } = usuarioSchema.listarUsuario.parse(req.params)
 
-        let { nome, email, senha } = usuarioSchema.alterarUsuario.parse(req.body)
+        let { nome, email, senha } = usuarioSchema.alterarUsuario.parse({ ...req.body, id })
+
+        const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: id
+            }
+        })
+
+        if (userExist === null) {
+            erros.push({ path: "id", message: messages.auth.userNotFound(id) })
+        }
 
         if (email) {
-            let userExist = await prisma.usuario.findUnique({
+            let userExistByEmail = await prisma.usuario.findUnique({
                 where: { email: email }
             })
 
-            if (userExist !== null && userExist.id !== id) {
-                erros.push(messages.auth.emailAlreadyExists(email))
+            if (userExist?.email === process.env.LOGIN_ADMINISTRADOR_PADRAO && userExist.email !== email) {
+                erros.push("O usuário Administrador padrão não pode ter o email alterado!")
+            }
+
+            if (userExistByEmail !== null && userExistByEmail.id !== id) {
+                erros.push({ path: "email", message: messages.auth.emailAlreadyExists(email) })
             }
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
+
+        if (email) {
+            if (userExist.email !== email) {
+                const codigoVerificacao = Math.floor(100000 + Math.random() * 900000);
+
+                const expirationInMs = 30 * 60 * 1000; // 30 minutos em milissegundos
+
+                await prisma.usuario.update({
+                    where: {
+                        id: id,
+                    },
+                    data: {
+                        emailVerificado: false,
+                        codigoVerificacaoEmail: codigoVerificacao,
+                        expirationVerificacaoEmail: new Date(new Date().getTime() + expirationInMs)
+                    }
+                });
+
+                await EmailService.sendEmail({
+                    "subject": "Academia FSLab - Confirme o seu E-mail",
+                    "to": email,
+                    "template": "academia-verificaemail",
+                    "data": {
+                        "userName": nome,
+                        "verificationCode": `${codigoVerificacao}`
+                    }
+                });
+            }
+
+        }
 
         if (senha) senha = bcrypt.hashSync(senha, 10)
 
@@ -166,32 +211,99 @@ export default class UsuarioController {
         return sendResponse(res, 200, [])
     }
 
-    static async deletarUsuario(req, res) {
+    static async alterarGrupoUsuario(req, res) {
         const erros = []
 
-        const { id } = req.params
+        const { id } = usuarioSchema.listarUsuario.parse(req.params)
 
-        if (!id) {
-            erros.push(messages.error.invalidID)
-        } else {
-            const userExist = await prisma.usuario.findUnique({
-                where: {
-                    id
-                }
-            })
+        let { grupoId } = usuarioSchema.alterarGrupoUsuario.parse(req.body)
 
-            if (userExist === null) {
-                erros.push(messages.auth.userNotFound(id))
+        const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: id
             }
+        })
+
+        if (userExist === null) {
+            erros.push({ path: "id", message: messages.auth.userNotFound(id) })
+        }
+
+        const grupoExist = await prisma.grupo.findUnique({
+            where: {
+                id: grupoId
+            }
+        })
+
+        if (grupoExist === null) {
+            erros.push({ path: "grupoId", message: messages.validationGeneric.notFound('id de grupo') })
+        }
+
+        if (userExist?.email === process.env.LOGIN_ADMINISTRADOR_PADRAO) {
+            erros.push("O usuário Administrador padrão não pode ter o grupo alterado!")
         }
 
         if (erros.length > 0) return sendError(res, 422, erros)
 
-        await prisma.usuario.delete({
+
+        await prisma.usuario.update({
             where: {
                 id: id,
             },
+            data: {
+                grupoId: grupoId
+            },
         })
+
+        return sendResponse(res, 200, [])
+    }
+
+    static async deletarUsuario(req, res) {
+        const erros = []
+
+        const { id: userId } = usuarioSchema.listarUsuario.parse(req.params)
+
+        const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: userId
+            }
+        })
+
+        if (userExist === null) {
+            erros.push(messages.auth.userNotFound(userId))
+        }
+
+        if (userExist?.email === process.env.LOGIN_ADMINISTRADOR_PADRAO) {
+            erros.push("O usuário Administrador padrão não pode ser deletado!")
+        }
+
+        if (erros.length > 0) return sendError(res, 422, erros)
+
+        await prisma.$transaction(async (prisma) => {
+            await prisma.curso.updateMany({
+                where: { criador: userId },
+                data: { criador: null },
+            });
+
+            await prisma.certificado.deleteMany({
+                where: { userId },
+            });
+
+            await prisma.progressoCurso.deleteMany({
+                where: { userId },
+            });
+
+            await prisma.inscricao.deleteMany({
+                where: { userId },
+            });
+
+            await prisma.instrutores.deleteMany({
+                where: { userId },
+            });
+
+            await prisma.usuario.delete({
+                where: { id: userId },
+            });
+        });
 
         return sendResponse(res, 200, [])
     }
@@ -199,11 +311,11 @@ export default class UsuarioController {
     static async uploadFotoPerfil(req, res) {
         const erros = []
         const validImageTypes = [
-            'image/jpeg', 'image/jpg', 'image/png'
+            'image/jpeg', 'image/jpg', 'image/png', 'image/webp'
         ];
 
         const file = req.file
-        const userid = req.params.id
+        const { id: userid } = usuarioSchema.listarUsuario.parse(req.params)
 
         if (!validImageTypes.includes(file.mimetype)) {
             erros.push(`O arquivo enviado não é uma imagem válida, os tipos aceitos são: ${validImageTypes.join(", ")}!`)
@@ -243,9 +355,44 @@ export default class UsuarioController {
         return sendResponse(res, 201, [])
     }
 
+    static async deletarFotoPerfil(req, res) {
+        const erros = []
+        const { id: userid } = usuarioSchema.listarUsuario.parse(req.params)
+
+        const userExist = await prisma.usuario.findUnique({
+            where: {
+                id: userid
+            }
+        })
+
+        if (userExist === null) {
+            erros.push({ path: "id", message: messages.auth.userNotFound(userid) })
+        }
+
+        if (erros.length > 0) {
+            return sendError(res, 422, erros)
+        }
+
+        if (userExist.fotoPerfil) {
+            await minioFunctions.remove(userExist.fotoPerfil, bucketsMinio.Usuarios)
+                .catch()
+
+            await prisma.usuario.update({
+                where: {
+                    id: userid
+                },
+                data: {
+                    fotoPerfil: null
+                }
+            })
+        }
+
+        return sendResponse(res, 200, [])
+    }
+
     static async visualizarImagem(req, res) {
         const erros = []
-        const userid = req.params.id
+        const { id: userid } = usuarioSchema.listarUsuario.parse(req.params)
 
         const userExist = await prisma.usuario.findUnique({
             where: {

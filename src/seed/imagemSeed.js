@@ -4,11 +4,13 @@ import path from "path";
 import { bucketsMinio } from "../utils/enums.js";
 import minioFunctions from "../utils/minioFunctions.js";
 import { fileURLToPath } from "url";
+import dataSeed from "./data.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default async function imagemSeed(quantity) {
+export default async function imagemSeed() {
+  
     const tempDir = path.join(__dirname, "temp_images");
 
     // Garante que o diretório temporário exista
@@ -18,24 +20,34 @@ export default async function imagemSeed(quantity) {
 
     const buckets = [bucketsMinio.Cursos, bucketsMinio.Usuarios]
     const urls = {
-        [bucketsMinio.Cursos]: "https://picsum.photos/400",
-        [bucketsMinio.Usuarios]: "https://thispersondoesnotexist.com/"
+        [bucketsMinio.Cursos]: dataSeed.map(data => {
+            return {
+                url: data.capa,
+                nomeImagem: data.id
+            }
+        }),
+        [bucketsMinio.Usuarios]: dataSeed.map(data => {
+            return {
+                url: data.canal_infos.foto_de_perfil,
+                nomeImagem: data.canal_infos.id
+            }
+        }),
     }
 
     for (let bucket of buckets) {
         let count = 0
         await minioFunctions.removeAll(bucket)
 
-        for (let i = 0; i < quantity; i++) {
+        for (let i = 0; i < urls[bucket].length; i++) {
             try {
                 const response = await axios({
                     method: "get",
-                    url: urls[bucket],
+                    url: urls[bucket][i].url,
                     responseType: "stream",
                 });
 
                 // Salva a imagem temporariamente
-                const fileName = `image_${Date.now()}_${i}.jpg`;
+                const fileName = `${urls[bucket][i].nomeImagem}.jpg`;
                 const filePath = path.join(tempDir, fileName);
                 const writer = fs.createWriteStream(filePath);
 

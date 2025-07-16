@@ -16,20 +16,20 @@ export async function AuthMiddleware(req, res, next) {
             where: {
                 id: decodificado.id
             },
-            include:{
-                Grupo:{
+            include: {
+                Grupo: {
                     select: {
                         nome: true
                     }
                 }
             }
         })
-        
+
         if (!user) {
             return sendError(res, 498, messages.auth.invalidToken)
         }
 
-        if(!user.ativo){
+        if (!user.ativo) {
             return sendError(res, 498, messages.auth.invalidToken)
         }
 

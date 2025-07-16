@@ -34,10 +34,10 @@ router
         wrapException(InscricoesController.listarInscricoesDoUsuarioLogadoPorIdDeCurso)
     )
 
-    .delete("/inscricoes/:id",
+    .delete("/inscricoes/usuario/curso/:cursoId",
         AuthMiddleware,
         EmailVerificadoMiddleware,
-        wrapException(InscricoesController.deletarInscricao)
+        wrapException(InscricoesController.deletarInscricaoDoUsuarioLogadoPorIdDeCurso)
     )
 
 export default router;

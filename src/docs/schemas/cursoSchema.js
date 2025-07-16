@@ -189,6 +189,22 @@ export const CursoSchemas = {
         required: ['usersID'],
         description: "Corpo da requisição para adicionar instrutores a um curso"
     },
+    CursoInstrutoresRemoveBody: {
+        type: 'object',
+        properties: {
+            usersID: {
+                type: "array",
+                items: {
+                    type: "string",
+                    format: "uuid",
+                    description: "ID único do Instrutor",
+                    example: "2d40c652-dfa6-470b-8913-6002d8b2d76f"
+                }
+            }
+        },
+        required: ['usersID'],
+        description: "Corpo da requisição para remover instrutores do curso"
+    },
     CursoInstrutoresResponseBody: {
         type: "object",
         properties: {

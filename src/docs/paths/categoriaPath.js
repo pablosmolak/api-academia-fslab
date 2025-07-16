@@ -6,7 +6,8 @@ export const CategoriaPath = {
             tags: ["Categorias"],
             security: [{ jwtAuth: [] }],
             summary: "Obter Lista de Categorias",
-            description: "Retorna uma lista de todas as categorias disponíveis, permitindo aos usuários visualizar todas as opções de categorias.",
+            description: "Retorna uma lista de todas as categorias disponíveis, permitindo aos usuários visualizar todas as opções de categorias.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>",
             responses: {
                 ...gerarRespostasCorretas(200, "#/components/schemas/Categoria"),
                 ...gerarRespostasDeErro([401, 403, 498, 500])
@@ -17,8 +18,9 @@ export const CategoriaPath = {
             security: [{ jwtAuth: [] }],
             summary: "Adicionar Nova Categoria",
             description: "Cria uma nova categoria com base nos dados fornecidos pelo usuário.<br>" +
-                        "O corpo da requisição deve conter as informações necessárias para a criação da categoria.<br><br>" +
-                        "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
+                "O corpo da requisição deve conter as informações necessárias para a criação da categoria.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             requestBody: {
                 required: true,
                 content: {
@@ -38,7 +40,8 @@ export const CategoriaPath = {
             tags: ["Categorias"],
             security: [{ jwtAuth: [] }],
             summary: "Obter Detalhes de Categoria",
-            description: "Recupera os detalhes de uma categoria específica identificada pelo ID fornecido, permitindo aos usuários visualizar informações detalhadas sobre a categoria.",
+            description: "Recupera os detalhes de uma categoria específica identificada pelo ID fornecido, permitindo aos usuários visualizar informações detalhadas sobre a categoria.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>",
             parameters: [
                 {
                     name: "id",
@@ -58,8 +61,9 @@ export const CategoriaPath = {
             security: [{ jwtAuth: [] }],
             summary: "Atualizar Categoria Existente",
             description: "Atualiza as informações de uma categoria específica identificada pelo ID.<br>" +
-                        "Os novos dados da categoria devem ser fornecidos no corpo da requisição.<br><br>" +
-                        "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
+                "Os novos dados da categoria devem ser fornecidos no corpo da requisição.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
                     name: "id",
@@ -87,8 +91,9 @@ export const CategoriaPath = {
             security: [{ jwtAuth: [] }],
             summary: "Remover Categoria",
             description: "Deleta uma categoria específica identificada pelo ID fornecido.<br>" +
-                        "Esta operação é irreversível e removerá a categoria permanentemente do sistema.<br><br>" +
-                        "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
+                "Esta operação é irreversível e removerá a categoria permanentemente do sistema.<br><br>" +
+                "<strong>Requisitos obrigatórios:</strong> O e-mail do usuário deve estar verificado.<br>" +
+                "<strong>Permissões necessárias:</strong> Administrador ou Ministrante.",
             parameters: [
                 {
                     name: "id",

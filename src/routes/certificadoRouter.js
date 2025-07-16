@@ -3,6 +3,8 @@ import express from "express";
 import { wrapException } from "../utils/wrapException.js";
 import { AuthMiddleware } from "../middleware/authMiddleware.js";
 import { EmailVerificadoMiddleware } from "../middleware/EmailVerificadoMiddleware.js";
+import { permissaoMiddleware } from "../middleware/permissaoMiddleware.js";
+import { gruposEnum } from "../utils/enums.js";
 
 const router = express.Router();
 
@@ -10,13 +12,14 @@ router
     .get("/certificados",
         AuthMiddleware,
         EmailVerificadoMiddleware,
+        permissaoMiddleware([gruposEnum.ADM, gruposEnum.Professores]),
         wrapException(CertificadoController.listarCertificados)
     )
 
-    .get("/certificados/usuario/:userId",
+    .get("/certificados/usuario",
         AuthMiddleware,
         EmailVerificadoMiddleware,
-        wrapException(CertificadoController.listarCertificadosDoUsuario)
+        wrapException(CertificadoController.listarCertificadosDoUsuarioLogado)
     )
 
     .get("/certificados/usuario/curso/:cursoId",
