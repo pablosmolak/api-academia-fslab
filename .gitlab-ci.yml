@@ -24,7 +24,7 @@ testar-jest:
     MYSQL_USER: test_user
     MYSQL_PASSWORD: test1234
     # 👇 E são usadas pelo seu app
-    DATABASE_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
+    DB_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
   only:
     - 39-criar-rotas-para-manipular-instrutores-do-curso
   before_script:
