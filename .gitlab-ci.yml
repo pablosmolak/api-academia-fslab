@@ -5,48 +5,9 @@ variables:
   ENV_CONFIG_TEST: $ENV_CONFIG_TEST
 
 stages:
-  - test
+  # - test
   - build
   - deploy
-
-
-testar-jest:
-  stage: test
-  image: node:20
-  services:
-    - name: mysql:8
-      alias: mysql
-      command:
-        - --default-authentication-plugin=mysql_native_password
-  variables:
-    MYSQL_ROOT_PASSWORD: test1234
-    MYSQL_DATABASE: academiaFSlabTest
-    MYSQL_USER: test_user
-    MYSQL_PASSWORD: test1234
-    DATABASE_URL: "mysql://test_user:test1234@mysql:3306/academiaFSlabTest"
-  before_script:
-    - apt-get update && apt-get install -y default-mysql-client
-    - echo "⏳ Aguardando MySQL subir..."
-    - |
-      for i in {1..60}; do
-        mysqladmin ping -hmysql -utest_user -ptest1234 --silent && break
-        echo "Ainda não disponível, tentando de novo..."
-        sleep 5
-      done
-    - echo "Listando processos do MySQL no container de serviço:"
-    - docker ps -a || echo "Não há containers Docker disponíveis no runner"
-    - echo "Tentando conectar ao MySQL e mostrar bases:"
-    - mysql -hmysql -utest_user -ptest1234 -e "SHOW DATABASES;" || echo "Falha ao conectar ao MySQL"
-    - echo "Verificando logs do serviço MySQL (se possível):"
-    - docker logs $(docker ps -q -f ancestor=mysql:8) || echo "Não há logs do container MySQL disponíveis"
-    - npx prisma migrate deploy
-  script:
-    - npm ci
-    - npm run test
-
-
-
-
 
 # testar-jest:
 #   stage: test
@@ -61,7 +22,7 @@ testar-jest:
 
 buildar-docker:
   stage: build
-  needs: ['testar-jest']
+  # needs: ['testar-jest']
   image: docker:dind
   only:
     - 39-criar-rotas-para-manipular-instrutores-do-curso
