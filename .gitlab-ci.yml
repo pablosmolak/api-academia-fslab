@@ -1,0 +1,52 @@
+variables:
+  KUBECTL_CONFIG: $KUBECTL_CONFIG
+  IMAGEM_DOCKER: registry.fslab.dev/pablosmolak/api-academia
+  ENV_CONFIG: $ENV_CONFIG
+  ENV_CONFIG_TEST: $ENV_CONFIG_TEST
+
+stages:
+  - build
+  - deploy
+
+buildar-docker:
+  stage: build
+  image: docker:dind
+  only:
+    - master
+  script:
+    - cat $ENV_CONFIG > .env
+    - >
+      docker build 
+      -t $IMAGEM_DOCKER
+      -f DockerFile
+      .
+    - docker push $IMAGEM_DOCKER
+
+fazer-deploy:
+  stage: deploy
+  needs: ['buildar-docker']
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
+  only:
+    - master
+  script:
+    - cat $KUBECTL_CONFIG > ~/.kube/config
+    - kubectl config get-contexts
+    - kubectl get node
+    - kubectl get pods
+
+    #apaga e sobe novo deploy da api
+    - kubectl delete deployment api-academia || true
+    - kubectl apply -f deployment/deployment.yaml
+
+    #apaga e sobe novo deploy do minio
+    - kubectl delete ConfigMap minio-academia-config || true
+    - kubectl apply -f deployment/minio-academia-config.yaml
+    - kubectl delete deployment minio-academia || true
+    - kubectl apply -f deployment/minio-academia.yaml
+
+    - sleep 60
+    - kubectl get pods
+    - kubectl describe deploy/api-academia
+    - kubectl logs deploy/api-academia
