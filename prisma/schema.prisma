@@ -7,14 +7,183 @@ datasource db {
     url      = env("DB_URL")
 }
 
-model Usuarios {
+// modelo de Grupos de Usuários
+model Grupo {
     id         String   @id @default(uuid())
-    nome       String   @db.VarChar(200)
-    email      String   @unique @db.VarChar(255)
-    senha      String   @db.VarChar(255)
-    ativo      Boolean  @default(false)
+    nome       String
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    @@map("usuarios")
+    // Relacionamento com os usuários
+    usuario Usuario[]
+
+    @@map("grupos")
+}
+
+// modelo de Usuários
+model Usuario {
+    id                         String    @id @default(uuid())
+    nome                       String
+    email                      String    @unique
+    senha                      String?
+    emailVerificado            Boolean   @default(false)
+    codigoVerificacaoEmail     Int?
+    expirationVerificacaoEmail DateTime?
+    tokenRecuperaSenha         String?   @db.VarChar(1024)
+    fotoPerfil                 String?
+    ativo                      Boolean   @default(true)
+    grupoId                    String
+    created_at                 DateTime  @default(now())
+    updated_at                 DateTime  @updatedAt
+
+    // Relacionamentos
+    inscricoes      Inscricao[]
+    certificados    Certificado[]
+    progressoCursos ProgressoCurso[]
+    instrutores     Instrutores[]
+    Grupo           Grupo            @relation(fields: [grupoId], references: [id])
+    Curso           Curso[]
+}
+
+// modelo de Inscrições em Cursos
+model Inscricao {
+  cursoId       String
+  userId        String
+  status        String    @default("Em Andamento")
+  dataInscricao DateTime  @default(now())
+  dataTermino   DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  curso     Curso          @relation(fields: [cursoId], references: [id])
+  usuario   Usuario        @relation(fields: [userId], references: [id])
+  progresso ProgressoCurso?
+
+  @@id([userId, cursoId])
+  @@map("inscricoes")
+}
+
+
+// modelo de Progresso do Curso
+model ProgressoCurso {
+  userId               String
+  cursoId              String
+  porcentagem          Float
+  atividadeAtual       String?
+  atividadesConcluidas Json?
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  curso     Curso          @relation(fields: [cursoId], references: [id])
+  usuario   Usuario        @relation(fields: [userId], references: [id])
+  conteudo  ConteudoCurso? @relation(fields: [atividadeAtual], references: [id])
+  inscricao Inscricao      @relation(fields: [userId, cursoId], references: [userId, cursoId])
+
+  @@id([userId, cursoId])
+  @@map("progresso_cursos")
+}
+
+
+// modelo de Conteúdo do Curso
+model ConteudoCurso {
+    id           String   @id @default(uuid())
+    titulo       String
+    topicoId     String
+    tipo         String // tipo de conteúdo (texto, vídeo, questão, etc.)
+    conteudo     String // conteúdo em si (texto formatado, URL do vídeo, etc.)
+    cargaHoraria Int      @default(0)
+    ordem        Int
+    created_at   DateTime @default(now())
+    updated_at   DateTime @updatedAt
+
+    // Relacionamento com o topico
+    topico Topico @relation(fields: [topicoId], references: [id])
+
+    progressoCurso ProgressoCurso[]
+
+    @@map("conteudos_cursos")
+}
+
+// modelo de topicos
+model Topico {
+    id         String   @id @default(uuid())
+    titulo     String
+    ordem      Int
+    cursoId    String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    // Relacionamento com o curso
+    curso Curso @relation(fields: [cursoId], references: [id])
+
+    // Relacionamento com o conteúdo
+    conteudos ConteudoCurso[]
+
+    @@map("topicos")
+}
+
+// modelo de Cursos
+model Curso {
+    id           String   @id @default(uuid())
+    nome         String
+    descricao    String   @db.Text
+    capa         String?
+    criador      String?
+    cargaHoraria Int      @default(0)
+    publicado    Boolean  @default(false)
+    created_at   DateTime @default(now())
+    updated_at   DateTime @updatedAt
+
+    // Relacionamentos
+    inscricoes      Inscricao[]
+    topicos         Topico[]
+    progressoCursos ProgressoCurso[]
+    certificado     Certificado[]
+    instrutores     Instrutores[]
+    categoria       Categoria[]
+    usuario         Usuario?          @relation(fields: [criador], references: [id])
+}
+
+// Criar um modelo de categoria de cursos para organizar os cursos
+model Categoria {
+    id         String   @id @default(uuid())
+    nome       String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    // Relacionamento com os cursos
+    cursos Curso[]
+
+    @@map("categorias")
+}
+
+// modelo de Instrutores
+model Instrutores {
+    id         String   @id @default(uuid())
+    cursoId    String
+    userId     String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    curso   Curso   @relation(fields: [cursoId], references: [id])
+    usuario Usuario @relation(fields: [userId], references: [id])
+
+    @@unique([cursoId, userId])
+    @@map("instrutores")
+}
+
+// modelo de Certificados
+model Certificado {
+    userId     String
+    cursoId    String
+    validador  String   @unique @default(uuid())
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    // Relacionamento com o curso e usuário
+    curso   Curso   @relation(fields: [cursoId], references: [id])
+    usuario Usuario @relation(fields: [userId], references: [id])
+
+    @@id([userId, cursoId])
+    @@map("certificados")
 }

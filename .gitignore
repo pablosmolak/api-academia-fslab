@@ -1,3 +1,6 @@
 data
+data_minio
 node_modules
 .env
+.env.test
+migrations
