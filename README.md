@@ -13,8 +13,8 @@ Plataforma para gerenciamento de usuários, cursos e conteúdos educacionais da 
 
 ## 📑 Sumário
 
-- [📦 API Academia FSLab](#api-academia-fslab)
-- [🌐 Acesse a documentação em produção](#acesse-a-documentação-em-produção)
+- [📦 API Academia FSLab](#-api-academia-fslab)
+- [🌐 Acesse a documentação em produção](#-acesse-a-documentação-em-produção)
 - [🚀 Funcionalidades](#-funcionalidades)
 - [🛠 Tecnologias Utilizadas](#-tecnologias-utilizadas)
 - [📂 Estrutura de Pastas](#-estrutura-de-pastas)
