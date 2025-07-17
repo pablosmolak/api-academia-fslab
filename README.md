@@ -181,5 +181,5 @@ FS_MAIL_API_URL=
 
 <br>
 
-<p align="center">🧪 Projeto em desenvolvimento como parte do Trabalho de Conclusão de Curso 🚀</p>
+<p align="center">🧪 Projeto desenvolvido como parte do Trabalho de Conclusão de Curso 🚀</p>
 
