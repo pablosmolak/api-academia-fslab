@@ -5,27 +5,14 @@ variables:
   ENV_CONFIG_TEST: $ENV_CONFIG_TEST
 
 stages:
-  # - test
   - build
   - deploy
 
-# testar-jest:
-#   stage: test
-#   image: node:20
-#   only:
-#     - 39-criar-rotas-para-manipular-instrutores-do-curso
-#   script:
-#     - cat "$ENV_CONFIG_TEST" > .env.test
-#     - cat .env.test
-#     - npm ci
-#     - npm run test
-
 buildar-docker:
   stage: build
-  # needs: ['testar-jest']
   image: docker:dind
   only:
-    - 39-criar-rotas-para-manipular-instrutores-do-curso
+    - master
   script:
     - cat $ENV_CONFIG > .env
     - >
@@ -42,18 +29,16 @@ fazer-deploy:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   only:
-    - 39-criar-rotas-para-manipular-instrutores-do-curso
+    - master
   script:
     - cat $KUBECTL_CONFIG > ~/.kube/config
     - kubectl config get-contexts
     - kubectl get node
     - kubectl get pods
 
-
     #apaga e sobe novo deploy da api
     - kubectl delete deployment api-academia || true
     - kubectl apply -f deployment/deployment.yaml
-
 
     #apaga e sobe novo deploy do minio
     - kubectl delete ConfigMap minio-academia-config || true

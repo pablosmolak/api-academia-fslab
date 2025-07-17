@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1752544854684" clover="3.2.0">
-  <project timestamp="1752544854684" name="All files">
-    <metrics statements="1201" coveredstatements="1180" conditionals="660" coveredconditionals="575" methods="200" coveredmethods="186" elements="2061" coveredelements="1941" complexity="0" loc="1201" ncloc="1201" packages="8" files="56" classes="56"/>
+<coverage generated="1752715256380" clover="3.2.0">
+  <project timestamp="1752715256380" name="All files">
+    <metrics statements="1203" coveredstatements="1180" conditionals="660" coveredconditionals="575" methods="200" coveredmethods="186" elements="2063" coveredelements="1941" complexity="0" loc="1203" ncloc="1203" packages="8" files="56" classes="56"/>
     <package name="src">
       <metrics statements="16" coveredstatements="16" conditionals="6" coveredconditionals="5" methods="4" coveredmethods="4"/>
       <file name="app.js" path="C:\Users\pablo\Desktop\academia-fslab-back-end\src\app.js">
@@ -25,7 +25,7 @@
       </file>
     </package>
     <package name="src.config">
-      <metrics statements="43" coveredstatements="31" conditionals="18" coveredconditionals="9" methods="9" coveredmethods="8"/>
+      <metrics statements="45" coveredstatements="31" conditionals="18" coveredconditionals="9" methods="9" coveredmethods="8"/>
       <file name="initialConfig.js" path="C:\Users\pablo\Desktop\academia-fslab-back-end\src\config\initialConfig.js">
         <metrics statements="29" coveredstatements="19" conditionals="14" coveredconditionals="7" methods="7" coveredmethods="6"/>
         <line num="8" count="19" type="stmt"/>
@@ -63,7 +63,7 @@
         <line num="3" count="19" type="stmt"/>
       </file>
       <file name="prismaClient.js" path="C:\Users\pablo\Desktop\academia-fslab-back-end\src\config\prismaClient.js">
-        <metrics statements="8" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <metrics statements="10" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="5" count="19" type="stmt"/>
         <line num="7" count="19" type="stmt"/>
         <line num="10" count="19" type="stmt"/>
@@ -72,6 +72,8 @@
         <line num="25" count="19" type="stmt"/>
         <line num="28" count="0" type="stmt"/>
         <line num="29" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
       </file>
       <file name="zodConfig.js" path="C:\Users\pablo\Desktop\academia-fslab-back-end\src\config\zodConfig.js">
         <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="1" methods="1" coveredmethods="1"/>
@@ -1243,7 +1245,7 @@
         <line num="34" count="3" type="stmt"/>
         <line num="36" count="3" type="stmt"/>
         <line num="39" count="3" type="stmt"/>
-        <line num="40" count="286" type="stmt"/>
+        <line num="40" count="289" type="stmt"/>
         <line num="43" count="3" type="stmt"/>
         <line num="45" count="3" type="stmt"/>
         <line num="49" count="6" type="stmt"/>

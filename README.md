@@ -1,108 +1,185 @@
-<div align="center">
- <img 
-      alt="Project programing languages count" 
-      src="assets/logo.png"
-      width="400px"
-    >  
-    <br />
-    <br />
-    <br />
-    <br />
-  <!-- project name -->
-  <h1 align="center">API Academia FSLab>_</h1>
-  
- 
-  <p align="center">
-      🛠️ Em Construção...
-    <br />
-    <a 
-      href="#">
-      <strong>Em Produção »</strong>
-    </a>
-    <br />
-    <br />
-    <a 
-      href="#">
-      Report Bug
-    </a>
-    ·
-    <a 
-      href="#">
-      Request Feature
-    </a>
-  </p>
-</div>
+<p align="center">
+  <img src="assets/logo.png" alt="Logo" width="300"/>
+  <br />
+  <br />
+
+ <h1 align="center">📦 API Academia FSLab</h1>
+</p>
 
 
+Plataforma para gerenciamento de usuários, cursos e conteúdos educacionais da Academia FSLab.
 
-## 🔥 Features
-- [ ] Autenticação de usuários para acesso seguro à API;
-- [ ] Exemplos de Features ...
+---
+
+## 📑 Sumário
+
+- [📦 API Academia FSLab](#api-academia-fslab)
+- [🌐 Acesse a documentação em produção](#acesse-a-documentação-em-produção)
+- [🚀 Funcionalidades](#-funcionalidades)
+- [🛠 Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [📂 Estrutura de Pastas](#-estrutura-de-pastas)
+- [▶️ Como Rodar Localmente](#️-como-rodar-localmente)
+- [🔐 Variáveis de Ambiente](#-variáveis-de-ambiente)
+- [👨‍💻 Autor](#-autor)
+
+---
+
+## 🌐 Acesse a documentação em produção:  
 
 
+🔗 [https://api-academia.app.fslab.dev/docs/](https://api-academia.app.fslab.dev/docs/)
 
+---
 
-## Tecnologias usadas
+## 🚀 Funcionalidades
 
-O Projeto foi usado com as demais tecnologias apresentados abaixo:
+- Autenticação via JWT
+- Cadastro e gerenciamento de usuários
+- Sistema de permissões
+- Gerenciamento de cursos, conteúdos e inscrições
+- Emissão de certificados
+- Integração com Swagger para documentação
+- Testes unitários e de integração
 
-- `Swagger`: [swagger-UI on  GitHub](https://github.com/swagger-api/swagger-ui)
-- `express`: [Express.js on GitHub](https://github.com/expressjs/express)
-- `dotenv`: [dotenv on GitHub](https://github.com/motdotla/dotenv)
-- `bcrypt`: [bcrypt.js on GitHub](https://github.com/dcodeIO/bcrypt.js)
-- `cors`: [npm cors](https://www.npmjs.com/package/cors)
-- `jsonwebtoken`: [jsonwebtoken on GitHub](https://github.com/auth0/node-jsonwebtoken)
+---
 
+## 🛠 Tecnologias Utilizadas
 
-## Informações
+- Node.js
+- Express
+- Prisma ORM
+- Swagger
+- Docker
+- JWT
+- Bcrypt
+- Dotenv
+- Zod
+- MinIO
+- MJML
+- Jest
 
-Você precisará ter o [Node.js](https://nodejs.org) instalado em seu computador para construir este aplicativo.
+---
 
-```bash
-$ git clone ssh://git@gitlab.fslab.dev:4241/academia-fslab/academia-fslab-back-end.git
-$ cd academia-fslab-back-end
-$ npm install
+## 📂 Estrutura de Pastas
 
 ```
-
-
-## Docker e Migração do ORM Prisma
-
-🔧 Script
-
-```bash
-$ docker compose -f ./docker-compose-banco.yml up -d
-$ npx prisma migrate dev
-$ npm run dev
+academia-fslab-back-end/
+├── assets/
+│   └── logo.png
+├── deployment/
+│   ├── deployment.yaml
+│   ├── minio-academia-config.yaml
+│   └── minio-academia.yaml
+├── prisma/
+│   ├── schema.prisma
+│   └── migrations
+├── src/
+│   ├── app.js
+│   ├── config/
+│   ├── controller/
+│   ├── docs/
+│   ├── middleware/
+│   ├── routes/
+│   ├── schema/
+│   ├── seed/
+│   ├── services/
+│   └── utils/
+├── templates/
+│   ├── recuperaSenha.mjml
+│   └── verificaEmail.mjml
+├── tests/
+│   ├── images/
+│   ├── integration/
+│   └── unit/
+├── .dockerignore
+├── .env
+├── .env.example
+├── .env.test
+├── .gitignore
+├── .gitlab-ci.yml
+├── babel.config.js
+├── docker-compose-banco.yml
+├── docker-compose-minio.yml
+├── DockerFile
+├── jest.config.js
+├── jest.setup.js
+├── package-lock.json
+├── package.json
+├── README.md
+└── server.js
 ```
-🔧 Comandos do Prisma
+
+---
+
+## ▶️ Como Rodar Localmente
 
 ```bash
-$ npx prisma studio # Rodar o Studio Prisma Navegador
+# 📦 Clone o repositório
+git clone ssh://git@gitlab.fslab.dev:4241/academia-fslab/academia-fslab-back-end.git
+
+# 💻 Acesse o diretório do projeto
+cd academia-fslab-back-end
+
+# 📥 Instale as dependências
+npm install
+
+# ⚙️ Configure as variáveis de ambiente
+cp .env.example .env
+nano .env   # edite conforme necessário
+
+# 🚀 Inicie a aplicação
+npm start
+
+> academia-fslab-back-end@1.0.0 start
+> node src/main.js
+
+✅ Servidor rodando em: http://localhost:3000
 ```
 
+## 🔐 Variáveis de Ambiente
 
-🔧 `.env` 
-```bash
-PORT=3000
+Crie um arquivo `.env` com o seguinte conteúdo:
 
-DB_URL= mysql://root:pablo123@localhost:3307/academiaFSlab
-
-#JWT
-JWT_SECRET=1234567890
-JWT_EXPIRATION=1d
-
+```env
 #variavel de debug
 DEBUGLOG=true
+PORT=
+
+DB_URL=
+
+#JWT
+JWT_SECRET=
+JWT_EXPIRATION=1d
+JWT_EXPIRATION_RECUPERA_SENHA=30m
+
+LOGIN_ADMINISTRADOR_PADRAO = 
+SENHA_ADMINISTRADOR_PADRAO = 
+
+#minio
+MINIO_ENDPOINT = 'localhost'
+MINIO_PORT = 9000
+MINIO_ACCESS_KEY = 'ROOTUSER'
+MINIO_SECRET_KEY = 'CHANGEME123'
+MINIO_USE_SSL = false
+
+
+#Váriavel de envio de email FS-Mail
+FS_MAIL_ADDRESS=
+FS_MAIL_API_KEY=
+FS_MAIL_API_URL=
+
 ```
+---
 
-Runs the app in the development mode.<br/>
+## 👨‍💻 Autor
 
-## Autores
+<p align="center">
+  <a href="https://github.com/pablosmolak">
+  <img src="https://avatars.githubusercontent.com/u/83317702?v=4" width="200"/><br/>
+  Pablo Smolak</a>
+</p>
 
-<div style="display: flex;">
+<br>
 
-| [<img width="150px" style="border-radius: 50%"  src="https://avatars.githubusercontent.com/u/83317702?v=4"><br><sub>Pablo Smolak</sub>](https://github.com/pablosmolak) |
-| :---------------------------------------------------------------------------------------------------------------------------------------: |
+<p align="center">🧪 Projeto em desenvolvimento como parte do Trabalho de Conclusão de Curso — FSLab 🚀</p>
 
-</div>
