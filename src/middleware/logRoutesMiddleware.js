@@ -2,7 +2,8 @@ const logRoutes = async (req, res, next) => {
     try {
         const timestamp = new Date().toISOString();
 
-        let ip = req.headers["x-forwarded-for"] ||
+        let ip = req.headers["cf-connecting-ip"] ||
+        req.headers["x-forwarded-for"] ||
         req.socket.remoteAddress ||
         null;
     
