@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: rubix-minio-config
 data:
-  MINIO_ENDPOINT: "rubix-minio-server"
+  MINIO_ENDPOINT: "rubix-minio-server.shared"
   MINIO_PORT: "9000"
   MINIO_USE_SSL: "false"
   MINIO_BUCKET: "imagens"

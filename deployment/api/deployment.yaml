@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: academia-env
 data:
-  DB_URL: "mysql://pablo:pablo123@rubix-mysql:3306/academiaFSlab"
+  DB_URL: "mysql://pablo:pablo123@rubix-mysql.shared:3306/academiaFSlab"
   PORT: "3000"
 
 ---
