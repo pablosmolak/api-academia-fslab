@@ -21,10 +21,10 @@ spec:
         app: api-academia
     spec:
       imagePullSecrets:
-      - name: regcred
+      - name: ghcr-secret
       containers:
       - name: api-academia
-        image: registry.fslab.dev/pablosmolak/api-academia:latest
+        image: ghcr.io/pablosmolak/api-academia:latest
         envFrom:
         - configMapRef:
             name: academia-env
