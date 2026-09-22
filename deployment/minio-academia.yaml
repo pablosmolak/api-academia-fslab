@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: minio-academia
-        image: minio/minio:latest
+        image: quay.io/minio/minio:latest
         args: ["server","/data","--console-address",":9001"]
         resources: {}
         ports:

@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-academia
+spec:
+  resources:
+    requests:
+      storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-academia
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mysql-academia
+  template:
+    metadata:
+      labels:
+        app: mysql-academia
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "pablo123"
+        - name: MYSQL_DATABASE
+          value: "academiaFSlab"
+        - name: MYSQL_USER
+          value: "pablo"
+        - name: MYSQL_PASSWORD
+          value: "pablo123"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: pv
+      volumes:
+      - name: pv
+        persistentVolumeClaim:
+          claimName: mysql-academia
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-academia
+spec:
+  type: ClusterIP
+  selector:
+    app: mysql-academia
+  ports:
+  - port: 3306
+    targetPort: 3306
