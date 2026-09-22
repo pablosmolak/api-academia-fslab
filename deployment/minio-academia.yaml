@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: minio-academia
+  name: rubix-minio
 spec:
   resources:
     requests:
@@ -12,18 +12,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: minio-academia
+  name: rubix-minio
 spec:
   selector:
     matchLabels:
-      app: minio-academia
+      app: rubix-minio
   template:
     metadata:
       labels:
-        app: minio-academia
+        app: rubix-minio
     spec:
       containers:
-      - name: minio-academia
+      - name: rubix-minio
         image: quay.io/minio/minio:latest
         args: ["server","/data","--console-address",":9001"]
         resources: {}
@@ -32,24 +32,24 @@ spec:
         - containerPort: 9001
         envFrom:
         - configMapRef:
-            name: minio-academia-config
+            name: rubix-minio-config
         volumeMounts:
           - mountPath: /data
             name: pv
       volumes:
       - name: pv
         persistentVolumeClaim:
-          claimName: minio-academia
+          claimName: rubix-minio
 ---
 apiVersion: v1
 kind: Service
 metadata:
 # Nome de host do minio
-  name: minio-academia-server
+  name: rubix-minio-server
 spec:
   type: ClusterIP
   selector:
-    app: minio-academia
+    app: rubix-minio
   ports:
   - port: 9000
     targetPort: 9000
@@ -58,11 +58,11 @@ apiVersion: v1
 kind: Service
 metadata:
 # Nome de host do minio console
-  name: minio-academia
+  name: rubix-minio
 spec:
   type: ClusterIP
   selector:
-    app: minio-academia
+    app: rubix-minio
   ports:
   - port: 80
     targetPort: 9001

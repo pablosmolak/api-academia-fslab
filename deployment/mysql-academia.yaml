@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-academia
+  name: rubix-mysql
 spec:
   resources:
     requests:
@@ -12,18 +12,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql-academia
+  name: rubix-mysql
 spec:
   replicas: 1
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: mysql-academia
+      app: rubix-mysql
   template:
     metadata:
       labels:
-        app: mysql-academia
+        app: rubix-mysql
     spec:
       containers:
       - name: mysql
@@ -45,16 +45,16 @@ spec:
       volumes:
       - name: pv
         persistentVolumeClaim:
-          claimName: mysql-academia
+          claimName: rubix-mysql
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-academia
+  name: rubix-mysql
 spec:
   type: ClusterIP
   selector:
-    app: mysql-academia
+    app: rubix-mysql
   ports:
   - port: 3306
     targetPort: 3306
