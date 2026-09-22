@@ -5,7 +5,16 @@ metadata:
 data:
   DB_URL: "mysql://pablo:pablo123@rubix-mysql.shared:3306/academiaFSlab"
   PORT: "3000"
-
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rubix-minio-config
+data:
+  MINIO_ENDPOINT: "rubix-minio-server.shared"
+  MINIO_PORT: "9000"
+  MINIO_USE_SSL: "false"
+  MINIO_BUCKET: "imagens"
 ---
 apiVersion: apps/v1
 kind: Deployment
