@@ -5,6 +5,7 @@ metadata:
 data:
   DB_URL: "mysql://pablo:pablo123@rubix-mysql.shared:3306/academiaFSlab"
   PORT: "3000"
+  JWT_EXPIRATION: "1d"
 ---
 apiVersion: v1
 kind: ConfigMap
