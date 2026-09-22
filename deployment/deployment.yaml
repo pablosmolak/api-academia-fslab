@@ -28,6 +28,8 @@ spec:
         envFrom:
         - configMapRef:
             name: academia-env
+        - configMapRef:
+            name: rubix-minio-config
         resources: {}
         ports:
         - containerPort: 3000
