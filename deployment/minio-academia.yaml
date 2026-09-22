@@ -33,6 +33,8 @@ spec:
         envFrom:
         - configMapRef:
             name: rubix-minio-config
+        - secretRef:
+            name: rubix-minio-secret
         volumeMounts:
           - mountPath: /data
             name: pv

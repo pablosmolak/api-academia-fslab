@@ -32,6 +32,8 @@ spec:
             name: rubix-minio-config
         - secretRef:
             name: academia-admin-secret
+        - secretRef:
+            name: rubix-minio-secret
         resources: {}
         ports:
         - containerPort: 3000

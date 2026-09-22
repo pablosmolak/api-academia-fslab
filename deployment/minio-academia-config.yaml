@@ -3,11 +3,7 @@ kind: ConfigMap
 metadata:
   name: rubix-minio-config
 data:
-  MINIO_ROOT_USER: "minio"
-  MINIO_ROOT_PASSWORD: "minio123"
   MINIO_ENDPOINT: "rubix-minio-server"
   MINIO_PORT: "9000"
   MINIO_USE_SSL: "false"
-  MINIO_ACCESS_KEY: "academia"
-  MINIO_SECRET_KEY: "zaq123edc"
   MINIO_BUCKET: "imagens"
