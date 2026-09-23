@@ -6,6 +6,10 @@ data:
   DB_URL: "mysql://pablo:pablo123@rubix-mysql.shared:3306/academiaFSlab"
   PORT: "3000"
   JWT_EXPIRATION: "1d"
+  JWT_EXPIRATION_RECUPERA_SENHA: "30m"
+  DEBUGLOG: "false"
+  FS_MAIL_ADDRESS: "p.smolak@estudante.ifro.edu.br"
+  FS_MAIL_API_URL: "https://fs-mail.app.fslab.dev"
 ---
 apiVersion: v1
 kind: ConfigMap
