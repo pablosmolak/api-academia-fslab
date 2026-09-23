@@ -15,6 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Write .env
+        run: printf '%s' "${{ vars.ENV_FILE }}" > .env
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 

@@ -1,26 +1,3 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: academia-env
-data:
-  DB_URL: "mysql://pablo:pablo123@rubix-mysql.shared:3306/academiaFSlab"
-  PORT: "3000"
-  JWT_EXPIRATION: "1d"
-  JWT_EXPIRATION_RECUPERA_SENHA: "30m"
-  DEBUGLOG: "false"
-  FS_MAIL_ADDRESS: "p.smolak@estudante.ifro.edu.br"
-  FS_MAIL_API_URL: "https://fs-mail.app.fslab.dev"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: rubix-minio-config
-data:
-  MINIO_ENDPOINT: "rubix-minio-server.shared"
-  MINIO_PORT: "9000"
-  MINIO_USE_SSL: "false"
-  MINIO_BUCKET: "imagens"
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,15 +16,6 @@ spec:
       containers:
       - name: api-academia
         image: ghcr.io/pablosmolak/api-academia:latest
-        envFrom:
-        - configMapRef:
-            name: academia-env
-        - configMapRef:
-            name: rubix-minio-config
-        - secretRef:
-            name: academia-admin-secret
-        - secretRef:
-            name: rubix-minio-secret
         resources: {}
         ports:
         - containerPort: 3000
